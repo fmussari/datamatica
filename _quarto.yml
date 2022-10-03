@@ -1,0 +1,19 @@
+project:
+  type: website
+
+website:
+  title: "datamatica"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/fmussari
+      - icon: linkedin
+        href: https://www.linkedin.com/in/francisco-mussari-432b781a6/
+format:
+  html:
+    theme: simplex
+    css: styles.css
+
+
+

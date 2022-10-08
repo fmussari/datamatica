@@ -13,4 +13,4 @@ about:
 
 ---
 
-I'm Francisco Mussari, blogging from Caracas about data, ai, engineering and social sciences.
+I'm Francisco Mussari, blogging from Caracas about data, ai, cloud computing, engineering and social sciences.

@@ -4,14 +4,21 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "I’m Francisco Mussari, blogging from Caracas about data, ai, engineering and social sciences."
+    "text": "I’m Francisco Mussari, blogging from Caracas about data, ai, cloud computing, engineering and social sciences."
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "datamatica",
     "section": "",
-    "text": "news\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nOct 3, 2022\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nSep 30, 2022\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "computer-vision\n\n\ndeeplearning\n\n\nazure\n\n\ncustom-vision\n\n\nobject-detection\n\n\n\n\n\n\n\n\n\n\n\nOct 8, 2022\n\n\nFrancisco Mussari\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nOct 3, 2022\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nSep 30, 2022\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html",
+    "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html",
+    "title": "Object Detection with Azure Custom Vision - Part 1",
+    "section": "",
+    "text": "Building an Object Detection with Azure Custom Vision - Part 1"
   },
   {
     "objectID": "posts/post-with-code/index.html",

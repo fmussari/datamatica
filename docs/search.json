@@ -21,6 +21,27 @@
     "text": "Building an Object Detection with Azure Custom Vision - Part 1"
   },
   {
+    "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#introduction",
+    "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#introduction",
+    "title": "Object Detection with Azure Custom Vision - Part 1",
+    "section": "Introduction",
+    "text": "Introduction\nI was introduced to deep learning with fastai’s top-down approach. That means that in the first week I was able to train a model As part of fast.ai great deep learning course I was able to easily train and put into production a classifier of telecommunication tower elements."
+  },
+  {
+    "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#references",
+    "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#references",
+    "title": "Object Detection with Azure Custom Vision - Part 1",
+    "section": "References",
+    "text": "References\n\nMicrosoft Learn Excersice: Detect Objects in Images with Custom Vision\nCustom Vision Documentation: Quickstart: Create an object detection project with the Custom Vision client library\nREST API Endpoint: Custom Vision REST API reference - Azure Cognitive Services\nAPIs Documentation: Custom_Vision_Training_3.3\nAzure SDK for Python: Azure Cognitive Services Computer Vision SDK for Python\nSource Code: Azure/azure-sdk-for-python"
+  },
+  {
+    "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#install-and-import-libraries",
+    "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#install-and-import-libraries",
+    "title": "Object Detection with Azure Custom Vision - Part 1",
+    "section": "Install and Import Libraries",
+    "text": "Install and Import Libraries\nAfter installing Custom Vision’s Python SDK and python-dotenv\n! pip install azure-cognitiveservices-vision-customvision==3.1.0\n! pip install python-dotenv\n\nfrom azure.cognitiveservices.vision.customvision.training import CustomVisionTrainingClient\nfrom azure.cognitiveservices.vision.customvision.training.models import ImageFileCreateBatch, ImageFileCreateEntry, Region\nfrom msrest.authentication import ApiKeyCredentials\nimport time\nimport json\nimport os\n\nimport pandas as pd\nfrom pathlib import Path\n\nfrom PIL import Image\nfrom PIL import UnidentifiedImageError"
+  },
+  {
     "objectID": "posts/post-with-code/index.html",
     "href": "posts/post-with-code/index.html",
     "title": "Post With Code",

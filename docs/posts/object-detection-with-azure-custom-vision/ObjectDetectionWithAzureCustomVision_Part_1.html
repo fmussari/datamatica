@@ -131,7 +131,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -204,7 +204,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#tutorial-parts" id="toc-tutorial-parts" class="nav-link" data-scroll-target="#tutorial-parts">Tutorial Parts</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#part-1.1-create-a-custom-vision-service" id="toc-part-1.1-create-a-custom-vision-service" class="nav-link" data-scroll-target="#part-1.1-create-a-custom-vision-service">Part 1.1: Create a Custom Vision Service</a></li>
+  <li><a href="#part-1.2-upload-the-images" id="toc-part-1.2-upload-the-images" class="nav-link" data-scroll-target="#part-1.2-upload-the-images">Part 1.2: Upload the images</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
 
@@ -220,8 +232,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>After the model is published in Azure service, we can use the API to build and share a demo with <a href="https://gradio.app/">Gradio</a> and <a href="https://huggingface.co/">Huggingface</a>.</p>
 <p>Here is the one that is already published for you to test:<br>
 <a href="https://huggingface.co/spaces/fmussari/Telecom-Object-Detection">Telecom-Object-Detection</a></p>
-<section id="the-objects-the-model-will-be-trained-to-detect-are-the-following" class="level4">
-<h4 class="anchored" data-anchor-id="the-objects-the-model-will-be-trained-to-detect-are-the-following">The objects the model will be trained to detect are the following:</h4>
+<section id="the-model-will-be-trained-to-detect-the-following-objects" class="level4">
+<h4 class="anchored" data-anchor-id="the-model-will-be-trained-to-detect-the-following-objects">The model will be trained to detect the following objects:</h4>
 <ul>
 <li>Grid Antenna</li>
 <li>Panel antenna</li>

@@ -123,6 +123,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -222,13 +225,13 @@ https://huggingface.co/spaces/fmussari/Telecom-Object-Detection</p>
 <table>
 <tbody><tr>
 <td>
-<img src="images/Grid.jpg" alt="1" width="200px" height="200px">
+<img src="blog-pictures/Grid.jpg" alt="1" width="200px" height="200px">
 </td>
 <td>
-<img src="images/Panel.jpg" alt="2" width="200px" height="200px">
+<img src="blog-pictures/Panel.jpg" alt="2" width="200px" height="200px">
 </td>
 <td>
-<img src="images/Radome.jpg" alt="2" width="200px" height="200px">
+<img src="blog-pictures/Radome.jpg" alt="2" width="200px" height="200px">
 </td>
 </tr>
 <tr>
@@ -244,13 +247,13 @@ Radome
 </tr>
 <tr>
 <td>
-<img src="images/RRU.jpg" alt="1" width="200px" height="200px">
+<img src="blog-pictures/RRU.jpg" alt="1" width="200px" height="200px">
 </td>
 <td>
-<img src="images/Shroud.jpg" alt="1" width="200px" height="200px">
+<img src="blog-pictures/Shroud.jpg" alt="1" width="200px" height="200px">
 </td>
 <td>
-<img src="images/Solid.jpg" alt="1" width="200px" height="200px">
+<img src="blog-pictures/Solid.jpg" alt="1" width="200px" height="200px">
 </td>
 </tr>
 <tr>
@@ -310,7 +313,10 @@ Solid
 <h2 class="anchored" data-anchor-id="part-1.2-upload-the-images">Part 1.2: Upload the images</h2>
 <section id="environment-variables" class="level3">
 <h3 class="anchored" data-anchor-id="environment-variables">Environment variables</h3>
-<p>Update the configuration variables in the <a href=".env">.env</a> file that contains: &gt; <code>TrainingEndpoint=YOUR_TRAINING_ENDPOINT TrainingKey=YOUR_TRAINING_KEY ProjectID=YOUR_PROJECT_ID</code></p>
+<p>Update the configuration variables in the <a href=".env">.env</a> file that contains:</p>
+<pre><code>TrainingEndpoint=YOUR_TRAINING_ENDPOINT
+TrainingKey=YOUR_TRAINING_KEY
+ProjectID=YOUR_PROJECT_ID</code></pre>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -321,103 +327,196 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>In order to protect my credentials, I’m going to store .env file in a <code>creds</code> folder that is not going to be pushed.</p>
+<p>In order to protect my credentials, I’m going to store .env file in a <code>creds</code> folder that isn’t being pushed to github.</p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>DOTENV_PATH <span class="op">=</span> <span class="st">'./.env'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>DOTENV_PATH <span class="op">=</span> <span class="st">'./.env'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="install-and-import-libraries" class="level3">
-<h3 class="anchored" data-anchor-id="install-and-import-libraries">Install and Import Libraries</h3>
+<h3 class="anchored" data-anchor-id="install-and-import-libraries">Install and import libraries</h3>
 <p>We need to install Custom Vision’s Python SDK and python-dotenv:<br>
 <code>! pip install azure-cognitiveservices-vision-customvision==3.1.0</code><br>
 <code>! pip install python-dotenv</code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> azure.cognitiveservices.vision.customvision.training <span class="im">import</span> CustomVisionTrainingClient</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> azure.cognitiveservices.vision.customvision.training.models <span class="im">import</span> ImageFileCreateBatch, ImageFileCreateEntry, Region</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> msrest.authentication <span class="im">import</span> ApiKeyCredentials</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> UnidentifiedImageError</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> azure.cognitiveservices.vision.customvision.training <span class="im">import</span> CustomVisionTrainingClient</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> azure.cognitiveservices.vision.customvision.training.models <span class="im">import</span> ImageFileCreateBatch, ImageFileCreateEntry, Region</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> msrest.authentication <span class="im">import</span> ApiKeyCredentials</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> UnidentifiedImageError</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="credentials-and-services" class="level3">
-<h3 class="anchored" data-anchor-id="credentials-and-services">Credentials and Services</h3>
+<h3 class="anchored" data-anchor-id="credentials-and-services">Credentials and services</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>load_dotenv(DOTENV_PATH)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>training_endpoint <span class="op">=</span> os.getenv(<span class="st">'TrainingEndpoint'</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>training_key <span class="op">=</span> os.getenv(<span class="st">'TrainingKey'</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>project_id <span class="op">=</span> os.getenv(<span class="st">'ProjectID'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>credentials <span class="op">=</span> ApiKeyCredentials(in_headers<span class="op">=</span>{<span class="st">"Training-key"</span>: training_key})</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>training_client <span class="op">=</span> CustomVisionTrainingClient(training_endpoint, credentials)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>custom_vision_project <span class="op">=</span> training_client.get_project(project_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>load_dotenv(DOTENV_PATH)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>training_endpoint <span class="op">=</span> os.getenv(<span class="st">'TrainingEndpoint'</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>training_key <span class="op">=</span> os.getenv(<span class="st">'TrainingKey'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>project_id <span class="op">=</span> os.getenv(<span class="st">'ProjectID'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>credentials <span class="op">=</span> ApiKeyCredentials(in_headers<span class="op">=</span>{<span class="st">"Training-key"</span>: training_key})</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>training_client <span class="op">=</span> CustomVisionTrainingClient(training_endpoint, credentials)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>custom_vision_project <span class="op">=</span> training_client.get_project(project_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="functions" class="level3">
 <h3 class="anchored" data-anchor-id="functions">Functions</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Borrowed from fastai library</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> verify_image(fn):</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Confirm that `fn` can be opened"</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        im <span class="op">=</span> Image.<span class="bu">open</span>(fn)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        im.draft(im.mode, (<span class="dv">32</span>,<span class="dv">32</span>))</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        im.load()</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">True</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span>: <span class="cf">return</span> <span class="va">False</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">#except PIL.UnidentifiedImageError:</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Borrowed from fastai library</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> verify_image(fn):</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Confirm that `fn` can be opened"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        im <span class="op">=</span> Image.<span class="bu">open</span>(fn)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        im.draft(im.mode, (<span class="dv">32</span>,<span class="dv">32</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        im.load()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">True</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span>: <span class="cf">return</span> <span class="va">False</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">#except PIL.UnidentifiedImageError:</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The SDK / API allows to upload images in batches but I didn’t find a way to match the local image name with the id generated by the service. Then I opted to create a function that uploads the pictures one by one.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Upload_Images_1by1(pictures: <span class="bu">list</span>[Path]) <span class="op">-&gt;</span> <span class="bu">list</span>(<span class="st">'dict'</span>):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Upload the pictures from a list of paths,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">    one by one to keep track of the relation between</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">    local image name and Azure image id.</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">    And to track the ones that python fails opening</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Uploading images..."</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    processed_ids <span class="op">=</span> []</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    processed_status <span class="op">=</span> []</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    picture_names <span class="op">=</span> []</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pic_path <span class="kw">in</span> pictures:</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> verify_image(pic_path):</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> <span class="bu">open</span>(pic_path, mode<span class="op">=</span><span class="st">"rb"</span>) <span class="im">as</span> image_data:</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                image_entry <span class="op">=</span> ImageFileCreateEntry(name<span class="op">=</span>pic_path.name, contents<span class="op">=</span>image_data.read())</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Upload the list of (1) images as a batch</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>            upload_result <span class="op">=</span> training_client.create_images_from_files(</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                custom_vision_project.<span class="bu">id</span>, </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Creates an ImageFileCreateBatch from a list of (1) ImageFileCreateEntry</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                ImageFileCreateBatch(images<span class="op">=</span>[image_entry])</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Check for failure</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> upload_result.is_batch_successful:</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>                pic_status <span class="op">=</span> upload_result.images[<span class="dv">0</span>].status</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>                pic_id <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>                pic_status <span class="op">=</span> upload_result.images[<span class="dv">0</span>].status</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>                pic_id <span class="op">=</span> upload_result.images[<span class="dv">0</span>].image.<span class="bu">id</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>            pic_status <span class="op">=</span> <span class="st">"ReadError"</span> <span class="co"># Equivalente to SDK `ErrorSource`</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>            pic_id <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        processed_status.append(pic_status)</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        processed_ids.append(pic_id)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        picture_names.append(pic_path.name)</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(pic_path.name, <span class="st">"//"</span>, pic_id, <span class="st">"//"</span>, pic_status)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"image_name"</span>: picture_names, <span class="st">"image_id"</span>: processed_ids, <span class="st">"image_status"</span>: processed_status}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="explore-pictures" class="level3">
+<h3 class="anchored" data-anchor-id="explore-pictures">Explore pictures</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pics_folder <span class="op">=</span> Path(<span class="st">'./train_images'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>pictures <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">list</span>(pics_folder.iterdir()))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"There are </span><span class="sc">{</span><span class="bu">len</span>(pictures)<span class="sc">}</span><span class="ss"> pictures"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>There are 203 pictures</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Upload_Images_1by1(picture_names: <span class="bu">list</span>) <span class="op">-&gt;</span> <span class="bu">list</span>(<span class="st">'dict'</span>):</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Upload the pictures from a list of paths,</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">    one by one to keep track of the relation between</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">    local image name and Azure image id.</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">    And to track the ones that python fails opening</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Uploading images..."</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    processed_ids <span class="op">=</span> []</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    processed_status <span class="op">=</span> []</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pic_name <span class="kw">in</span> picture_names:</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        pic_path <span class="op">=</span> pictures_path <span class="op">/</span> pic_name</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> verify_image(pic_path):</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> <span class="bu">open</span>(pic_path, mode<span class="op">=</span><span class="st">"rb"</span>) <span class="im">as</span> image_data:</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                image_entry <span class="op">=</span> ImageFileCreateEntry(name<span class="op">=</span>pic_name, contents<span class="op">=</span>image_data.read())</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Upload the list of (1) images as a batch</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>            upload_result <span class="op">=</span> training_client.create_images_from_files(</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>                custom_vision_project.<span class="bu">id</span>, </span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Creates an ImageFileCreateBatch from a list of (1) ImageFileCreateEntry</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                ImageFileCreateBatch(images<span class="op">=</span>[image_entry])</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Check for failure</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> upload_result.is_batch_successful:</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>                pic_status <span class="op">=</span> upload_result.images[<span class="dv">0</span>].status</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>                pic_id <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>                pic_status <span class="op">=</span> upload_result.images[<span class="dv">0</span>].status</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>                pic_id <span class="op">=</span> upload_result.images[<span class="dv">0</span>].image.<span class="bu">id</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>            pic_status <span class="op">=</span> <span class="st">"ReadError"</span> <span class="co"># Equivalente to SDK `ErrorSource`</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            pic_id <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        processed_status.append(pic_status)</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        processed_ids.append(pic_id)</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(pic_name, <span class="st">"//"</span>, pic_id, <span class="st">"//"</span>, pic_status)</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [{<span class="st">"image_name"</span>: image_name, <span class="st">"image_id"</span>: image_id, <span class="st">"image_status"</span>: image_status} </span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> image_name, image_id, image_status <span class="kw">in</span> </span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>            <span class="bu">zip</span>(picture_names, processed_ids, processed_status)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">12</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_img(im, figsize<span class="op">=</span><span class="va">None</span>, ax<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> ax: fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    ax.imshow(im)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    ax.get_xaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    ax.get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ax</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">enumerate</span>(axes.flat):</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> Image.<span class="bu">open</span>( pictures[i<span class="op">*</span><span class="dv">10</span>] )</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> show_img(im, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_1_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>As you can see the pictures are very varied. Different cameras, lighting conditions, focus, resolutions and sizes…</p>
+</section>
+<section id="upload-the-pictures" class="level3">
+<h3 class="anchored" data-anchor-id="upload-the-pictures">Upload the pictures</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df <span class="op">=</span> pd.DataFrame(columns<span class="op">=</span>[<span class="st">"image_name"</span>, <span class="st">"image_id"</span>, <span class="st">"image_status"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>upload_batch <span class="op">=</span> Upload_Images_1by1(pictures)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Uploading images...
+41.JPG // 5fc8bfe8-20da-4ef2-88b1-d9129bc5dc23 // OK
+CIMG0030.JPG // de3db466-a262-4d65-88d1-380ece29d21e // OK</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>{'image_name': ['41.JPG', 'CIMG0030.JPG'],
+ 'image_id': ['5fc8bfe8-20da-4ef2-88b1-d9129bc5dc23',
+  'de3db466-a262-4d65-88d1-380ece29d21e'],
+ 'image_status': ['OK', 'OK']}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df <span class="op">=</span> pd.DataFrame(upload_batch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>image_name</th>
+      <th>image_id</th>
+      <th>image_status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>41.JPG</td>
+      <td>5fc8bfe8-20da-4ef2-88b1-d9129bc5dc23</td>
+      <td>OK</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CIMG0030.JPG</td>
+      <td>de3db466-a262-4d65-88d1-380ece29d21e</td>
+      <td>OK</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Save a csv</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.to_csv(<span class="st">'20221012_203_Images_Uploaded.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(PosixPath('train_images'), '41.JPG')</code></pre>
+</div>
 </div>
 
 

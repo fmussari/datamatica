@@ -310,13 +310,22 @@ Solid
 <h2 class="anchored" data-anchor-id="part-1.2-upload-the-images">Part 1.2: Upload the images</h2>
 <section id="environment-variables" class="level3">
 <h3 class="anchored" data-anchor-id="environment-variables">Environment variables</h3>
-<p>Update the configuration variables in the <a href=".env">.env</a> file that contains:</p>
-<pre><code>TrainingEndpoint=YOUR_TRAINING_ENDPOINT
-TrainingKey=YOUR_TRAINING_KEY
-ProjectID=YOUR_PROJECT_ID</code></pre>
-<p>Notes: In order to protect my credentials, I’m going to store .env file in a <code>creds</code> folder that is not going to be pushed.</p>
+<p>Update the configuration variables in the <a href=".env">.env</a> file that contains: &gt; <code>TrainingEndpoint=YOUR_TRAINING_ENDPOINT TrainingKey=YOUR_TRAINING_KEY ProjectID=YOUR_PROJECT_ID</code></p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In order to protect my credentials, I’m going to store .env file in a <code>creds</code> folder that is not going to be pushed.</p>
+</div>
+</div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>DOTENV_PATH <span class="op">=</span> <span class="st">'./creds/.env'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>DOTENV_PATH <span class="op">=</span> <span class="st">'./.env'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="install-and-import-libraries" class="level3">
@@ -325,19 +334,35 @@ ProjectID=YOUR_PROJECT_ID</code></pre>
 <code>! pip install azure-cognitiveservices-vision-customvision==3.1.0</code><br>
 <code>! pip install python-dotenv</code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> azure.cognitiveservices.vision.customvision.training <span class="im">import</span> CustomVisionTrainingClient</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> azure.cognitiveservices.vision.customvision.training.models <span class="im">import</span> ImageFileCreateBatch, ImageFileCreateEntry, Region</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> msrest.authentication <span class="im">import</span> ApiKeyCredentials</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> UnidentifiedImageError</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> azure.cognitiveservices.vision.customvision.training <span class="im">import</span> CustomVisionTrainingClient</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> azure.cognitiveservices.vision.customvision.training.models <span class="im">import</span> ImageFileCreateBatch, ImageFileCreateEntry, Region</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> msrest.authentication <span class="im">import</span> ApiKeyCredentials</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> UnidentifiedImageError</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="credentials-and-services" class="level3">
+<h3 class="anchored" data-anchor-id="credentials-and-services">Credentials and Services</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>load_dotenv(DOTENV_PATH)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>training_endpoint <span class="op">=</span> os.getenv(<span class="st">'TrainingEndpoint'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>training_key <span class="op">=</span> os.getenv(<span class="st">'TrainingKey'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>project_id <span class="op">=</span> os.getenv(<span class="st">'ProjectID'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>credentials <span class="op">=</span> ApiKeyCredentials(in_headers<span class="op">=</span>{<span class="st">"Training-key"</span>: training_key})</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>training_client <span class="op">=</span> CustomVisionTrainingClient(training_endpoint, credentials)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>custom_vision_project <span class="op">=</span> training_client.get_project(project_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="functions" class="level3">
+<h3 class="anchored" data-anchor-id="functions">Functions</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Borrowed from fastai library</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> verify_image(fn):</span>

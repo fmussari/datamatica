@@ -16,28 +16,35 @@
   {
     "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html",
     "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html",
-    "title": "Object Detection with Azure Custom Vision - Part 1",
+    "title": "Telecom Equipment Detection with Azure Custom Vision - Part 1",
     "section": "",
-    "text": "Building an Object Detection with Azure Custom Vision - Part 1"
+    "text": "Building an Object Detection with Azure Custom Vision - Part 1\nIn this post we are going to follow along the process and code required to train an object detection model using Azure Custom Vision in its free tier.\nWe are going to use real world pictures compiled from work I have done over the years in Venezuela. The objects we are going to detect are the following: - Microwave Grid Antenna - Microwave Radome antenna - Microwave Shroud antenna - Microwave Solid antenna - Panel antenna - RRU"
   },
   {
     "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#introduction",
     "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#introduction",
-    "title": "Object Detection with Azure Custom Vision - Part 1",
+    "title": "Telecom Equipment Detection with Azure Custom Vision - Part 1",
     "section": "Introduction",
     "text": "Introduction\nI was introduced to deep learning with fastai’s top-down approach. That means that in the first week I was able to train a model As part of fast.ai great deep learning course I was able to easily train and put into production a classifier of telecommunication tower elements."
   },
   {
     "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#references",
     "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#references",
-    "title": "Object Detection with Azure Custom Vision - Part 1",
+    "title": "Telecom Equipment Detection with Azure Custom Vision - Part 1",
     "section": "References",
     "text": "References\n\nMicrosoft Learn Excersice: Detect Objects in Images with Custom Vision\nCustom Vision Documentation: Quickstart: Create an object detection project with the Custom Vision client library\nREST API Endpoint: Custom Vision REST API reference - Azure Cognitive Services\nAPIs Documentation: Custom_Vision_Training_3.3\nAzure SDK for Python: Azure Cognitive Services Computer Vision SDK for Python\nSource Code: Azure/azure-sdk-for-python"
   },
   {
+    "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#create-a-custom-vision-service",
+    "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#create-a-custom-vision-service",
+    "title": "Telecom Equipment Detection with Azure Custom Vision - Part 1",
+    "section": "Create a Custom Vision Service",
+    "text": "Create a Custom Vision Service\nI’m not going to get into the details of creating the service. And the reason is that there is a detailed tutorial covering not just that, but also the code for uploading and training a simple model. I encourage you to try it first:\nDetect Objects in Images with Custom Vision"
+  },
+  {
     "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#install-and-import-libraries",
     "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#install-and-import-libraries",
-    "title": "Object Detection with Azure Custom Vision - Part 1",
+    "title": "Telecom Equipment Detection with Azure Custom Vision - Part 1",
     "section": "Install and Import Libraries",
     "text": "Install and Import Libraries\nAfter installing Custom Vision’s Python SDK and python-dotenv\n! pip install azure-cognitiveservices-vision-customvision==3.1.0\n! pip install python-dotenv\n\nfrom azure.cognitiveservices.vision.customvision.training import CustomVisionTrainingClient\nfrom azure.cognitiveservices.vision.customvision.training.models import ImageFileCreateBatch, ImageFileCreateEntry, Region\nfrom msrest.authentication import ApiKeyCredentials\nimport time\nimport json\nimport os\n\nimport pandas as pd\nfrom pathlib import Path\n\nfrom PIL import Image\nfrom PIL import UnidentifiedImageError\n\n\n# Borrowed from fastai library\ndef verify_image(fn):\n    \"Confirm that `fn` can be opened\"\n    try:\n        im = Image.open(fn)\n        im.draft(im.mode, (32,32))\n        im.load()\n        return True\n    except: return False\n    #except PIL.UnidentifiedImageError:\n\n\ndef Upload_Images_1by1(picture_names: list) -> list('dict'):\n    \"\"\"Upload the pictures from a list of paths,\n    one by one to keep track of the relation between\n    local image name and Azure image id.\n    And to track the ones that python fails opening\n    \"\"\"\n    print(\"Uploading images...\")\n\n    processed_ids = []\n    processed_status = []\n\n    for pic_name in picture_names:\n        pic_path = pictures_path / pic_name\n\n        if verify_image(pic_path):\n            with open(pic_path, mode=\"rb\") as image_data:\n                image_entry = ImageFileCreateEntry(name=pic_name, contents=image_data.read())\n            \n            # Upload the list of (1) images as a batch\n            upload_result = training_client.create_images_from_files(\n                custom_vision_project.id, \n                # Creates an ImageFileCreateBatch from a list of (1) ImageFileCreateEntry\n                ImageFileCreateBatch(images=[image_entry])\n            )\n            # Check for failure\n            if not upload_result.is_batch_successful:\n                pic_status = upload_result.images[0].status\n                pic_id = None\n            else:\n                pic_status = upload_result.images[0].status\n                pic_id = upload_result.images[0].image.id\n        else:\n            pic_status = \"ReadError\" # Equivalente to SDK `ErrorSource`\n            pic_id = None\n        \n        processed_status.append(pic_status)\n        processed_ids.append(pic_id)\n        print(pic_name, \"//\", pic_id, \"//\", pic_status)\n    \n    return [{\"image_name\": image_name, \"image_id\": image_id, \"image_status\": image_status} \n            for image_name, image_id, image_status in \n            zip(picture_names, processed_ids, processed_status)]"
   },

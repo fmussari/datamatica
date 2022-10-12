@@ -9,7 +9,7 @@
 <meta name="author" content="Francisco Mussari">
 <meta name="dcterms.date" content="2022-10-08">
 
-<title>datamatica - Object Detection with Azure Custom Vision - Part 1</title>
+<title>datamatica - Telecom Equipment Detection with Azure Custom Vision - Part 1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -167,7 +167,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Object Detection with Azure Custom Vision - Part 1</h1>
+      <h1 class="title">Telecom Equipment Detection with Azure Custom Vision - Part 1</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">computer-vision</div>
                 <div class="quarto-category">deeplearning</div>
@@ -210,6 +210,51 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <p>Building an Object Detection with Azure Custom Vision - Part 1</p>
 <p><img src="test-url-Iteration2.png" class="img-fluid"></p>
+<p>In this post we are going to follow along the process and code required to train an <em>object detection</em> model using Azure Custom Vision in its free tier.</p>
+<p>We are going to use real world pictures compiled from work I have done over the years in Venezuela. The objects we are going to detect are the following: - Microwave Grid Antenna - Microwave Radome antenna - Microwave Shroud antenna - Microwave Solid antenna - Panel antenna - RRU</p>
+
+<table>
+<tbody><tr>
+<td>
+<img src="images/Grid.jpg" alt="1" width="200px" height="200px">
+</td>
+<td>
+<img src="images/Panel.jpg" alt="2" width="200px" height="200px">
+</td>
+<td>
+<img src="images/Radome.jpg" alt="2" width="200px" height="200px">
+</td>
+</tr>
+<tr>
+<td>
+<img src="images/RRU.jpg" alt="1" width="200px" height="200px">
+</td>
+<td>
+<img src="images/Shroud.jpg" alt="1" width="200px" height="200px">
+</td>
+<td>
+<img src="images/Solid.jpg" alt="1" width="200px" height="200px">
+</td>
+</tr>
+
+</tbody></table>
+<ul>
+<li>Part 1
+<ul>
+<li>Create a <a href="https://azure.microsoft.com/en-us/pricing/details/cognitive-services/custom-vision-service/#pricing">free</a> Azure <a href="https://www.customvision.ai/">Custom Vision</a> Service.</li>
+<li>Upload the images.</li>
+<li>Compare the original images with uploaded images.</li>
+</ul></li>
+<li>Part 2
+<ul>
+<li>Label the images using <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/suggested-tags">Smart Labeler</a></li>
+<li>Train and publish the model.</li>
+</ul></li>
+<li>Part 3
+<ul>
+<li>Create a Huggingface Gradio Demo.</li>
+</ul></li>
+</ul>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>I was introduced to deep learning with fastai’s top-down approach. That means that in the first week I was able to train a model As part of fast.ai great deep learning course I was able to easily train and put into production a classifier of telecommunication tower elements.</p>
@@ -224,6 +269,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Azure SDK for Python: <a href="https://docs.microsoft.com/en-us/python/api/overview/azure/cognitiveservices-vision-computervision-readme?view=azure-python">Azure Cognitive Services Computer Vision SDK for Python</a></li>
 <li>Source Code: <a href="https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/cognitiveservices/azure-cognitiveservices-vision-customvision/azure/cognitiveservices/vision/customvision/training/operations/_custom_vision_training_client_operations.py">Azure/azure-sdk-for-python</a></li>
 </ul>
+</section>
+<section id="create-a-custom-vision-service" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-custom-vision-service">Create a Custom Vision Service</h2>
+<p>I’m not going to get into the details of creating the service. And the reason is that there is a detailed tutorial covering not just that, but also the code for uploading and training a simple model. I encourage you to try it first:<br>
+<a href="https://microsoftlearning.github.io/AI-102-AIEngineer/Instructions/18-object-detection.html">Detect Objects in Images with Custom Vision</a></p>
 </section>
 <section id="install-and-import-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="install-and-import-libraries">Install and Import Libraries</h2>

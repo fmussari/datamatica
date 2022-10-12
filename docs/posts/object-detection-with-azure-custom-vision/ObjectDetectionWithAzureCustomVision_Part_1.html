@@ -220,8 +220,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>After the model is published in Azure service, we can use the API to build and share a demo with <a href="https://gradio.app/">Gradio</a> and <a href="https://huggingface.co/">Huggingface</a>.</p>
 <p>Here is the one that is already published for you to test:<br>
 <a href="https://huggingface.co/spaces/fmussari/Telecom-Object-Detection">Telecom-Object-Detection</a></p>
-<section id="the-objects-the-model-will-be-trained-to-detect-are-the-following" class="level3">
-<h3 class="anchored" data-anchor-id="the-objects-the-model-will-be-trained-to-detect-are-the-following">The objects the model will be trained to detect are the following:</h3>
+<section id="the-objects-the-model-will-be-trained-to-detect-are-the-following" class="level4">
+<h4 class="anchored" data-anchor-id="the-objects-the-model-will-be-trained-to-detect-are-the-following">The objects the model will be trained to detect are the following:</h4>
 <ul>
 <li>Grid Antenna</li>
 <li>Panel antenna</li>
@@ -315,11 +315,13 @@ Solid
 <h2 class="anchored" data-anchor-id="part-1.1-create-a-custom-vision-service">Part 1.1: Create a Custom Vision Service</h2>
 <p>I’m not going to get into the details of creating the service. And the reason is that there is a detailed tutorial covering not just that, but also the code for uploading and training a simple model. I encourage you to try it first:<br>
 <a href="https://microsoftlearning.github.io/AI-102-AIEngineer/Instructions/18-object-detection.html">Detect Objects in Images with Custom Vision</a></p>
-<p>For this tutorial I created a Custom Vision with the following settings:</p>
+<section id="for-this-tutorial-i-created-a-custom-vision-with-the-following-settings" class="level4">
+<h4 class="anchored" data-anchor-id="for-this-tutorial-i-created-a-custom-vision-with-the-following-settings">For this tutorial I created a Custom Vision with the following settings:</h4>
 <p>Custom Vision service:<br>
 - <strong>Resource</strong>: ai102cvision - <strong>Resource Kind</strong>: Custom Vision Training</p>
 <p>Project:<br>
 - <strong>Name</strong>: Telecom Equipment Detection - <strong>Description</strong>: Detect different types of antennas - <strong>Resource</strong>: ai102cvision [F0] - <strong>Project Types</strong>: Object Detection - <strong>Domains</strong>: General</p>
+</section>
 </section>
 <section id="part-1.2-upload-the-images" class="level2">
 <h2 class="anchored" data-anchor-id="part-1.2-upload-the-images">Part 1.2: Upload the images</h2>

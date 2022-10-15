@@ -220,7 +220,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#credentials-and-services" id="toc-credentials-and-services" class="nav-link" data-scroll-target="#credentials-and-services">Credentials and services</a></li>
   <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a></li>
   <li><a href="#explore-pictures" id="toc-explore-pictures" class="nav-link" data-scroll-target="#explore-pictures">Explore pictures</a></li>
-  <li><a href="#upload-the-pictures" id="toc-upload-the-pictures" class="nav-link" data-scroll-target="#upload-the-pictures">Upload the pictures</a></li>
+  <li><a href="#upload-the-pictures-to-custom-vision-service" id="toc-upload-the-pictures-to-custom-vision-service" class="nav-link" data-scroll-target="#upload-the-pictures-to-custom-vision-service">Upload the pictures to Custom Vision Service</a></li>
   </ul></li>
   <li><a href="#part-1.3.-explore-data-from-custom-vision-service" id="toc-part-1.3.-explore-data-from-custom-vision-service" class="nav-link" data-scroll-target="#part-1.3.-explore-data-from-custom-vision-service">Part 1.3. Explore Data from Custom Vision Service</a>
   <ul class="collapse">
@@ -244,10 +244,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="test-url-Iteration2.png" class="img-fluid"></p>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>In this series of post we are going to follow along the process and code required to train an <em>object detection</em> model using <a href="https://azure.microsoft.com/en-us/pricing/details/cognitive-services/custom-vision-service">Azure Custom Vision</a> (in its free tier.</p>
-<p>We are going to use real world pictures compiled from work I have done over the years in Venezuela. For this <em>supervised learning</em> problem we need to tagged images. So we will use <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/suggested-tags">Smart Labeler</a> to do that.</p>
+<p>In this series of posts we are going to follow along the process and code required to train an <em>object detection</em> model using <a href="https://azure.microsoft.com/en-us/pricing/details/cognitive-services/custom-vision-service">Azure Custom Vision</a> (in its free tier).</p>
+<p>We are going to use real world pictures compiled from work I have done over the years in Venezuela. In this kind of <em>supervised learning</em> problem we need tagged images. So we will use <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/suggested-tags">Smart Labeler</a> to do that.</p>
 <p>After the model is published in Azure service, we can use the API to build and share a demo with <a href="https://gradio.app/">Gradio</a> and <a href="https://huggingface.co/">Huggingface</a>.</p>
-<p>Here is the one that is already published for you to test:<br>
+<p>Here is the one that is already published for you to try:<br>
 <a href="https://huggingface.co/spaces/fmussari/Telecom-Object-Detection">Telecom-Object-Detection</a></p>
 <section id="the-model-will-be-trained-to-detect-the-following-objects" class="level4">
 <h4 class="anchored" data-anchor-id="the-model-will-be-trained-to-detect-the-following-objects">The model will be trained to detect the following objects:</h4>
@@ -465,31 +465,35 @@ Note
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> verify_image(pic_path):</span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> <span class="bu">open</span>(pic_path, mode<span class="op">=</span><span class="st">"rb"</span>) <span class="im">as</span> image_data:</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                image_entry <span class="op">=</span> ImageFileCreateEntry(name<span class="op">=</span>pic_path.name, contents<span class="op">=</span>image_data.read())</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Upload the list of (1) images as a batch</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>            upload_result <span class="op">=</span> training_client.create_images_from_files(</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                custom_vision_project.<span class="bu">id</span>, </span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Creates an ImageFileCreateBatch from a list of (1) ImageFileCreateEntry</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                ImageFileCreateBatch(images<span class="op">=</span>[image_entry])</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Check for failure</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> upload_result.is_batch_successful:</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>                pic_status <span class="op">=</span> upload_result.images[<span class="dv">0</span>].status</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>                pic_id <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>                pic_status <span class="op">=</span> upload_result.images[<span class="dv">0</span>].status</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>                pic_id <span class="op">=</span> upload_result.images[<span class="dv">0</span>].image.<span class="bu">id</span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>            pic_status <span class="op">=</span> <span class="st">"ReadError"</span> <span class="co"># Equivalente to SDK `ErrorSource`</span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>            pic_id <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        processed_status.append(pic_status)</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        processed_ids.append(pic_id)</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        picture_names.append(pic_path.name)</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(pic_path.name, <span class="st">"//"</span>, pic_id, <span class="st">"//"</span>, pic_status)</span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"image_name"</span>: picture_names, <span class="st">"image_id"</span>: processed_ids, <span class="st">"image_status"</span>: processed_status}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                image_entry <span class="op">=</span> ImageFileCreateEntry(</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                    name<span class="op">=</span>pic_path.name, contents<span class="op">=</span>image_data.read()</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Upload the list of (1) images as a batch</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>            upload_result <span class="op">=</span> training_client.create_images_from_files(</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                custom_vision_project.<span class="bu">id</span>, </span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Creates an ImageFileCreateBatch from a list of 1 ImageFileCreateEntry</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>                ImageFileCreateBatch(images<span class="op">=</span>[image_entry])</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Check for failure</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> upload_result.is_batch_successful:</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>                pic_status <span class="op">=</span> upload_result.images[<span class="dv">0</span>].status</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>                pic_id <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>                pic_status <span class="op">=</span> upload_result.images[<span class="dv">0</span>].status</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>                pic_id <span class="op">=</span> upload_result.images[<span class="dv">0</span>].image.<span class="bu">id</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>            pic_status <span class="op">=</span> <span class="st">"ReadError"</span> <span class="co"># Equivalente to SDK `ErrorSource`</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>            pic_id <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        processed_status.append(pic_status)</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>        processed_ids.append(pic_id)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>        picture_names.append(pic_path.name)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(pic_path.name, <span class="st">"//"</span>, pic_id, <span class="st">"//"</span>, pic_status)</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"image_name"</span>: picture_names, </span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>            <span class="st">"image_id"</span>: processed_ids, </span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>            <span class="st">"image_status"</span>: processed_status}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="explore-pictures" class="level3">
@@ -523,8 +527,8 @@ Note
 </div>
 <p>As you can see the pictures are very varied. Different cameras, lighting conditions, focus, resolutions and sizes…</p>
 </section>
-<section id="upload-the-pictures" class="level3">
-<h3 class="anchored" data-anchor-id="upload-the-pictures">Upload the pictures</h3>
+<section id="upload-the-pictures-to-custom-vision-service" class="level3">
+<h3 class="anchored" data-anchor-id="upload-the-pictures-to-custom-vision-service">Upload the pictures to Custom Vision Service</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df <span class="op">=</span> pd.DataFrame(columns<span class="op">=</span>[<span class="st">"image_name"</span>, <span class="st">"image_id"</span>, <span class="st">"image_status"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -621,7 +625,8 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="bu">sum</span>(uploaded_images_df.image_status <span class="op">!=</span> <span class="st">'OK'</span>)<span class="sc">}</span><span class="ss"> images failed uploading"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="bu">sum</span>(uploaded_images_df.image_status <span class="op">!=</span> <span class="st">'OK'</span>)<span class="sc">}</span><span class="ss"> </span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="er">      images failed when uploading")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>0 images failed uploading</code></pre>
 </div>
@@ -688,6 +693,7 @@ image.height: 900</code></pre>
 </section>
 <section id="the-images-are-resized-when-uploaded" class="level3">
 <h3 class="anchored" data-anchor-id="the-images-are-resized-when-uploaded">The images are resized when uploaded</h3>
+<p>Let’s see the same image locally:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[uploaded_images_df.image_id<span class="op">==</span>image.<span class="bu">id</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -735,7 +741,7 @@ image.height: 900</code></pre>
 </section>
 <section id="keep-track-of-original-size-vs.-size-in-the-service" class="level3">
 <h3 class="anchored" data-anchor-id="keep-track-of-original-size-vs.-size-in-the-service">Keep track of original size vs.&nbsp;size in the service</h3>
-<p>To get the real width and height we need to consider EXIF metadata.</p>
+<p>To get the real width and height we need to consider EXIF metadata. That’s because local images are sometimes rotated by the viewer with some app viewer.</p>
 <section id="size-of-local-images" class="level4">
 <h4 class="anchored" data-anchor-id="size-of-local-images">Size of local images</h4>
 <div class="cell">

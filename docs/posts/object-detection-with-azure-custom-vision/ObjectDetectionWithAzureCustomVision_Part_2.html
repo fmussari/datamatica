@@ -218,10 +218,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#credentials-and-services" id="toc-credentials-and-services" class="nav-link" data-scroll-target="#credentials-and-services">Credentials and services</a></li>
   <li><a href="#creating-labels" id="toc-creating-labels" class="nav-link" data-scroll-target="#creating-labels">Creating Labels</a></li>
   <li><a href="#upload-regions-from-json-file" id="toc-upload-regions-from-json-file" class="nav-link" data-scroll-target="#upload-regions-from-json-file">Upload Regions from json file</a></li>
+  <li><a href="#verifying-the-number-of-created-regions" id="toc-verifying-the-number-of-created-regions" class="nav-link" data-scroll-target="#verifying-the-number-of-created-regions">Verifying the number of created Regions</a></li>
+  <li><a href="#draw-some-regions" id="toc-draw-some-regions" class="nav-link" data-scroll-target="#draw-some-regions">Draw some regions</a></li>
   </ul></li>
-  <li><a href="#part-2.2.-explore-and-download-annotations" id="toc-part-2.2.-explore-and-download-annotations" class="nav-link" data-scroll-target="#part-2.2.-explore-and-download-annotations">Part 2.2. Explore and Download Annotations</a>
+  <li><a href="#part-2.2.-train-and-test-a-model" id="toc-part-2.2.-train-and-test-a-model" class="nav-link" data-scroll-target="#part-2.2.-train-and-test-a-model">Part 2.2. Train and Test a Model</a>
   <ul class="collapse">
-  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a></li>
   <li><a href="#explore-pictures" id="toc-explore-pictures" class="nav-link" data-scroll-target="#explore-pictures">Explore pictures</a></li>
   <li><a href="#upload-the-pictures-to-custom-vision-service" id="toc-upload-the-pictures-to-custom-vision-service" class="nav-link" data-scroll-target="#upload-the-pictures-to-custom-vision-service">Upload the pictures to Custom Vision Service</a></li>
   </ul></li>
@@ -363,13 +364,15 @@ Solid
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image, ImageOps</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> UnidentifiedImageError</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image, ImageOps</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> UnidentifiedImageError</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> patches, patheffects</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="credentials-and-services" class="level3">
@@ -396,7 +399,7 @@ Solid
 <section id="creating-labels" class="level3">
 <h3 class="anchored" data-anchor-id="creating-labels">Creating Labels</h3>
 <p>Since I already did the manual tagging, we can use those tags in this new project.<br>
-First we need to create the labels/tags in the service: - <code>CustomVisionTrainingClient.create_tag()</code></p>
+First we need to create the labels/tags in the service: - <a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-create-tag"><code>CustomVisionTrainingClient.create_tag()</code></a></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>tags <span class="op">=</span> [<span class="st">'Grid'</span>, <span class="st">'Panel'</span>, <span class="st">'Radome'</span>, <span class="st">'RRU'</span>, <span class="st">'Shroud'</span>, <span class="st">'Solid'</span>]</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>desc <span class="op">=</span> [<span class="st">'Grid Antenna'</span>, <span class="st">'Panel Cel. Antenna'</span>, <span class="st">'Radome Antenna'</span>, </span>
@@ -440,7 +443,7 @@ First we need to create the labels/tags in the service: - <code>CustomVisionTrai
 <h3 class="anchored" data-anchor-id="upload-regions-from-json-file">Upload Regions from json file</h3>
 <p>As I pointed before, you can create all the regions with Smart Labeler. Since I did that already in a previos project, I updated the region’s image ids and tags to the ones in this project and save them as a json.</p>
 <ul>
-<li><code>CustomVisionTrainingClient.create_image_regions()</code></li>
+<li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-create-image-regions"><code>CustomVisionTrainingClient.create_image_regions()</code></a></li>
 </ul>
 <p>We can see from the documentation that “There is a limit of 64 entries in a batch.”</p>
 <div class="cell">
@@ -522,86 +525,221 @@ Creating Regions 1_261 to 1_279</code></pre>
 <p>Example image in the service:<br>
 <img src="./blog-pictures/Part-2-Regions.PNG" class="img-fluid"></p>
 </section>
-</section>
-<section id="part-2.2.-explore-and-download-annotations" class="level2">
-<h2 class="anchored" data-anchor-id="part-2.2.-explore-and-download-annotations">Part 2.2. Explore and Download Annotations</h2>
-<p>In Part 1 we created our <code>.env</code> file to store the values we need to get our credentials.</p>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>In order to protect my credentials, I’m going to store .env file in a <code>creds</code> folder that isn’t being pushed to github.</p>
-</div>
-</div>
-<section id="functions" class="level3">
-<h3 class="anchored" data-anchor-id="functions">Functions</h3>
+<section id="verifying-the-number-of-created-regions" class="level3">
+<h3 class="anchored" data-anchor-id="verifying-the-number-of-created-regions">Verifying the number of created Regions</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> http.client, urllib.request, urllib.parse, urllib.error, base64</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>http_client_conn <span class="op">=</span> training_endpoint.split(<span class="st">'//'</span>)[<span class="dv">1</span>][:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>http_client_conn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>'ai102cvision.cognitiveservices.azure.com'</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">########### Python 3.2 #############</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>headers <span class="op">=</span> {<span class="st">'Training-key'</span>: training_key,}</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> <span class="va">None</span><span class="co">#urllib.parse.urlencode({'iterationId': iteration_id,})</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>get_str <span class="op">=</span> <span class="ss">f"/customvision/v3.3/Training/projects/</span><span class="sc">{</span>project_id<span class="sc">}</span><span class="ss">"</span> <span class="op">+</span> <span class="st">"/tags?</span><span class="sc">%s</span><span class="st">"</span> <span class="op">%</span> params</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    conn <span class="op">=</span> http.client.HTTPSConnection(http_client_conn)</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    conn.request(<span class="st">"GET"</span>, get_str, <span class="st">"</span><span class="sc">{body}</span><span class="st">"</span>, headers)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> conn.getresponse()</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> response.read()</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(data)</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    conn.close()</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(e)</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">#print("[Errno {0}] {1}".format(e.errno, e.strerror))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>all_tagged_images <span class="op">=</span> training_client.get_images(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    tagging_status<span class="op">=</span><span class="st">"Tagged"</span>, </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    take<span class="op">=</span><span class="dv">250</span>   <span class="co"># Max 256</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> im <span class="kw">in</span> all_tagged_images: i <span class="op">+=</span> <span class="bu">len</span>(im.regions)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of created Regions: </span><span class="sc">{</span>i<span class="sc">:</span>_<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>b'[{"id":"be3c951a-2eac-4113-a783-232d3fd547d3","name":"Radome","description":null,"type":"Regular","imageCount":1},{"id":"78d9fa32-63ee-4e15-825f-4586a81f920f","name":"Solid","description":null,"type":"Regular","imageCount":1},{"id":"41d40584-f010-488b-82d7-5663d30d376a","name":"Shroud","description":null,"type":"Regular","imageCount":1}]'</code></pre>
+<pre><code>Number of created Regions: 1_279</code></pre>
 </div>
 </div>
 </section>
+<section id="draw-some-regions" class="level3">
+<h3 class="anchored" data-anchor-id="draw-some-regions">Draw some regions</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>images_df <span class="op">=</span> pd.read_csv(<span class="st">'20221015_203_Images_Uploaded_WxH.csv'</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>images_df.index <span class="op">=</span> images_df.image_id</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>images_df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>image_name</th>
+      <th>image_id</th>
+      <th>image_status</th>
+      <th>ori_w</th>
+      <th>ori_h</th>
+      <th>train_w</th>
+      <th>train_h</th>
+    </tr>
+    <tr>
+      <th>image_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>452a0b58-0dc5-41ff-83d1-8d1ae7bd5d1c</th>
+      <td>41.JPG</td>
+      <td>452a0b58-0dc5-41ff-83d1-8d1ae7bd5d1c</td>
+      <td>OK</td>
+      <td>640</td>
+      <td>480</td>
+      <td>640</td>
+      <td>480</td>
+    </tr>
+    <tr>
+      <th>96b7774e-f5ad-4591-aa71-99ad5c71135e</th>
+      <td>CIMG0030.JPG</td>
+      <td>96b7774e-f5ad-4591-aa71-99ad5c71135e</td>
+      <td>OK</td>
+      <td>1620</td>
+      <td>2160</td>
+      <td>900</td>
+      <td>1200</td>
+    </tr>
+    <tr>
+      <th>3027bc7e-6e21-4b13-a7d7-bb7e08ce6824</th>
+      <td>CIMG0031.JPG</td>
+      <td>3027bc7e-6e21-4b13-a7d7-bb7e08ce6824</td>
+      <td>OK</td>
+      <td>1620</td>
+      <td>2160</td>
+      <td>900</td>
+      <td>1200</td>
+    </tr>
+    <tr>
+      <th>1320ab2e-3405-4853-bd7e-b0ef0f915d4b</th>
+      <td>CIMG0056.JPG</td>
+      <td>1320ab2e-3405-4853-bd7e-b0ef0f915d4b</td>
+      <td>OK</td>
+      <td>2160</td>
+      <td>1620</td>
+      <td>1200</td>
+      <td>900</td>
+    </tr>
+    <tr>
+      <th>aa67eceb-3db0-4026-bf16-0842c006e6ac</th>
+      <td>CIMG0059.JPG</td>
+      <td>aa67eceb-3db0-4026-bf16-0842c006e6ac</td>
+      <td>OK</td>
+      <td>2160</td>
+      <td>1620</td>
+      <td>1200</td>
+      <td>900</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Create a dictionary to easily access all regions from an image id:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>img2ann <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image <span class="kw">in</span> all_tagged_images:</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    img2ann[image.<span class="bu">id</span>] <span class="op">=</span> <span class="bu">tuple</span>([<span class="bu">list</span>(), <span class="bu">list</span>()])</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    image_w <span class="op">=</span> image.width<span class="op">;</span> image_h <span class="op">=</span> image.height</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    ori_w <span class="op">=</span> images_df.loc[image.<span class="bu">id</span>].ori_w</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    ori_h <span class="op">=</span> images_df.loc[image.<span class="bu">id</span>].ori_h</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> region <span class="kw">in</span> image.regions:</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        img2ann[image.<span class="bu">id</span>][<span class="dv">1</span>].append(region.tag_name)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        img2ann[image.<span class="bu">id</span>][<span class="dv">0</span>].append([</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>            region.left<span class="op">*</span>ori_w, </span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>            region.top<span class="op">*</span>ori_h, </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>            region.width<span class="op">*</span>ori_w, </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>            region.height<span class="op">*</span>ori_h</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pics_folder <span class="op">=</span> Path(<span class="st">'./train_images'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://youtu.be/Z0ssNAbe81M?t=4636</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_img(im, figsize<span class="op">=</span><span class="va">None</span>, ax<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> ax: fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    ax.imshow(im)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    ax.get_xaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    ax.get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ax</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_outline(o, lw):</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    o.set_path_effects([patheffects.Stroke(</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span>lw, foreground<span class="op">=</span><span class="st">'black'</span>), patheffects.Normal()</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_rect(ax, b):</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    patch <span class="op">=</span> ax.add_patch(</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>        patches.Rectangle(b[:<span class="dv">2</span>], <span class="op">*</span>b[<span class="op">-</span><span class="dv">2</span>:], fill<span class="op">=</span><span class="va">False</span>, edgecolor<span class="op">=</span><span class="st">'white'</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    draw_outline(patch, <span class="dv">4</span>)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_text(ax, xy, txt, sz<span class="op">=</span><span class="dv">14</span>):</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> ax.text(<span class="op">*</span>xy, txt,</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>        verticalalignment<span class="op">=</span><span class="st">'top'</span>, color<span class="op">=</span><span class="st">'white'</span>, fontsize<span class="op">=</span>sz, weight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    draw_outline(text, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_regions(index<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> Image.<span class="bu">open</span>( pics_folder <span class="op">/</span> images_df.iloc[index].image_name )</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> show_img(im, figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">8</span>))</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    reg, lab <span class="op">=</span> img2ann[images_df.iloc[index].image_id]</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, region <span class="kw">in</span> <span class="bu">enumerate</span>(reg):</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        draw_rect(ax, np.array(region))</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        tag <span class="op">=</span> lab[idx]</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>        draw_text(ax, region[:<span class="dv">2</span>], tag)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>draw_regions(index<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-23-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>A dragon-fly was cought in that picture!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>draw_regions(index<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-24-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="part-2.2.-train-and-test-a-model" class="level2">
+<h2 class="anchored" data-anchor-id="part-2.2.-train-and-test-a-model">Part 2.2. Train and Test a Model</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-train-project"><code>CustomVisionTrainingClient.train_project()</code></a></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>train_iteration <span class="op">=</span> training_client.train_project(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    training_type<span class="op">=</span><span class="st">'Regular'</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <section id="explore-pictures" class="level3">
 <h3 class="anchored" data-anchor-id="explore-pictures">Explore pictures</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pics_folder <span class="op">=</span> Path(<span class="st">'./train_images'</span>)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>pictures <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">list</span>(pics_folder.iterdir()))</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"There are </span><span class="sc">{</span><span class="bu">len</span>(pictures)<span class="sc">}</span><span class="ss"> pictures"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>pics_folder <span class="op">=</span> Path(<span class="st">'./train_images'</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>pictures <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">list</span>(pics_folder.iterdir()))</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"There are </span><span class="sc">{</span><span class="bu">len</span>(pictures)<span class="sc">}</span><span class="ss"> pictures"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>There are 203 pictures</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">12</span>))</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_img(im, figsize<span class="op">=</span><span class="va">None</span>, ax<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> ax: fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    ax.imshow(im)</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    ax.get_xaxis().set_visible(<span class="va">False</span>)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    ax.get_yaxis().set_visible(<span class="va">False</span>)</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ax</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">enumerate</span>(axes.flat):</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> Image.<span class="bu">open</span>( pictures[i<span class="op">*</span><span class="dv">10</span>] )</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> show_img(im, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">12</span>))</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_img(im, figsize<span class="op">=</span><span class="va">None</span>, ax<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> ax: fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    ax.imshow(im)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    ax.get_xaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    ax.get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ax</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">enumerate</span>(axes.flat):</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> Image.<span class="bu">open</span>( pictures[i<span class="op">*</span><span class="dv">10</span>] )</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> show_img(im, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-21-output-1.png" class="img-fluid"></p>
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-28-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>As you can see the pictures are very varied. Different cameras, lighting conditions, focus, resolutions and sizes…</p>
@@ -609,14 +747,14 @@ Note
 <section id="upload-the-pictures-to-custom-vision-service" class="level3">
 <h3 class="anchored" data-anchor-id="upload-the-pictures-to-custom-vision-service">Upload the pictures to Custom Vision Service</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df <span class="op">=</span> pd.DataFrame(columns<span class="op">=</span>[<span class="st">"image_name"</span>, <span class="st">"image_id"</span>, <span class="st">"image_status"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df <span class="op">=</span> pd.DataFrame(columns<span class="op">=</span>[<span class="st">"image_name"</span>, <span class="st">"image_id"</span>, <span class="st">"image_status"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>upload_batch <span class="op">=</span> Upload_Images_1by1(pictures)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>upload_batch <span class="op">=</span> Upload_Images_1by1(pictures)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df <span class="op">=</span> pd.DataFrame(upload_batch)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df <span class="op">=</span> pd.DataFrame(upload_batch)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
 <div>
@@ -704,15 +842,15 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="bu">sum</span>(uploaded_images_df.image_status <span class="op">!=</span> <span class="st">'OK'</span>)<span class="sc">}</span><span class="ss"> </span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="er">      images failed when uploading")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="bu">sum</span>(uploaded_images_df.image_status <span class="op">!=</span> <span class="st">'OK'</span>)<span class="sc">}</span><span class="ss"> </span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="er">      images failed when uploading")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>0 images failed uploading</code></pre>
 </div>
 </div>
 <p>Save a csv:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.to_csv(<span class="st">'20221012_203_Images_Uploaded.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.to_csv(<span class="st">'20221012_203_Images_Uploaded.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -724,15 +862,15 @@ Note
 <li><code>CustomVisionTrainingClient.get_images()</code></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>train_images <span class="op">=</span> training_client.get_images(</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>custom_vision_project.<span class="bu">id</span>,</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    take<span class="op">=</span><span class="dv">250</span>,</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    skip<span class="op">=</span><span class="dv">0</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>train_images <span class="op">=</span> training_client.get_images(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>custom_vision_project.<span class="bu">id</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    take<span class="op">=</span><span class="dv">250</span>,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    skip<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"There are </span><span class="sc">{</span><span class="bu">len</span>(train_images)<span class="sc">}</span><span class="ss"> training images in the service."</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Each image has a type of </span><span class="sc">{</span><span class="bu">type</span>(train_images[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"There are </span><span class="sc">{</span><span class="bu">len</span>(train_images)<span class="sc">}</span><span class="ss"> training images in the service."</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Each image has a type of </span><span class="sc">{</span><span class="bu">type</span>(train_images[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>There are 203 training images in the service.
 Each image has a type of &lt;class 'azure.cognitiveservices.vision.customvision.training.models._models_py3.Image'&gt;.</code></pre>
@@ -740,10 +878,10 @@ Each image has a type of &lt;class 'azure.cognitiveservices.vision.customvision.
 </div>
 <p>Some properties of the image class:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> train_images[<span class="dv">0</span>]</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"image.id: </span><span class="sc">{</span>image<span class="sc">.</span><span class="bu">id</span><span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"image.width: </span><span class="sc">{</span>image<span class="sc">.</span>width<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"image.height: </span><span class="sc">{</span>image<span class="sc">.</span>height<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> train_images[<span class="dv">0</span>]</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"image.id: </span><span class="sc">{</span>image<span class="sc">.</span><span class="bu">id</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"image.width: </span><span class="sc">{</span>image<span class="sc">.</span>width<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"image.height: </span><span class="sc">{</span>image<span class="sc">.</span>height<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>image.id: 6e274dfc-411a-4bf3-9151-51b96f662248
 image.width: 1188
@@ -751,20 +889,20 @@ image.height: 900</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>image.original_image_uri</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>image.original_image_uri</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>'https://irisprodeutraining.blob.core.windows.net:443/i-f6cb4ba75bbe46a4883669654dc86f3a/o-6e274dfc411a4bf3915151b96f662248?sv=2020-04-08&amp;se=2022-10-16T22%3A23%3A43Z&amp;sr=b&amp;sp=r&amp;sig=ru8DNhvBrpA46oZtmzNP7CRHSkwGugumb3R%2F3IzJaUE%3D'</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>image.resized_image_uri</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>image.resized_image_uri</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>'https://irisprodeutraining.blob.core.windows.net:443/i-f6cb4ba75bbe46a4883669654dc86f3a/i-6e274dfc411a4bf3915151b96f662248?sv=2020-04-08&amp;se=2022-10-16T22%3A23%3A43Z&amp;sr=b&amp;sp=r&amp;sig=U5UQ6tjjdLF5gZHFR6wrrWk8B0w9at4cIUeYyxylx2E%3D'</code></pre>
 </div>
 </div>
 <p>Of course there are no tags yet:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"image.tags: </span><span class="sc">{</span>image<span class="sc">.</span>tags<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"image.tags: </span><span class="sc">{</span>image<span class="sc">.</span>tags<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>image.tags: None</code></pre>
 </div>
@@ -774,7 +912,7 @@ image.height: 900</code></pre>
 <h3 class="anchored" data-anchor-id="the-images-are-resized-when-uploaded">The images are resized when uploaded</h3>
 <p>Let’s see the same image locally:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[uploaded_images_df.image_id<span class="op">==</span>image.<span class="bu">id</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[uploaded_images_df.image_id<span class="op">==</span>image.<span class="bu">id</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
 <div>
@@ -801,17 +939,17 @@ image.height: 900</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>local_image <span class="op">=</span> uploaded_images_df[</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    uploaded_images_df.image_id<span class="op">==</span><span class="st">'6e274dfc-411a-4bf3-9151-51b96f662248'</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>].image_name.item()</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>local_image</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>local_image <span class="op">=</span> uploaded_images_df[</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    uploaded_images_df.image_id<span class="op">==</span><span class="st">'6e274dfc-411a-4bf3-9151-51b96f662248'</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>].image_name.item()</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>local_image</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>'torre cerro el pavon 087.jpg'</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> Image.<span class="bu">open</span>(pics_folder <span class="op">/</span> local_image)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>im.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> Image.<span class="bu">open</span>(pics_folder <span class="op">/</span> local_image)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>im.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>(2576, 1952)</code></pre>
 </div>
@@ -824,29 +962,29 @@ image.height: 900</code></pre>
 <section id="size-of-local-images" class="level4">
 <h4 class="anchored" data-anchor-id="size-of-local-images">Size of local images</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The image has some EXIF meta data including information about orientation (rotation)</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://stackoverflow.com/a/63950647</span></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>local_w <span class="op">=</span> []</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>local_h <span class="op">=</span> []</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image <span class="kw">in</span> uploaded_images_df.image_name:</span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> Image.<span class="bu">open</span>(pics_folder <span class="op">/</span> image)</span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> ImageOps.exif_transpose(im)</span>
-<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>    local_w.append(im.size[<span class="dv">0</span>])</span>
-<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>    local_h.append(im.size[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The image has some EXIF meta data including information about orientation (rotation)</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://stackoverflow.com/a/63950647</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>local_w <span class="op">=</span> []</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>local_h <span class="op">=</span> []</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image <span class="kw">in</span> uploaded_images_df.image_name:</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> Image.<span class="bu">open</span>(pics_folder <span class="op">/</span> image)</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> ImageOps.exif_transpose(im)</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>    local_w.append(im.size[<span class="dv">0</span>])</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>    local_h.append(im.size[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>local_w[:<span class="dv">5</span>], local_h[:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>local_w[:<span class="dv">5</span>], local_h[:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>([640, 1620, 1620, 2160, 2160], [480, 2160, 2160, 1620, 1620])</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'ori_w'</span>] <span class="op">=</span> local_w</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'ori_h'</span>] <span class="op">=</span> local_h</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'ori_w'</span>] <span class="op">=</span> local_w</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'ori_h'</span>] <span class="op">=</span> local_h</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
 <div>
@@ -912,32 +1050,32 @@ image.height: 900</code></pre>
 <section id="size-of-images-in-the-service" class="level4">
 <h4 class="anchored" data-anchor-id="size-of-images-in-the-service">Size of images in the service</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>service_ids <span class="op">=</span> [im.<span class="bu">id</span> <span class="cf">for</span> im <span class="kw">in</span> train_images]</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>service_w <span class="op">=</span> [im.width <span class="cf">for</span> im <span class="kw">in</span> train_images]</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>service_h <span class="op">=</span> [im.height <span class="cf">for</span> im <span class="kw">in</span> train_images]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>service_ids <span class="op">=</span> [im.<span class="bu">id</span> <span class="cf">for</span> im <span class="kw">in</span> train_images]</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>service_w <span class="op">=</span> [im.width <span class="cf">for</span> im <span class="kw">in</span> train_images]</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>service_h <span class="op">=</span> [im.height <span class="cf">for</span> im <span class="kw">in</span> train_images]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>service_w <span class="op">=</span> {<span class="bu">id</span>: w <span class="cf">for</span> <span class="bu">id</span>, w <span class="kw">in</span> <span class="bu">zip</span>(service_ids, service_w)}</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>service_h <span class="op">=</span> {<span class="bu">id</span>: h <span class="cf">for</span> <span class="bu">id</span>, h <span class="kw">in</span> <span class="bu">zip</span>(service_ids, service_h)}</span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'train_w'</span>] <span class="op">=</span> uploaded_images_df[<span class="st">'image_id'</span>].<span class="bu">map</span>(service_w)</span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'train_h'</span>] <span class="op">=</span> uploaded_images_df[<span class="st">'image_id'</span>].<span class="bu">map</span>(service_h)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>service_w <span class="op">=</span> {<span class="bu">id</span>: w <span class="cf">for</span> <span class="bu">id</span>, w <span class="kw">in</span> <span class="bu">zip</span>(service_ids, service_w)}</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>service_h <span class="op">=</span> {<span class="bu">id</span>: h <span class="cf">for</span> <span class="bu">id</span>, h <span class="kw">in</span> <span class="bu">zip</span>(service_ids, service_h)}</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'train_w'</span>] <span class="op">=</span> uploaded_images_df[<span class="st">'image_id'</span>].<span class="bu">map</span>(service_w)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'train_h'</span>] <span class="op">=</span> uploaded_images_df[<span class="st">'image_id'</span>].<span class="bu">map</span>(service_h)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
 <section id="checking-consistency-in-the-ratios" class="level3">
 <h3 class="anchored" data-anchor-id="checking-consistency-in-the-ratios">Checking consistency in the ratios</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>ori_ratio <span class="op">=</span> uploaded_images_df.ori_w <span class="op">/</span> uploaded_images_df.ori_h</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>train_ratio <span class="op">=</span> uploaded_images_df.train_w <span class="op">/</span> uploaded_images_df.train_h</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="bu">all</span>(<span class="bu">abs</span>(ori_ratio <span class="op">-</span> i_ratio) <span class="op">&gt;</span> <span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>ori_ratio <span class="op">=</span> uploaded_images_df.ori_w <span class="op">/</span> uploaded_images_df.ori_h</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>train_ratio <span class="op">=</span> uploaded_images_df.train_w <span class="op">/</span> uploaded_images_df.train_h</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="bu">all</span>(<span class="bu">abs</span>(ori_ratio <span class="op">-</span> i_ratio) <span class="op">&gt;</span> <span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>False</code></pre>
 </div>
 </div>
 <p>Images that has an inconsistent ratio:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="bu">abs</span>(ori_ratio <span class="op">-</span> train_ratio) <span class="op">&gt;</span> <span class="fl">0.1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="bu">abs</span>(ori_ratio <span class="op">-</span> train_ratio) <span class="op">&gt;</span> <span class="fl">0.1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
 <div>
@@ -972,14 +1110,14 @@ image.height: 900</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> Image.<span class="bu">open</span>( pics_folder <span class="op">/</span> <span class="st">'TORRE EL TIGRITO 01.jpg'</span> )</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>show_img(im)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> Image.<span class="bu">open</span>( pics_folder <span class="op">/</span> <span class="st">'TORRE EL TIGRITO 01.jpg'</span> )</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>show_img(im)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-43-output-1.png" class="img-fluid"></p>
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-50-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>im.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>im.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>(640, 480)</code></pre>
 </div>
@@ -988,16 +1126,16 @@ image.height: 900</code></pre>
 But if you don’t use it, more images would be inconsistent.<br>
 If seems that <code>exif_transpose</code> keep track of manually rotated images.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> ImageOps.exif_transpose(im)</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>im.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> ImageOps.exif_transpose(im)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>im.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>(480, 640)</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="bu">filter</span> <span class="op">=</span> uploaded_images_df.image_id <span class="op">==</span> <span class="st">'2563fffe-d621-4799-8e81-6ad57049cdaa'</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.loc[<span class="bu">filter</span>, [<span class="st">'ori_w'</span>, <span class="st">'ori_h'</span>]] <span class="op">=</span> (<span class="dv">640</span>, <span class="dv">480</span>)</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="bu">filter</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="bu">filter</span> <span class="op">=</span> uploaded_images_df.image_id <span class="op">==</span> <span class="st">'2563fffe-d621-4799-8e81-6ad57049cdaa'</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.loc[<span class="bu">filter</span>, [<span class="st">'ori_w'</span>, <span class="st">'ori_h'</span>]] <span class="op">=</span> (<span class="dv">640</span>, <span class="dv">480</span>)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="bu">filter</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
 <div>
@@ -1035,7 +1173,7 @@ If seems that <code>exif_transpose</code> keep track of manually rotated images.
 <section id="exporting-csv-with-size-data" class="level3">
 <h3 class="anchored" data-anchor-id="exporting-csv-with-size-data">Exporting csv with size data</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.sample(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.sample(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
 <div>
@@ -1160,7 +1298,7 @@ If seems that <code>exif_transpose</code> keep track of manually rotated images.
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.to_csv(<span class="st">'20221015_203_Images_Uploaded_WxH.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.to_csv(<span class="st">'20221015_203_Images_Uploaded_WxH.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>

@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_2.html",
       "/posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html",
       "/posts/post-with-code/index.html",
       "/posts/welcome/index.html"

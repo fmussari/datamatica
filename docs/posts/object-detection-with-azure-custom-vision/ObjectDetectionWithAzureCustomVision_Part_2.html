@@ -221,7 +221,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#verifying-the-number-of-created-regions" id="toc-verifying-the-number-of-created-regions" class="nav-link" data-scroll-target="#verifying-the-number-of-created-regions">Verifying the number of created Regions</a></li>
   <li><a href="#draw-some-regions" id="toc-draw-some-regions" class="nav-link" data-scroll-target="#draw-some-regions">Draw some regions</a></li>
   </ul></li>
-  <li><a href="#part-2.2.-train-and-test-a-model" id="toc-part-2.2.-train-and-test-a-model" class="nav-link" data-scroll-target="#part-2.2.-train-and-test-a-model">Part 2.2. Train and Test a Model</a></li>
+  <li><a href="#part-2.2.-train-and-test-a-model" id="toc-part-2.2.-train-and-test-a-model" class="nav-link" data-scroll-target="#part-2.2.-train-and-test-a-model">Part 2.2. Train and Test a Model</a>
+  <ul class="collapse">
+  <li><a href="#train-the-model" id="toc-train-the-model" class="nav-link" data-scroll-target="#train-the-model">Train the model</a></li>
+  <li><a href="#test-the-model" id="toc-test-the-model" class="nav-link" data-scroll-target="#test-the-model">Test the model</a></li>
+  </ul></li>
   <li><a href="#conslusions" id="toc-conslusions" class="nav-link" data-scroll-target="#conslusions">Conslusions</a></li>
   </ul>
 </nav>
@@ -692,6 +696,8 @@ Creating Regions 1_261 to 1_279</code></pre>
 </section>
 <section id="part-2.2.-train-and-test-a-model" class="level2">
 <h2 class="anchored" data-anchor-id="part-2.2.-train-and-test-a-model">Part 2.2. Train and Test a Model</h2>
+<section id="train-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="train-the-model">Train the model</h3>
 <ul>
 <li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-train-project"><code>CustomVisionTrainingClient.train_project()</code></a></li>
 </ul>
@@ -701,6 +707,101 @@ Creating Regions 1_261 to 1_279</code></pre>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    training_type<span class="op">=</span><span class="st">'Regular'</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>train_iteration.as_dict()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'id': 'd0006e20-33dd-4806-9fe9-cfc3fca82552',
+ 'name': 'Iteration 1',
+ 'status': 'Training',
+ 'created': '2022-10-12T13:34:38.120Z',
+ 'last_modified': '2022-10-22T14:56:30.406Z',
+ 'project_id': 'f6cb4ba7-5bbe-46a4-8836-69654dc86f3a',
+ 'exportable': False,
+ 'training_type': 'Regular',
+ 'reserved_budget_in_hours': 0,
+ 'training_time_in_minutes': 0}</code></pre>
+</div>
+</div>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-get-iteration-performance"><code>CustomVisionTrainingClient.get_iteration_performance()</code></a></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>performance <span class="op">=</span> training_client.get_iteration_performance(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    iteration_id<span class="op">=</span>train_iteration.<span class="bu">id</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>).as_dict()</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tag <span class="kw">in</span> performance[<span class="st">'per_tag_performance'</span>]:</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'/'</span><span class="op">*</span><span class="dv">20</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'tag:'</span>, tag[<span class="st">'name'</span>])</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'image count:'</span>, training_client.get_tag(</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>        project_id<span class="op">=</span>project_id, tag_id<span class="op">=</span>service_tags[tag[<span class="st">'name'</span>]]</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    ).image_count)</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'recall:'</span>, tag[<span class="st">'recall'</span>])</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'average_precision:'</span>, tag[<span class="st">'average_precision'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>////////////////////
+tag: Shroud
+image count: 140
+recall: 0.35789475
+average_precision: 0.7280897
+////////////////////
+tag: Panel
+image count: 68
+recall: 0.11392405
+average_precision: 0.3710658
+////////////////////
+tag: Solid
+image count: 88
+recall: 0.21428572
+average_precision: 0.4641156
+////////////////////
+tag: Grid
+image count: 80
+recall: 0.10526316
+average_precision: 0.3784035
+////////////////////
+tag: Radome
+image count: 20
+recall: 0.0
+average_precision: 0.051538005
+////////////////////
+tag: RRU
+image count: 32
+recall: 0.13043478
+average_precision: 0.48053658</code></pre>
+</div>
+</div>
+<p>Some things that I would take into account now that negatively impact the model performance: - I choose many images with small boxes. - Some tags are not represented equally, so we ended an unbalanced distribution. - And of course lets remember we only did a quick train.</p>
+<p>Here is my tweet about this blog post:</p>
+<center>
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+</p><p>I started a new blog to write content in English.<br>The first post is ‘Creating a blog with Quarto in 10 steps’<a href="https://twitter.com/quarto_pub?ref_src=twsrc%5Etfw"><span class="citation" data-cites="quarto_pub">@quarto_pub</span></a> <br><br>In this post, I introduce you to my new blog and show how you can create a blog with Quarto:<a href="https://t.co/u9Umh3X5eu">https://t.co/u9Umh3X5eu</a><a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a> <a href="https://twitter.com/hashtag/rladies?src=hash&amp;ref_src=twsrc%5Etfw">#rladies</a> feedback is welcome!</p>
+<p></p>
+<p>If you want a very good thread on some tips and tricks for object detection:</p>
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+😨 Training an Object Detection Model is a very challenging task and involves tweaking so many knobs<br><br>Here is an exhaustive 🎁 tips &amp; tricks list 🎁 that you could use to boost your model performance <br><br>🧵 <a href="https://t.co/sOvEUhCCwg">pic.twitter.com/sOvEUhCCwg</a>
+</p>
+— AI Fast Track (<span class="citation" data-cites="ai_fast_track">@ai_fast_track</span>) <a href="https://twitter.com/ai_fast_track/status/1583125709685673985?ref_src=twsrc%5Etfw">October 20, 2022</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</blockquote></center></section>
+<section id="test-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="test-the-model">Test the model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>service_tags <span class="op">=</span> {</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Grid'</span>: <span class="st">'e016b6a4-49e6-4897-a0c7-d8fc64d032f1'</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Panel'</span>: <span class="st">'c9b15b62-6823-44a4-8fee-fa9d84e65a7e'</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Radome'</span>: <span class="st">'a1020654-79c5-4d8a-867c-93dfb2a4a81d'</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'RRU'</span>: <span class="st">'91ffb5b0-fe25-4d72-9c65-14793183a3b9'</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Shroud'</span>: <span class="st">'4e413c15-141a-419b-a958-1485008b2904'</span>,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Solid'</span>: <span class="st">'3f13d9b0-7b4d-4679-8fb8-7855cea0a118'</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 </section>
 <section id="conslusions" class="level2">
 <h2 class="anchored" data-anchor-id="conslusions">Conslusions</h2>

@@ -317,7 +317,7 @@ Solid
 <ul>
 <li>Analyzing what happens to the images after uploading.</li>
 <li>How to label the images using <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/suggested-tags">Smart Labeler</a></li>
-<li>Training and publishing the model.</li>
+<li>Training and testing the model.</li>
 </ul></li>
 <li>Part 3 will cover:
 <ul>
@@ -873,13 +873,13 @@ average_precision: 0.48053658</code></pre>
 </div>
 <p>Not a good job in this one. But this is not with a full training.<br>
 You can see in the Gradio demo <a href="https://huggingface.co/spaces/fmussari/Telecom-Object-Detection">Telecom Object Detection with Azure Custom Vision</a> that the model trained for 1 hour (free tier limit) does a better job with this picture.</p>
-<p><img src="gradio_demo.png" alt="1" width="600px" height="200px"></p>
+<p><img src="gradio_demo.png" alt="1" width="464" height="352"></p>
 </section>
 </section>
 <section id="conslusions" class="level2">
 <h2 class="anchored" data-anchor-id="conslusions">Conslusions</h2>
 <ul>
-<li>Object detection is a complex problem. The fact that the service does it without taking too much care with training fotos and with such a limited training time … makes it simple to …</li>
+<li>Object detection is a complex problem. The fact that the service does a reasonable good job with unbalanced training phootos and with such a limited training time talks about the great margin for improvement.</li>
 </ul>
 
 

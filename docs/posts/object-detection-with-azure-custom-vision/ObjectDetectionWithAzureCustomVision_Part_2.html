@@ -304,12 +304,12 @@ Solid
 <section id="tutorial-parts" class="level2">
 <h2 class="anchored" data-anchor-id="tutorial-parts">Tutorial Parts</h2>
 <ul>
-<li>Part 1 will cover:
+<li>Part 1 covered:
 <ul>
 <li>Creating a <a href="https://azure.microsoft.com/en-us/pricing/details/cognitive-services/custom-vision-service/#pricing">free</a> Azure <a href="https://www.customvision.ai/">Custom Vision</a> Service.</li>
 <li>Uploading the images to the service.</li>
 </ul></li>
-<li>Part 2 will cover:
+<li><strong>Part 2 will cover</strong>:
 <ul>
 <li>Analyzing what happens to the images after uploading.</li>
 <li>How to label the images using <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/suggested-tags">Smart Labeler</a></li>
@@ -335,9 +335,9 @@ Solid
 </section>
 <section id="part-2.1.-labeling-the-images" class="level2">
 <h2 class="anchored" data-anchor-id="part-2.1.-labeling-the-images">Part 2.1. Labeling the Images</h2>
-<p><strong>Smart Labeler</strong> is a simple tool for labeling images. It can be used for classification and object detection problems. When working in this problem I missed the ability to zoom-in when labeling some small objects.</p>
-<p>For speeding up bigger projects it might be usefull that you can first label some pictures, then train and get suggestions for the untagged images, but I didn’t use it. By default the labeler tries to give suggestions even without training.</p>
-<p>The process is simple and you can the use the annotation to train models outside the service (as we are going to try after this serie, using fastai).</p>
+<p><strong>Smart Labeler</strong> is a simple tool for labeling images. It can be used for classification and object detection problems. When working in this problem I missed the ability to zoom-in when labeling some small objects, but as I said, this is a straightforward tool.</p>
+<p>For speeding up bigger projects it might be usefull that you can first label some pictures, then train and get suggestions for the untagged images, but I didn’t use it. By default the labeler tries to give suggestions even without that first training.</p>
+<p>The process is simple and you can the use the annotation to train models outside the service (as we are going to try after this series, hopefully, using fastai).</p>
 <section id="install-and-import-libraries" class="level3">
 <h3 class="anchored" data-anchor-id="install-and-import-libraries">Install and import libraries</h3>
 <p>We need to install Custom Vision’s Python SDK and python-dotenv:<br>
@@ -366,9 +366,9 @@ Solid
 <section id="credentials-and-services" class="level3">
 <h3 class="anchored" data-anchor-id="credentials-and-services">Credentials and services</h3>
 <ul>
-<li><code>ApiKeyCredentials</code></li>
-<li><code>CustomVisionTrainingClient</code></li>
-<li><code>CustomVisionTrainingClient.get_project()</code></li>
+<li><a href="https://learn.microsoft.com/en-us/python/api/msrest/msrest.authentication.apikeycredentials?view=azure-python"><code>ApiKeyCredentials</code></a></li>
+<li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.customvisiontrainingclient?view=azure-python"><code>CustomVisionTrainingClient</code></a></li>
+<li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-get-project"><code>CustomVisionTrainingClient.get_project()</code></a></li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>DOTENV_PATH <span class="op">=</span> <span class="st">'./.env'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -510,7 +510,7 @@ Creating Regions 1_201 to 1_260
 Creating Regions 1_261 to 1_279</code></pre>
 </div>
 </div>
-<p>Example image in the service:<br>
+<p>Example image, capture from the service:<br>
 <img src="./blog-pictures/Part-2-Regions.PNG" class="img-fluid"></p>
 </section>
 <section id="verifying-the-number-of-created-regions" class="level3">

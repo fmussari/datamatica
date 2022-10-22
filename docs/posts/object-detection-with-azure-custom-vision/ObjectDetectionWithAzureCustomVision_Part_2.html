@@ -224,7 +224,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#part-2.2.-train-and-test-a-model" id="toc-part-2.2.-train-and-test-a-model" class="nav-link" data-scroll-target="#part-2.2.-train-and-test-a-model">Part 2.2. Train and Test a Model</a>
   <ul class="collapse">
   <li><a href="#train-the-model" id="toc-train-the-model" class="nav-link" data-scroll-target="#train-the-model">Train the model</a></li>
-  <li><a href="#test-the-model" id="toc-test-the-model" class="nav-link" data-scroll-target="#test-the-model">Test the model</a></li>
+  <li><a href="#test-the-model-quick-test" id="toc-test-the-model-quick-test" class="nav-link" data-scroll-target="#test-the-model-quick-test">Test the model (Quick Test)</a></li>
   </ul></li>
   <li><a href="#conslusions" id="toc-conslusions" class="nav-link" data-scroll-target="#conslusions">Conslusions</a></li>
   </ul>
@@ -418,16 +418,22 @@ First we need to create the labels/tags in the service: - <a href="https://learn
 </div>
 <p>Now we can see this in the service:<br>
 <img src="./blog-pictures/Part-2-Tags.PNG" class="img-fluid"></p>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-get-images"><code>CustomVisionTrainingClient.get_tags()</code></a></li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>service_tag_ids <span class="op">=</span> {tag.name: tag.<span class="bu">id</span> <span class="cf">for</span> tag <span class="kw">in</span> service_tags}</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>service_tag_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>service_tags <span class="op">=</span> training_client.get_tags(project_id<span class="op">=</span>project_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>service_tag_ids <span class="op">=</span> {tag.name: tag.<span class="bu">id</span> <span class="cf">for</span> tag <span class="kw">in</span> service_tags}</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>service_tag_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<pre><code>{'Grid': 'e016b6a4-49e6-4897-a0c7-d8fc64d032f1',
- 'Panel': 'c9b15b62-6823-44a4-8fee-fa9d84e65a7e',
- 'Radome': 'a1020654-79c5-4d8a-867c-93dfb2a4a81d',
- 'RRU': '91ffb5b0-fe25-4d72-9c65-14793183a3b9',
+<pre><code>{'RRU': '91ffb5b0-fe25-4d72-9c65-14793183a3b9',
  'Shroud': '4e413c15-141a-419b-a958-1485008b2904',
- 'Solid': '3f13d9b0-7b4d-4679-8fb8-7855cea0a118'}</code></pre>
+ 'Solid': '3f13d9b0-7b4d-4679-8fb8-7855cea0a118',
+ 'Radome': 'a1020654-79c5-4d8a-867c-93dfb2a4a81d',
+ 'Grid': 'e016b6a4-49e6-4897-a0c7-d8fc64d032f1',
+ 'Panel': 'c9b15b62-6823-44a4-8fee-fa9d84e65a7e'}</code></pre>
 </div>
 </div>
 </section>
@@ -439,13 +445,13 @@ First we need to create the labels/tags in the service: - <a href="https://learn
 </ul>
 <p>We can see from the documentation that “There is a limit of 64 entries in a batch.”</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"20221016_CreateImageRegions_Body.json"</span>) <span class="im">as</span> json_file:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    regions_dict <span class="op">=</span> json.load(json_file)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'We have a total of </span><span class="sc">{</span><span class="bu">len</span>(regions_dict[<span class="st">"regions"</span>])<span class="sc">:</span>_<span class="sc">}</span><span class="ss"> regions.'</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first two regions:'</span>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>regions_dict[<span class="st">'regions'</span>][:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"20221016_CreateImageRegions_Body.json"</span>) <span class="im">as</span> json_file:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    regions_dict <span class="op">=</span> json.load(json_file)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'We have a total of </span><span class="sc">{</span><span class="bu">len</span>(regions_dict[<span class="st">"regions"</span>])<span class="sc">:</span>_<span class="sc">}</span><span class="ss"> regions.'</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'The first two regions:'</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>regions_dict[<span class="st">'regions'</span>][:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>We have a total of 1_279 regions.
 
@@ -455,7 +461,7 @@ The first two regions:</code></pre>
 <pre><code>[{'imageId': '6e274dfc-411a-4bf3-9151-51b96f662248',
   'tagId': '91ffb5b0-fe25-4d72-9c65-14793183a3b9',
   'left': 0.6395582,
-  'top': 0,
+  'top': 0.0,
   'width': 0.10740108,
   'height': 0.14776269},
  {'imageId': '6e274dfc-411a-4bf3-9151-51b96f662248',
@@ -467,28 +473,28 @@ The first two regions:</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create batches of 60 regions</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>regions <span class="op">=</span> regions_dict[<span class="st">'regions'</span>]</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">int</span>(<span class="dv">1_279</span> <span class="op">/</span> <span class="dv">60</span>)<span class="op">+</span><span class="dv">1</span>):</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    batch_regions <span class="op">=</span> []</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'Creating Regions </span><span class="sc">{</span>i<span class="op">*</span><span class="dv">60</span><span class="op">+</span><span class="dv">1</span><span class="sc">:</span><span class="op">&gt;</span>{<span class="dv">5</span>}_<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span><span class="bu">min</span>((i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span><span class="dv">60</span>, <span class="dv">1_279</span>)<span class="sc">:</span><span class="op">&gt;</span>{<span class="dv">5</span>}_<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> region <span class="kw">in</span> regions[i<span class="op">*</span><span class="dv">60</span>: (i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span><span class="dv">60</span>]:</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        batch_regions.append(</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>            ImageRegionCreateEntry(</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                image_id<span class="op">=</span>region[<span class="st">'imageId'</span>],</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>                tag_id<span class="op">=</span>region[<span class="st">'tagId'</span>],</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>                left<span class="op">=</span>region[<span class="st">'left'</span>], top<span class="op">=</span>region[<span class="st">'top'</span>],</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                width<span class="op">=</span>region[<span class="st">'width'</span>], height<span class="op">=</span>region[<span class="st">'height'</span>]</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        ))</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    training_client.create_image_regions(</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>        project_id<span class="op">=</span>project_id, </span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        regions<span class="op">=</span>batch_regions</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create batches of 60 regions</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>regions <span class="op">=</span> regions_dict[<span class="st">'regions'</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">int</span>(<span class="dv">1_279</span> <span class="op">/</span> <span class="dv">60</span>)<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    batch_regions <span class="op">=</span> []</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'Creating Regions </span><span class="sc">{</span>i<span class="op">*</span><span class="dv">60</span><span class="op">+</span><span class="dv">1</span><span class="sc">:</span><span class="op">&gt;</span>{<span class="dv">5</span>}_<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span><span class="bu">min</span>((i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span><span class="dv">60</span>, <span class="dv">1_279</span>)<span class="sc">:</span><span class="op">&gt;</span>{<span class="dv">5</span>}_<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> region <span class="kw">in</span> regions[i<span class="op">*</span><span class="dv">60</span>: (i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span><span class="dv">60</span>]:</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        batch_regions.append(</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>            ImageRegionCreateEntry(</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                image_id<span class="op">=</span>region[<span class="st">'imageId'</span>],</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>                tag_id<span class="op">=</span>region[<span class="st">'tagId'</span>],</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>                left<span class="op">=</span>region[<span class="st">'left'</span>], top<span class="op">=</span>region[<span class="st">'top'</span>],</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>                width<span class="op">=</span>region[<span class="st">'width'</span>], height<span class="op">=</span>region[<span class="st">'height'</span>]</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        ))</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    training_client.create_image_regions(</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        project_id<span class="op">=</span>project_id, </span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>        regions<span class="op">=</span>batch_regions</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Creating Regions     1 to    60
 Creating Regions    61 to   120
@@ -519,15 +525,18 @@ Creating Regions 1_261 to 1_279</code></pre>
 </section>
 <section id="verifying-the-number-of-created-regions" class="level3">
 <h3 class="anchored" data-anchor-id="verifying-the-number-of-created-regions">Verifying the number of created Regions</h3>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-get-images"><code>CustomVisionTrainingClient.get_images()</code></a></li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>all_tagged_images <span class="op">=</span> training_client.get_images(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    tagging_status<span class="op">=</span><span class="st">"Tagged"</span>, </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    take<span class="op">=</span><span class="dv">250</span>   <span class="co"># Max 256</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> im <span class="kw">in</span> all_tagged_images: i <span class="op">+=</span> <span class="bu">len</span>(im.regions)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of created Regions: </span><span class="sc">{</span>i<span class="sc">:</span>_<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>all_tagged_images <span class="op">=</span> training_client.get_images(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    tagging_status<span class="op">=</span><span class="st">"Tagged"</span>, </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    take<span class="op">=</span><span class="dv">250</span>   <span class="co"># Max 256</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> im <span class="kw">in</span> all_tagged_images: i <span class="op">+=</span> <span class="bu">len</span>(im.regions)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of created Regions: </span><span class="sc">{</span>i<span class="sc">:</span>_<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Number of created Regions: 1_279</code></pre>
 </div>
@@ -536,9 +545,9 @@ Creating Regions 1_261 to 1_279</code></pre>
 <section id="draw-some-regions" class="level3">
 <h3 class="anchored" data-anchor-id="draw-some-regions">Draw some regions</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>images_df <span class="op">=</span> pd.read_csv(<span class="st">'20221015_203_Images_Uploaded_WxH.csv'</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>images_df.index <span class="op">=</span> images_df.image_id</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>images_df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>images_df <span class="op">=</span> pd.read_csv(<span class="st">'20221015_203_Images_Uploaded_WxH.csv'</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>images_df.index <span class="op">=</span> images_df.image_id</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>images_df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
 <div>
@@ -624,72 +633,75 @@ Creating Regions 1_261 to 1_279</code></pre>
 </div>
 <p>Create a dictionary to easily access all regions from an image id:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>img2ann <span class="op">=</span> <span class="bu">dict</span>()</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image <span class="kw">in</span> all_tagged_images:</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    img2ann[image.<span class="bu">id</span>] <span class="op">=</span> <span class="bu">tuple</span>([<span class="bu">list</span>(), <span class="bu">list</span>()])</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    image_w <span class="op">=</span> image.width<span class="op">;</span> image_h <span class="op">=</span> image.height</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    ori_w <span class="op">=</span> images_df.loc[image.<span class="bu">id</span>].ori_w</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    ori_h <span class="op">=</span> images_df.loc[image.<span class="bu">id</span>].ori_h</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> region <span class="kw">in</span> image.regions:</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        img2ann[image.<span class="bu">id</span>][<span class="dv">1</span>].append(region.tag_name)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        img2ann[image.<span class="bu">id</span>][<span class="dv">0</span>].append([</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>            region.left<span class="op">*</span>ori_w, </span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>            region.top<span class="op">*</span>ori_h, </span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>            region.width<span class="op">*</span>ori_w, </span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>            region.height<span class="op">*</span>ori_h</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>img2ann <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image <span class="kw">in</span> all_tagged_images:</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    img2ann[image.<span class="bu">id</span>] <span class="op">=</span> <span class="bu">tuple</span>([<span class="bu">list</span>(), <span class="bu">list</span>()])</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    image_w <span class="op">=</span> image.width<span class="op">;</span> image_h <span class="op">=</span> image.height</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    ori_w <span class="op">=</span> images_df.loc[image.<span class="bu">id</span>].ori_w</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    ori_h <span class="op">=</span> images_df.loc[image.<span class="bu">id</span>].ori_h</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> region <span class="kw">in</span> image.regions:</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>        img2ann[image.<span class="bu">id</span>][<span class="dv">1</span>].append(region.tag_name)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>        img2ann[image.<span class="bu">id</span>][<span class="dv">0</span>].append([</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>            region.left<span class="op">*</span>ori_w, </span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>            region.top<span class="op">*</span>ori_h, </span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>            region.width<span class="op">*</span>ori_w, </span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>            region.height<span class="op">*</span>ori_h</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>        ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pics_folder <span class="op">=</span> Path(<span class="st">'./train_images'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pics_folder <span class="op">=</span> Path(<span class="st">'./train_images'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://youtu.be/Z0ssNAbe81M?t=4636</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_img(im, figsize<span class="op">=</span><span class="va">None</span>, ax<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> ax: fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    ax.imshow(im)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    ax.get_xaxis().set_visible(<span class="va">False</span>)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    ax.get_yaxis().set_visible(<span class="va">False</span>)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ax</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_outline(o, lw):</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    o.set_path_effects([patheffects.Stroke(</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span>lw, foreground<span class="op">=</span><span class="st">'black'</span>), patheffects.Normal()</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    ])</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_rect(ax, b):</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    patch <span class="op">=</span> ax.add_patch(</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>        patches.Rectangle(b[:<span class="dv">2</span>], <span class="op">*</span>b[<span class="op">-</span><span class="dv">2</span>:], fill<span class="op">=</span><span class="va">False</span>, edgecolor<span class="op">=</span><span class="st">'white'</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    draw_outline(patch, <span class="dv">4</span>)</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_text(ax, xy, txt, sz<span class="op">=</span><span class="dv">14</span>):</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> ax.text(<span class="op">*</span>xy, txt,</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>        verticalalignment<span class="op">=</span><span class="st">'top'</span>, color<span class="op">=</span><span class="st">'white'</span>, fontsize<span class="op">=</span>sz, weight<span class="op">=</span><span class="st">'bold'</span>)</span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    draw_outline(text, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://youtu.be/Z0ssNAbe81M?t=4636</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_img(im, figsize<span class="op">=</span><span class="va">None</span>, ax<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> ax: fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    ax.imshow(im)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    ax.get_xaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    ax.get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ax</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_outline(o, lw):</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    o.set_path_effects([patheffects.Stroke(</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span>lw, foreground<span class="op">=</span><span class="st">'black'</span>), patheffects.Normal()</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_rect(ax, b):</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    patch <span class="op">=</span> ax.add_patch(</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>        patches.Rectangle(b[:<span class="dv">2</span>], <span class="op">*</span>b[<span class="op">-</span><span class="dv">2</span>:], fill<span class="op">=</span><span class="va">False</span>, edgecolor<span class="op">=</span><span class="st">'white'</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    draw_outline(patch, <span class="dv">4</span>)</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_text(ax, xy, txt, sz<span class="op">=</span><span class="dv">14</span>):</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> ax.text(<span class="op">*</span>xy, txt,</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>        verticalalignment<span class="op">=</span><span class="st">'top'</span>, color<span class="op">=</span><span class="st">'white'</span>, fontsize<span class="op">=</span>sz, weight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    draw_outline(text, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_regions(index<span class="op">=</span><span class="dv">0</span>):</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> Image.<span class="bu">open</span>( pics_folder <span class="op">/</span> images_df.iloc[index].image_name )</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> show_img(im, figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">8</span>))</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    reg, lab <span class="op">=</span> img2ann[images_df.iloc[index].image_id]</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, region <span class="kw">in</span> <span class="bu">enumerate</span>(reg):</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        draw_rect(ax, np.array(region))</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        tag <span class="op">=</span> lab[idx]</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>        draw_text(ax, region[:<span class="dv">2</span>], tag)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_regions(index<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> Image.<span class="bu">open</span>( pics_folder <span class="op">/</span> images_df.iloc[index].image_name )</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> show_img(im, figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">8</span>))</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    reg, lab <span class="op">=</span> img2ann[images_df.iloc[index].image_id]</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, region <span class="kw">in</span> <span class="bu">enumerate</span>(reg):</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        draw_rect(ax, np.array(region))</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        tag <span class="op">=</span> lab[idx]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        draw_text(ax, region[:<span class="dv">2</span>], tag)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>draw_regions(index<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>draw_regions(index<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[329.19859199999996, 205.3586496, 53.42696959999999, 114.2365248], [249.3986112, 264.75866399999995, 112.4269696, 85.23652799999999]]</code></pre>
+</div>
 <div class="cell-output cell-output-display">
-<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-23-output-1.png" class="img-fluid"></p>
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-24-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 <p>A dragon-fly was cought in that picture!</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>draw_regions(index<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>draw_regions(index<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-24-output-1.png" class="img-fluid"></p>
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-25-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 </section>
@@ -702,13 +714,13 @@ Creating Regions 1_261 to 1_279</code></pre>
 <li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-train-project"><code>CustomVisionTrainingClient.train_project()</code></a></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>train_iteration <span class="op">=</span> training_client.train_project(</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    training_type<span class="op">=</span><span class="st">'Regular'</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>train_iteration <span class="op">=</span> training_client.train_project(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    training_type<span class="op">=</span><span class="st">'Regular'</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>train_iteration.as_dict()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>train_iteration.as_dict()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>{'id': 'd0006e20-33dd-4806-9fe9-cfc3fca82552',
  'name': 'Iteration 1',
@@ -726,20 +738,20 @@ Creating Regions 1_261 to 1_279</code></pre>
 <li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-get-iteration-performance"><code>CustomVisionTrainingClient.get_iteration_performance()</code></a></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>performance <span class="op">=</span> training_client.get_iteration_performance(</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    iteration_id<span class="op">=</span>train_iteration.<span class="bu">id</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>).as_dict()</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>   </span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tag <span class="kw">in</span> performance[<span class="st">'per_tag_performance'</span>]:</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'/'</span><span class="op">*</span><span class="dv">20</span>)</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'tag:'</span>, tag[<span class="st">'name'</span>])</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'image count:'</span>, training_client.get_tag(</span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>        project_id<span class="op">=</span>project_id, tag_id<span class="op">=</span>service_tags[tag[<span class="st">'name'</span>]]</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    ).image_count)</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'recall:'</span>, tag[<span class="st">'recall'</span>])</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'average_precision:'</span>, tag[<span class="st">'average_precision'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>performance <span class="op">=</span> training_client.get_iteration_performance(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    project_id<span class="op">=</span>project_id,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    iteration_id<span class="op">=</span>train_iteration.<span class="bu">id</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>).as_dict()</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tag <span class="kw">in</span> performance[<span class="st">'per_tag_performance'</span>]:</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'/'</span><span class="op">*</span><span class="dv">20</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'tag:'</span>, tag[<span class="st">'name'</span>])</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'image count:'</span>, training_client.get_tag(</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>        project_id<span class="op">=</span>project_id, tag_id<span class="op">=</span>service_tags[tag[<span class="st">'name'</span>]]</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    ).image_count)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'recall:'</span>, tag[<span class="st">'recall'</span>])</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'average_precision:'</span>, tag[<span class="st">'average_precision'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>////////////////////
 tag: Shroud
@@ -774,13 +786,7 @@ average_precision: 0.48053658</code></pre>
 </div>
 </div>
 <p>Some things that I would take into account now that negatively impact the model performance: - I choose many images with small boxes. - Some tags are not represented equally, so we ended an unbalanced distribution. - And of course lets remember we only did a quick train.</p>
-<p>Here is my tweet about this blog post:</p>
-<center>
-<blockquote class="twitter-tweet blockquote">
-<p lang="en" dir="ltr">
-</p><p>I started a new blog to write content in English.<br>The first post is ‘Creating a blog with Quarto in 10 steps’<a href="https://twitter.com/quarto_pub?ref_src=twsrc%5Etfw"><span class="citation" data-cites="quarto_pub">@quarto_pub</span></a> <br><br>In this post, I introduce you to my new blog and show how you can create a blog with Quarto:<a href="https://t.co/u9Umh3X5eu">https://t.co/u9Umh3X5eu</a><a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a> <a href="https://twitter.com/hashtag/rladies?src=hash&amp;ref_src=twsrc%5Etfw">#rladies</a> feedback is welcome!</p>
-<p></p>
-<p>If you want a very good thread on some tips and tricks for object detection:</p>
+<p>This is a very good thread on some tips and tricks to improve object detection:</p>
 <blockquote class="twitter-tweet blockquote">
 <p lang="en" dir="ltr">
 😨 Training an Object Detection Model is a very challenging task and involves tweaking so many knobs<br><br>Here is an exhaustive 🎁 tips &amp; tricks list 🎁 that you could use to boost your model performance <br><br>🧵 <a href="https://t.co/sOvEUhCCwg">pic.twitter.com/sOvEUhCCwg</a>
@@ -788,23 +794,93 @@ average_precision: 0.48053658</code></pre>
 — AI Fast Track (<span class="citation" data-cites="ai_fast_track">@ai_fast_track</span>) <a href="https://twitter.com/ai_fast_track/status/1583125709685673985?ref_src=twsrc%5Etfw">October 20, 2022</a>
 </blockquote>
 <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-</blockquote></center></section>
-<section id="test-the-model" class="level3">
-<h3 class="anchored" data-anchor-id="test-the-model">Test the model</h3>
+</section>
+<section id="test-the-model-quick-test" class="level3">
+<h3 class="anchored" data-anchor-id="test-the-model-quick-test">Test the model (Quick Test)</h3>
+<p>Quick test allows to test the model without publishing a prediction API.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>service_tags <span class="op">=</span> {</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Grid'</span>: <span class="st">'e016b6a4-49e6-4897-a0c7-d8fc64d032f1'</span>,</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Panel'</span>: <span class="st">'c9b15b62-6823-44a4-8fee-fa9d84e65a7e'</span>,</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Radome'</span>: <span class="st">'a1020654-79c5-4d8a-867c-93dfb2a4a81d'</span>,</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'RRU'</span>: <span class="st">'91ffb5b0-fe25-4d72-9c65-14793183a3b9'</span>,</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Shroud'</span>: <span class="st">'4e413c15-141a-419b-a958-1485008b2904'</span>,</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Solid'</span>: <span class="st">'3f13d9b0-7b4d-4679-8fb8-7855cea0a118'</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load image and get height, width and channels</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>image_file <span class="op">=</span> Path(<span class="st">"./test_images/las-palmas-at-60-(20).jpg"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> Image.<span class="bu">open</span>(image_file)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>h, w, ch <span class="op">=</span> np.array(image).shape</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>show_img(image, figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">8</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-29-output-1.png" class="img-fluid"></p>
 </div>
+</div>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-customvision/azure.cognitiveservices.vision.customvision.training.operations.customvisiontrainingclientoperationsmixin?view=azure-python#azure-cognitiveservices-vision-customvision-training-operations-customvisiontrainingclientoperationsmixin-quick-test-image"><code>CustomVisionTrainingClient.quick_test_image()</code></a></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Detect objects in the test image</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Detecting objects in'</span>, image_file)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(image_file, mode<span class="op">=</span><span class="st">"rb"</span>) <span class="im">as</span> image_data:</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> training_client.quick_test_image(</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        project_id<span class="op">=</span>project_id, </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        image_data<span class="op">=</span>image_data,</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>        iteration_id<span class="op">=</span>train_iteration.<span class="bu">id</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Detecting objects in test_images/las-palmas-at-60-(20).jpg</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_reg_lab(results):</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    reg <span class="op">=</span> []<span class="op">;</span> lab <span class="op">=</span> []</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> prediction <span class="kw">in</span> results.predictions:</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Only show objects with a &gt; 50% probability</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (prediction.probability<span class="op">*</span><span class="dv">100</span>) <span class="op">&gt;</span> <span class="dv">50</span>:</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>            left <span class="op">=</span> prediction.bounding_box.left <span class="op">*</span> w</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>            top <span class="op">=</span> prediction.bounding_box.top <span class="op">*</span> h</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>            height <span class="op">=</span> prediction.bounding_box.height <span class="op">*</span> h</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>            width <span class="op">=</span>  prediction.bounding_box.width <span class="op">*</span> w</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>            reg.append([left, top, width, height])</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>            lab.append(prediction.tag_name)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> reg, lab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_regions(image):</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> show_img(image, figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">8</span>))</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    reg, lab <span class="op">=</span> get_reg_lab(results)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, region <span class="kw">in</span> <span class="bu">enumerate</span>(reg):</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>        draw_rect(ax, np.array(region))</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>        tag <span class="op">=</span> lab[idx]</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>        draw_text(ax, region[:<span class="dv">2</span>], tag)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>draw_regions(image)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-33-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>As you can see, it didn’t detect some antennas. But taking into account we did a regular training and the limitations mentioned in the training data, it is impressive that it got some right in such a complex problem as object detection.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>image_file <span class="op">=</span> Path(<span class="st">"./test_images/DSC09399.jpg"</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> Image.<span class="bu">open</span>(image_file)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>h, w, ch <span class="op">=</span> np.array(image).shape</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>show_img(image, figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">8</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-34-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>draw_regions(image)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="ObjectDetectionWithAzureCustomVision_Part_2_files/figure-html/cell-35-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Not a good job in this one. But this is not with a full training.<br>
+You can see in the Gradio demo <a href="https://huggingface.co/spaces/fmussari/Telecom-Object-Detection">Telecom Object Detection with Azure Custom Vision</a> that the model trained for 1 hour (free tier limit) does a better job with this picture.</p>
+<p><img src="gradio_demo.png" alt="1" width="600px" height="200px"></p>
 </section>
 </section>
 <section id="conslusions" class="level2">
 <h2 class="anchored" data-anchor-id="conslusions">Conslusions</h2>
+<ul>
+<li>Object detection is a complex problem. The fact that the service does it without taking too much care with training fotos and with such a limited training time … makes it simple to …</li>
+</ul>
 
 
 </section>

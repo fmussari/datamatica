@@ -15,4 +15,4 @@ format:
   html:
     theme: simplex
     css: styles.css
-    fontsize: 1.2em
+    fontsize: 1.0em

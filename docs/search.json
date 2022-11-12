@@ -67,7 +67,7 @@
     "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html#conslusions",
     "title": "Telecom Equipment Detection with Azure Custom Vision (Free) - Part 1",
     "section": "Conslusions",
-    "text": "Conslusions\n\nIt was straightforward to upload images to the service.\nBig images got resized, but their ratios were kept.\nexif_transpose needs to be used to get the real width and height of the image, but failed with one of them."
+    "text": "Conslusions\n\nIt was straightforward to upload images to the service.\nBig images got resized, but their ratios were kept.\nexif_transpose needs to be used to get the real width and height of the image, which may be different to the original size. For example when the image is rotated manually when looking at it. But somehow it failed with one of the images."
   },
   {
     "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_2.html",

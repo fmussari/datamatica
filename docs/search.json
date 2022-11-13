@@ -11,7 +11,7 @@
     "href": "index.html",
     "title": "datamatica",
     "section": "",
-    "text": "computer-vision\n\n\ndeeplearning\n\n\nazure\n\n\ncustom-vision\n\n\nobject-detection\n\n\n\n\n\n\n\n\n\n\n\nOct 15, 2022\n\n\nFrancisco Mussari\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\ncomputer-vision\n\n\ndeeplearning\n\n\nazure\n\n\ncustom-vision\n\n\nobject-detection\n\n\ngradio\n\n\n\n\n\n\n\n\n\n\n\nOct 15, 2022\n\n\nFrancisco Mussari\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\ncomputer-vision\n\n\ndeeplearning\n\n\nazure\n\n\ncustom-vision\n\n\nobject-detection\n\n\n\n\n\n\n\n\n\n\n\nOct 8, 2022\n\n\nFrancisco Mussari\n\n\n\n\n\n\nNo matching items"
+    "text": "computer-vision\n\n\ndeeplearning\n\n\nazure\n\n\ncustom-vision\n\n\nobject-detection\n\n\ngradio\n\n\n\n\n\n\n\n\n\n\n\nNov 15, 2022\n\n\nFrancisco Mussari\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\ncomputer-vision\n\n\ndeeplearning\n\n\nazure\n\n\ncustom-vision\n\n\nobject-detection\n\n\n\n\n\n\n\n\n\n\n\nOct 15, 2022\n\n\nFrancisco Mussari\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\ncomputer-vision\n\n\ndeeplearning\n\n\nazure\n\n\ncustom-vision\n\n\nobject-detection\n\n\n\n\n\n\n\n\n\n\n\nOct 8, 2022\n\n\nFrancisco Mussari\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html",
@@ -123,7 +123,7 @@
     "href": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_3.html",
     "title": "Telecom Equipment Detection with Azure Custom Vision (Free) - Part 3",
     "section": "",
-    "text": "Part 3. Deploy Gradio Web App"
+    "text": "Part 3. Deploy Gradio Web App\nNext, write the functions your gradio app will use. Because of nbdev, you can prototype and package your code all in one place. The special comment #|export marks which cells will be sent to a python script (more on this later). Note that there are only three cells in this notebook with the #|export directive."
   },
   {
     "objectID": "posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_3.html#introduction",

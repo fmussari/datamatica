@@ -175,6 +175,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
                 <div class="quarto-category">custom-vision</div>
                 <div class="quarto-category">object-detection</div>
                 <div class="quarto-category">gradio</div>
+                <div class="quarto-category">hugging face</div>
               </div>
                   </div>
   </div>
@@ -237,65 +238,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We are going to use that Prediction endpoint to do the inference.</p>
 <p>Here is the App already published for you to try:<br>
 <a href="https://huggingface.co/spaces/fmussari/Telecom-Object-Detection">Telecom-Object-Detection</a></p>
-<section id="the-model-was-trained-to-detect-the-following-objects" class="level4">
-<h4 class="anchored" data-anchor-id="the-model-was-trained-to-detect-the-following-objects">The model was trained to detect the following objects:</h4>
-<ul>
-<li>Grid Antenna</li>
-<li>Panel antenna</li>
-<li>Radome antenna</li>
-<li>RRU</li>
-<li>Shroud antenna</li>
-<li>Solid antenna</li>
-</ul>
-
-<table>
-<tbody><tr>
-<td>
-<img src="blog-pictures/Grid.jpg" alt="1" width="200px" height="200px">
-</td>
-<td>
-<img src="blog-pictures/Panel.jpg" alt="2" width="200px" height="200px">
-</td>
-<td>
-<img src="blog-pictures/Radome.jpg" alt="2" width="200px" height="200px">
-</td>
-</tr>
-<tr>
-<td>
-Grid
-</td>
-<td>
-Panel
-</td>
-<td>
-Radome
-</td>
-</tr>
-<tr>
-<td>
-<img src="blog-pictures/RRU.jpg" alt="1" width="200px" height="200px">
-</td>
-<td>
-<img src="blog-pictures/Shroud.jpg" alt="1" width="200px" height="200px">
-</td>
-<td>
-<img src="blog-pictures/Solid.jpg" alt="1" width="200px" height="200px">
-</td>
-</tr>
-<tr>
-<td>
-RRU
-</td>
-<td>
-Shroud
-</td>
-<td>
-Solid
-</td>
-</tr>
-
-</tbody></table>
-</section>
+<p>And here the repository:<br>
+https://huggingface.co/spaces/fmussari/Telecom-Object-Detection/tree/main</p>
 </section>
 <section id="tutorial-parts" class="level2">
 <h2 class="anchored" data-anchor-id="tutorial-parts">Tutorial Parts</h2>
@@ -361,7 +305,8 @@ Solid
 PredictionKey=YOUR_PREDICTION_KEY
 ProjectID=YOUR_PROJECT_ID
 ModelName=YOUR_PUBLISHED_MODEL</code></pre>
-<p>We need to create these environment variables in the Hugging Face Spaces.</p>
+<p>We need to create these environment variables in the Hugging Face Spaces repository under Settings -&gt; Repo Secrets:</p>
+<p><img src="./blog-pictures/Part-3-Secrets.PNG" class="img-fluid"></p>
 </section>
 <section id="credentials-and-services" class="level3">
 <h3 class="anchored" data-anchor-id="credentials-and-services">Credentials and services</h3>
@@ -527,12 +472,17 @@ ModelName=YOUR_PUBLISHED_MODEL</code></pre>
 <span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    example_images.click(fn<span class="op">=</span>set_example_image, inputs<span class="op">=</span>[example_images], outputs<span class="op">=</span>[image_input])</span>
 <span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>demo.launch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To publish the script from the notebook:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nbdev.export <span class="im">import</span> nb_export</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>nb_export(<span class="st">'ObjectDetectionWithAzureCustomVision_Part_3'</span>, lib_path<span class="op">=</span><span class="st">'.'</span>, name<span class="op">=</span><span class="st">'app'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 </section>
 <section id="conslusions" class="level2">
 <h2 class="anchored" data-anchor-id="conslusions">Conslusions</h2>
 <ul>
-<li>Object detection is a complex problem. The fact that the service does a reasonable good job with unbalanced training photos and with such a limited training time talks about the great margin for improvement.</li>
+<li>Gradio is great for publishing our demo Apps.</li>
 </ul>
 
 

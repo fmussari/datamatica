@@ -239,7 +239,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Here is the App already published for you to try:<br>
 <a href="https://huggingface.co/spaces/fmussari/Telecom-Object-Detection">Telecom-Object-Detection</a></p>
 <p>And here the repository:<br>
-https://huggingface.co/spaces/fmussari/Telecom-Object-Detection/tree/main</p>
+<a href="https://huggingface.co/spaces/fmussari/Telecom-Object-Detection/tree/main">https://huggingface.co/spaces/fmussari/Telecom-Object-Detection/tree/main</a></p>
 </section>
 <section id="tutorial-parts" class="level2">
 <h2 class="anchored" data-anchor-id="tutorial-parts">Tutorial Parts</h2>
@@ -274,7 +274,7 @@ https://huggingface.co/spaces/fmussari/Telecom-Object-Detection/tree/main</p>
 <p>If you are new to Gradio, I encourage you to start from the <a href="https://gradio.app/getting_started/">Quickstart</a>.</p>
 <p>The Gradio demo was created from a Jupyter Notebook with a great tool from <a href="https://www.fast.ai/">fast.ai</a> which is <a href="https://nbdev.fast.ai/">nbdev</a>. You can start here: <a href="https://nbdev.fast.ai/blog/posts/2022-11-07-spaces/">Create A 🤗 Space From A Notebook</a></p>
 <p>In both tutorials you will find the instructions to setup a Gradio enabled space in Hugging Face.</p>
-<p>This code is based and adapted from: - https://github.com/MicrosoftLearning/AI-102-AIEngineer/blob/master/18-object-detection/Python/test-detector/test-detector.py - https://huggingface.co/spaces/Gradio-Blocks/Object-Detection-With-DETR-and-YOLOS/blob/main/app.py</p>
+<p>This code is based and adapted from: - <a href="https://github.com/MicrosoftLearning/AI-102-AIEngineer/blob/master/18-object-detection/Python/test-detector/test-detector.py">https://github.com/MicrosoftLearning/AI-102-AIEngineer/blob/master/18-object-detection/Python/test-detector/test-detector.py</a> - <a href="https://huggingface.co/spaces/Gradio-Blocks/Object-Detection-With-DETR-and-YOLOS/blob/main/app.py">https://huggingface.co/spaces/Gradio-Blocks/Object-Detection-With-DETR-and-YOLOS/blob/main/app.py</a></p>
 <section id="install-and-import-libraries" class="level3">
 <h3 class="anchored" data-anchor-id="install-and-import-libraries">Install and import libraries</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|export</span></span>
@@ -472,7 +472,7 @@ ModelName=YOUR_PUBLISHED_MODEL</code></pre>
 <span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    example_images.click(fn<span class="op">=</span>set_example_image, inputs<span class="op">=</span>[example_images], outputs<span class="op">=</span>[image_input])</span>
 <span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>demo.launch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>To publish the script from the notebook:</p>
+<p>To publish the script <code>app.py</code> from the notebook:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nbdev.export <span class="im">import</span> nb_export</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>nb_export(<span class="st">'ObjectDetectionWithAzureCustomVision_Part_3'</span>, lib_path<span class="op">=</span><span class="st">'.'</span>, name<span class="op">=</span><span class="st">'app'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

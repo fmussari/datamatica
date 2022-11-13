@@ -230,7 +230,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <p>Part 3. Deploy Gradio Web App</p>
-<p><img src="./blog-pictures/Part-2.PNG" class="img-fluid"></p>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>After we train the model in Azure for 1 hour (free tier) and publishing it, when end up with a Prediction URL.</p>
@@ -272,9 +271,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="part-3.1.-publishing-a-gradio-app">Part 3.1. Publishing a Gradio App</h2>
 <p>Gradio is a great tool to demo machine learning models. The model is already deployed in Azure, so our Gradio App is going to be our front end to connect to that prediction endpoint. What I mean is that the model itself is not going to be deployed in Hugging Face Spaces, which is the normal workflow.</p>
 <p>If you are new to Gradio, I encourage you to start from the <a href="https://gradio.app/getting_started/">Quickstart</a>.</p>
-<p>The Gradio demo was created from a Jupyter Notebook with a great tool from <a href="https://www.fast.ai/">fast.ai</a> which is <a href="https://nbdev.fast.ai/">nbdev</a>. You can start here: <a href="https://nbdev.fast.ai/blog/posts/2022-11-07-spaces/">Create A 🤗 Space From A Notebook</a></p>
+<p>The Gradio demo was created from a Jupyter Notebook with a great tool from <a href="https://www.fast.ai/">fast.ai</a> which is <a href="https://nbdev.fast.ai/">nbdev</a>. You can start learning the basics here: <a href="https://nbdev.fast.ai/blog/posts/2022-11-07-spaces/">Create A 🤗 Space From A Notebook</a></p>
 <p>In both tutorials you will find the instructions to setup a Gradio enabled space in Hugging Face.</p>
-<p>This code is based and adapted from: - <a href="https://github.com/MicrosoftLearning/AI-102-AIEngineer/blob/master/18-object-detection/Python/test-detector/test-detector.py">https://github.com/MicrosoftLearning/AI-102-AIEngineer/blob/master/18-object-detection/Python/test-detector/test-detector.py</a> - <a href="https://huggingface.co/spaces/Gradio-Blocks/Object-Detection-With-DETR-and-YOLOS/blob/main/app.py">https://huggingface.co/spaces/Gradio-Blocks/Object-Detection-With-DETR-and-YOLOS/blob/main/app.py</a></p>
+<p>This code is based and adapted from:<br>
+- <a href="https://github.com/MicrosoftLearning/AI-102-AIEngineer/blob/master/18-object-detection/Python/test-detector/test-detector.py">https://github.com/MicrosoftLearning/AI-102-AIEngineer/blob/master/18-object-detection/Python/test-detector/test-detector.py</a><br>
+- <a href="https://huggingface.co/spaces/Gradio-Blocks/Object-Detection-With-DETR-and-YOLOS/blob/main/app.py">https://huggingface.co/spaces/Gradio-Blocks/Object-Detection-With-DETR-and-YOLOS/blob/main/app.py</a></p>
 <section id="install-and-import-libraries" class="level3">
 <h3 class="anchored" data-anchor-id="install-and-import-libraries">Install and import libraries</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|export</span></span>

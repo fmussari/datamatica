@@ -216,6 +216,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#youtube-playlists" id="toc-youtube-playlists" class="nav-link" data-scroll-target="#youtube-playlists">YouTube Playlists</a></li>
   <li><a href="#get-transcriptions" id="toc-get-transcriptions" class="nav-link" data-scroll-target="#get-transcriptions">Get Transcriptions</a></li>
   </ul></li>
+  <li><a href="#building-the-search-engine" id="toc-building-the-search-engine" class="nav-link" data-scroll-target="#building-the-search-engine">Building the Search Engine</a>
+  <ul class="collapse">
+  <li><a href="#formatting-the-data-to-facilitate-insertion-into-sqlite" id="toc-formatting-the-data-to-facilitate-insertion-into-sqlite" class="nav-link" data-scroll-target="#formatting-the-data-to-facilitate-insertion-into-sqlite">Formatting the data to facilitate insertion into SQLite</a></li>
+  <li><a href="#creating-the-database" id="toc-creating-the-database" class="nav-link" data-scroll-target="#creating-the-database">Creating the database</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -232,7 +237,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>After we get the transcriptions, we are going to build a search engine with <a href="https://sqlite.org/index.html">SQLite</a>’s full-text search functionality provided by its <a href="https://sqlite.org/fts5.html">FTS5</a> extension.</p>
 <section id="references" class="level3">
 <h3 class="anchored" data-anchor-id="references">References</h3>
-<p>If you want to get deeper, I encourage you to read these articles: - <a href="https://saraswatmks.github.io/2020/04/sqlite-fts-search-queries.html">Useful Full Text Search (FTS) queries with sqlite in Python 3.7</a> - <a href="https://simonwillison.net/2018/Dec/19/fast-autocomplete-search/">Fast Autocomplete Search for Your Website</a> - <a href="https://github.com/jdepoix/youtube-transcript-api#youtube-transcriptsubtitle-api-including-automatically-generated-subtitles-and-subtitle-translations">YouTube Transcript/Subtitle API (including automatically generated subtitles and subtitle translations)</a></p>
+<p>If you want to get deeper, I encourage you to read these articles:<br>
+- <a href="https://saraswatmks.github.io/2020/04/sqlite-fts-search-queries.html">Useful Full Text Search (FTS) queries with sqlite in Python 3.7</a> - <a href="https://simonwillison.net/2018/Dec/19/fast-autocomplete-search/">Fast Autocomplete Search for Your Website</a> - <a href="https://github.com/jdepoix/youtube-transcript-api#youtube-transcriptsubtitle-api-including-automatically-generated-subtitles-and-subtitle-translations">YouTube Transcript/Subtitle API (including automatically generated subtitles and subtitle translations)</a></p>
 </section>
 </section>
 <section id="get-youtube-transcriptions" class="level2">
@@ -287,46 +293,73 @@ $ conda install -c conda-forge youtube-transcript-api</code></pre>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>video_id <span class="op">=</span> playlist[<span class="dv">0</span>].split(<span class="st">'='</span>)[<span class="dv">1</span>]</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>script <span class="op">=</span> YouTubeTranscriptApi.get_transcript(video_id, languages<span class="op">=</span>(<span class="st">'en'</span>,))</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(script[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Practical Deep Learning for Coders 2022
-Lesson 1: Practical Deep Learning for Coders 2022
-https://www.youtube.com/watch?v=8SF_h3xF3cE
-{'text': 'Welcome to Practical Deep Learning for coders,\xa0\nlesson one. This is version five of this course,\xa0\xa0', 'start': 2.0, 'duration': 8.0}</code></pre>
 </div>
-</div>
+<section id="download-all-transcriptions" class="level4">
+<h4 class="anchored" data-anchor-id="download-all-transcriptions">Download all transcriptions</h4>
 <p>Now we are going to download all the transcriptions. Let’s create three dictionaries to store the data: - <code>playlists</code> to store each playlist as <code>{playlist_id: playlist_name}</code> - <code>videos</code> to store videos as <code>{video_id: video_name}</code> - <code>database</code> to store all captions as <code>{playlist_id: {video_id: {'start': caption}}</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>playlists <span class="op">=</span> <span class="bu">dict</span>()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>videos <span class="op">=</span> <span class="bu">dict</span>()</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>database <span class="op">=</span> <span class="bu">dict</span>()</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pl_id <span class="kw">in</span> yt_pl_ids:</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    playlist <span class="op">=</span> Playlist(base_pl <span class="op">+</span> pl_id)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(playlist.title)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    playlists[pl_id] <span class="op">=</span> playlist.title</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    database[pl_id] <span class="op">=</span> <span class="bu">dict</span>()</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> video <span class="kw">in</span> playlist:</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        video_id <span class="op">=</span> video.split(<span class="st">"="</span>)[<span class="dv">1</span>]</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        videos[video_id] <span class="op">=</span> YouTube(video).title</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        database[pl_id][video_id] <span class="op">=</span> <span class="bu">dict</span>()</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Manually created transcripts are returned first</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        script <span class="op">=</span> YouTubeTranscriptApi.get_transcript(video_id, languages<span class="op">=</span>(<span class="st">'en'</span>,))</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> txt <span class="kw">in</span> script:</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>            database[pl_id][video_id][txt[<span class="st">'start'</span>]] <span class="op">=</span> txt[<span class="st">'text'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>fast.ai APL Study Group
-Practical Deep Learning for Coders 2022
-fast.ai live coding &amp; tutorials
-Practical Deep Learning for Coders (2020)
-Deep Learning from the Foundations
-fastai v2 code walk-thrus
-Practical Deep Learning for Coders 2019
-Introduction to Machine Learning for Coders
-Cutting Edge Deep Learning for Coders 2
-Practical Deep Learning For Coders 2018</code></pre>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>playlists <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>videos <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>database <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pl_id <span class="kw">in</span> yt_pl_ids:</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    playlist <span class="op">=</span> Playlist(base_pl <span class="op">+</span> pl_id)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(playlist.title)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    playlists[pl_id] <span class="op">=</span> playlist.title</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    database[pl_id] <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> video <span class="kw">in</span> playlist:</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        video_id <span class="op">=</span> video.split(<span class="st">"="</span>)[<span class="dv">1</span>]</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        videos[video_id] <span class="op">=</span> YouTube(video).title</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        database[pl_id][video_id] <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Manually created transcripts are returned first</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        script <span class="op">=</span> YouTubeTranscriptApi.get_transcript(video_id, languages<span class="op">=</span>(<span class="st">'en'</span>,))</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> txt <span class="kw">in</span> script:</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>            database[pl_id][video_id][txt[<span class="st">'start'</span>]] <span class="op">=</span> txt[<span class="st">'text'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+</section>
+</section>
+<section id="building-the-search-engine" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-search-engine">Building the Search Engine</h2>
+<section id="formatting-the-data-to-facilitate-insertion-into-sqlite" class="level3">
+<h3 class="anchored" data-anchor-id="formatting-the-data-to-facilitate-insertion-into-sqlite">Formatting the data to facilitate insertion into SQLite</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://stackoverflow.com/a/60932565/10013187</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>records <span class="op">=</span> [</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    (level1, level2, level3, leaf)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> level1, level2_dict <span class="kw">in</span> database.items()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> level2, level3_dict <span class="kw">in</span> level2_dict.items()</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> level3, leaf <span class="kw">in</span> level3_dict.items()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"(playlist_id, video_id, start, text)"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(records[<span class="dv">100</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-the-database" class="level3">
+<h3 class="anchored" data-anchor-id="creating-the-database">Creating the database</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">'fastai_yt.db'</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>cur <span class="op">=</span> db.cursor()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># virtual table configured to allow full-text search</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE VIRTUAL TABLE transcriptions_fts USING fts5(playlist_id, video_id, start, text, tokenize="porter unicode61");'</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># dimension like tables</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE TABLE playlist (playlist_id, playlist_name);'</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE TABLE video (video_id, video_name);'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bulk index records</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cur.executemany(<span class="st">'INSERT INTO transcriptions_fts (playlist_id, video_id, start, text) values (?,?,?,?);'</span>, records)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>cur.executemany(<span class="st">'INSERT INTO playlist (playlist_id, playlist_name) values (?,?);'</span>, playlists.items())</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>cur.executemany(<span class="st">'INSERT INTO video (video_id, video_name) values (?,?);'</span>, videos.items())</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>db.commit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'SELECT start, text FROM transcriptions_fts WHERE video_id="8SF_h3xF3cE" LIMIT 5'</span>).fetchall()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

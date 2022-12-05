@@ -9,7 +9,7 @@
 <meta name="author" content="Francisco Mussari">
 <meta name="dcterms.date" content="2022-12-04">
 
-<title>datamatica - Building a Full-Text Search Engine for fastai youtube channel</title>
+<title>datamatica - Building a Full-Text Search Engine for fastai YouTube channel</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -167,7 +167,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Building a Full-Text Search Engine for fastai youtube channel</h1>
+      <h1 class="title">Building a Full-Text Search Engine for fastai YouTube channel</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">deeplearning</div>
                 <div class="quarto-category">full-text search</div>
@@ -242,8 +242,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>After we get the transcriptions, we are going to build a search engine with <a href="https://sqlite.org/index.html">SQLite</a>’s full-text search functionality provided by its <a href="https://sqlite.org/fts5.html">FTS5</a> extension.</p>
 <section id="references" class="level3">
 <h3 class="anchored" data-anchor-id="references">References</h3>
-<p>If you want to get deeper, I encourage you to read these articles:<br>
-- <a href="https://saraswatmks.github.io/2020/04/sqlite-fts-search-queries.html">Useful Full Text Search (FTS) queries with sqlite in Python 3.7</a> - <a href="https://simonwillison.net/2018/Dec/19/fast-autocomplete-search/">Fast Autocomplete Search for Your Website</a> - <a href="https://github.com/jdepoix/youtube-transcript-api#youtube-transcriptsubtitle-api-including-automatically-generated-subtitles-and-subtitle-translations">YouTube Transcript/Subtitle API (including automatically generated subtitles and subtitle translations)</a></p>
+<p>If you want to get deeper, I encourage you to read these articles:</p>
+<ul>
+<li><p><a href="https://saraswatmks.github.io/2020/04/sqlite-fts-search-queries.html">Useful Full Text Search (FTS) queries with sqlite in Python 3.7</a></p></li>
+<li><p><a href="https://simonwillison.net/2018/Dec/19/fast-autocomplete-search/">Fast Autocomplete Search for Your Website</a></p></li>
+<li><p><a href="https://github.com/jdepoix/youtube-transcript-api#youtube-transcriptsubtitle-api-including-automatically-generated-subtitles-and-subtitle-translations">YouTube Transcript/Subtitle API (including automatically generated subtitles and subtitle translations)</a></p></li>
+</ul>
 </section>
 </section>
 <section id="get-youtube-transcriptions" class="level2">
@@ -366,7 +370,6 @@ Practical Deep Learning For Coders 2018</code></pre>
 </section>
 <section id="creating-the-database" class="level3">
 <h3 class="anchored" data-anchor-id="creating-the-database">Creating the database</h3>
-<p>Once we have the database with transcriptions, we don’t need to get them from YouTube.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">'fastai_yt.db'</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>cur <span class="op">=</span> db.cursor()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -404,6 +407,7 @@ Practical Deep Learning For Coders 2018</code></pre>
   "So the basic joke here is… I'll let you\xa0\nread it, and then I'll come back to it.")]</code></pre>
 </div>
 </div>
+<p><a href="./fastai_yt.db">fastai_yt.db</a>. Once we have the database populated, we can use it in any application we want without the need to get the transcriptions from YouTube.</p>
 </section>
 </section>
 <section id="search-queries" class="level2">

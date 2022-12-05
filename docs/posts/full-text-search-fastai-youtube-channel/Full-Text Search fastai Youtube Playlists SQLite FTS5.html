@@ -169,6 +169,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div class="quarto-title column-body">
       <h1 class="title">Building a Full-Text Search Engine for fastai YouTube channel</h1>
                                 <div class="quarto-categories">
+                <div class="quarto-category">fastai</div>
                 <div class="quarto-category">deeplearning</div>
                 <div class="quarto-category">full-text search</div>
                 <div class="quarto-category">SQLite</div>
@@ -235,7 +236,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<p>Part 1. Create the service and upload the pictures</p>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>In this post we are going to get the transcriptions of YouTube videos from one or more given Playlists. Here we are going to do it with <a href="https://www.youtube.com/@howardjeremyp/playlists">fastai</a> channel, but it applies to any given playlists (if the videos have transcriptions).</p>
@@ -376,11 +376,14 @@ Practical Deep Learning For Coders 2018</code></pre>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># virtual table configured to allow full-text search</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE VIRTUAL TABLE transcriptions_fts USING fts5(playlist_id, video_id, start, text, tokenize="porter unicode61");'</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># dimension like tables</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE TABLE playlist (playlist_id, playlist_name);'</span>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE TABLE video (video_id, video_name);'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'DROP TABLE IF EXISTS transcriptions_fts;'</span>) </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE VIRTUAL TABLE transcriptions_fts USING fts5(playlist_id, video_id, start, text, tokenize="porter unicode61");'</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># dimension like tables</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'DROP TABLE IF EXISTS playlist;'</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE TABLE playlist (playlist_id, playlist_name);'</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'DROP TABLE IF EXISTS video;'</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'CREATE TABLE video (video_id, video_name);'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>&lt;sqlite3.Cursor&gt;</code></pre>
 </div>
@@ -392,6 +395,7 @@ Practical Deep Learning For Coders 2018</code></pre>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>cur.executemany(<span class="st">'INSERT INTO video (video_id, video_name) values (?,?);'</span>, videos.items())</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>db.commit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Example of a simple query:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cur.execute(<span class="st">'SELECT start, text FROM transcriptions_fts WHERE video_id="8SF_h3xF3cE" LIMIT 5'</span>).fetchall()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -423,11 +427,13 @@ Practical Deep Learning For Coders 2018</code></pre>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_query(q, limit):</span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    search_in <span class="op">=</span> <span class="st">'text'</span></span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">'text:'</span> <span class="kw">in</span> q: search_in <span class="op">=</span> <span class="st">'transcriptions_fts'</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"""</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="ss">f"""</span></span>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT *, HIGHLIGHT(transcriptions_fts, 3, '[', ']')</span></span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="ss">    FROM transcriptions_fts WHERE </span><span class="sc">{</span>search_in<span class="sc">}</span><span class="ss"> MATCH '</span><span class="sc">{</span>q<span class="sc">}</span><span class="ss">' ORDER BY rank</span></span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="ss">    LIMIT "</span><span class="sc">{</span>limit<span class="sc">}</span><span class="ss">" </span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(query)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> query</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="search-for-a-word" class="level3">
 <h3 class="anchored" data-anchor-id="search-for-a-word">Search for a word</h3>
@@ -437,6 +443,11 @@ Practical Deep Learning For Coders 2018</code></pre>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>print_search_results(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
+    SELECT *, HIGHLIGHT(transcriptions_fts, 3, '[', ']')
+    FROM transcriptions_fts WHERE text MATCH 'fastc*' ORDER BY rank
+    LIMIT "5" 
+    
+
 fast.ai live coding &amp; tutorials -&gt; Live coding 3
 "... going to install python and [fastcore]..."
 https://youtu.be/B6BQiIgiEks?t=820
@@ -464,6 +475,11 @@ https://youtu.be/0pWjZByJ3Lk?t=3720</code></pre>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>print_search_results(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
+    SELECT *, HIGHLIGHT(transcriptions_fts, 3, '[', ']')
+    FROM transcriptions_fts WHERE text MATCH 'deleg*' ORDER BY rank
+    LIMIT "5" 
+    
+
 fastai v2 code walk-thrus -&gt; fastai v2 walk-thru #9
 "... [delegated] down to that so [delegates] down..."
 https://youtu.be/bBqFVBpOZoY?t=2462
@@ -519,6 +535,14 @@ https://youtu.be/yEe5ZUMLEys?t=4756</code></pre>
 <span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>print_search_results(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
+    SELECT *, HIGHLIGHT(transcriptions_fts, 3, '[', ']')
+    FROM transcriptions_fts WHERE transcriptions_fts MATCH '
+(text: fastcore OR paral*) AND 
+(playlist_id: "PLfYUBJiXbdtSvpQjSnJJ_PmDQB_VyT5iU" OR "PLfYUBJiXbdtSLBPJ1GMx-sQWf6iNhb8mM")
+' ORDER BY rank
+    LIMIT "10" 
+    
+
 Practical Deep Learning for Coders 2022 -&gt; Lesson 6: Practical Deep Learning for Coders 2022
 "... but my [fastcore] library has a [parallel] sub module&nbsp;
 which can basically do anything that you can do&nbsp;&nbsp;..."

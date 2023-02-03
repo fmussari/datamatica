@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/fastai-api-levels-MNIST/API levels in fastai dataloaders.html",
       "/posts/full-text-search-fastai-youtube-channel/Full-Text-Search-fastai-Youtube-Playlists-SQLite-FTS5-Part2.html",
       "/posts/full-text-search-fastai-youtube-channel/Full-Text-Search-fastai-Youtube-Playlists-SQLite-FTS5.html",
       "/posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_3.html",

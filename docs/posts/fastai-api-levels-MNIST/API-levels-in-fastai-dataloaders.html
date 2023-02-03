@@ -9,7 +9,7 @@
 <meta name="author" content="Francisco Mussari">
 <meta name="dcterms.date" content="2023-02-02">
 
-<title>datamatica - Exploring fastai API levels to create DataLoaders</title>
+<title>datamatica - Exploring fastai API levels to create Data Loaders</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -167,7 +167,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Exploring fastai API levels to create <code>DataLoaders</code></h1>
+      <h1 class="title">Exploring fastai API levels to create Data Loaders</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">fastai</div>
                 <div class="quarto-category">deeplearning</div>
@@ -287,19 +287,19 @@ Each image is then stored in folders that represent its labels: <code>0</code>, 
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> PILImageBW.create(fnames[<span class="dv">0</span>])</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>im</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-7-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-7-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>CropPad(<span class="dv">50</span>)(im)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>RandomCrop(size<span class="op">=</span><span class="dv">28</span>)(CropPad(<span class="dv">50</span>)(im))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>Applying the first two sequentially with <code>reduce</code>:</p>
@@ -307,7 +307,7 @@ Each image is then stored in folders that represent its labels: <code>0</code>, 
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> <span class="bu">reduce</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">reduce</span>(<span class="kw">lambda</span> t,f: f(t), item_tfms[:<span class="dv">2</span>], im)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>Or with a for loop:</p>
@@ -317,7 +317,7 @@ Each image is then stored in folders that represent its labels: <code>0</code>, 
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    im0 <span class="op">=</span> tfm(im0)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>im0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>What about applying also <code>ToTensor()</code></p>
@@ -368,7 +368,7 @@ from_folder(path, train='train', valid='valid', valid_pct=None, seed=None, vocab
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(figsize<span class="op">=</span>(<span class="dv">4</span>,<span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-17-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-17-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell">
@@ -438,7 +438,7 @@ from_folder(path, train='train', valid='valid', valid_pct=None, seed=None, vocab
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>PILImageBW.create(sub_fnames[<span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-27-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-27-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 </section>
@@ -470,7 +470,7 @@ from_folder(path, train='train', valid='valid', valid_pct=None, seed=None, vocab
 <div class="cell">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(figsize<span class="op">=</span>(<span class="dv">4</span>,<span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-31-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-31-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell">
@@ -522,7 +522,7 @@ from_folder(path, train='train', valid='valid', valid_pct=None, seed=None, vocab
 <div class="cell">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>show_at(dsrc.train, <span class="dv">3</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-38-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-38-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <section id="exploring-what-each-tfms-does" class="level4">
@@ -530,7 +530,7 @@ from_folder(path, train='train', valid='valid', valid_pct=None, seed=None, vocab
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>PILImageBW.create(fnames[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-39-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-39-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell">
@@ -564,7 +564,7 @@ decodes: (Tabular,object) -&gt; decodes
 <div class="cell">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(figsize<span class="op">=</span>(<span class="dv">4</span>,<span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="API%20levels%20in%20fastai%20dataloaders_files/figure-html/cell-43-output-1.png" class="img-fluid"></p>
+<p><img src="API-levels-in-fastai-dataloaders_files/figure-html/cell-43-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell">

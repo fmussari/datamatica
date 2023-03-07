@@ -215,7 +215,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#import-libraries" id="toc-import-libraries" class="nav-link" data-scroll-target="#import-libraries">Import Libraries</a></li>
   <li><a href="#image-data" id="toc-image-data" class="nav-link" data-scroll-target="#image-data">Image Data</a>
   <ul class="collapse">
-  <li><a href="#visualizing-the-distribution-o-labels" id="toc-visualizing-the-distribution-o-labels" class="nav-link" data-scroll-target="#visualizing-the-distribution-o-labels">Visualizing the distribution o labels</a></li>
+  <li><a href="#visualizing-the-distribution-of-labels" id="toc-visualizing-the-distribution-of-labels" class="nav-link" data-scroll-target="#visualizing-the-distribution-of-labels">Visualizing the distribution of labels</a></li>
   </ul></li>
   <li><a href="#creating-pytorch-dataset" id="toc-creating-pytorch-dataset" class="nav-link" data-scroll-target="#creating-pytorch-dataset">Creating PyTorch Dataset</a>
   <ul class="collapse">
@@ -315,8 +315,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>{'base_plate': 0, 'grounding_bar': 1, 'identification': 2, 'ladder': 3, 'light': 4, 'lightning_rod': 5, 'platform': 6, 'transmission_lines': 7}</code></pre>
 </div>
 </div>
-<section id="visualizing-the-distribution-o-labels" class="level3">
-<h3 class="anchored" data-anchor-id="visualizing-the-distribution-o-labels">Visualizing the distribution o labels</h3>
+<section id="visualizing-the-distribution-of-labels" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-the-distribution-of-labels">Visualizing the distribution of labels</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [label.parts[<span class="op">-</span><span class="dv">1</span>] <span class="cf">for</span> label <span class="kw">in</span> train_path.iterdir()]</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>train_quantity <span class="op">=</span> [<span class="bu">len</span>(<span class="bu">list</span>(each.iterdir())) <span class="cf">for</span> each <span class="kw">in</span> train_path.iterdir()]</span>

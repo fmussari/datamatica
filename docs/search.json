@@ -81,7 +81,7 @@
     "href": "posts/2023-03_Wwf_homework/Part_2__Wwf_Homework_PyTorch_Tower_Classification.html#import-libraries",
     "title": "Telecommunication towers component clasification. Part 2. PyTorch",
     "section": "Import Libraries",
-    "text": "Import Libraries\n\nfrom pathlib import Path\nfrom miniai.datasets import show_images\n\nfrom torch.utils.data import Dataset\nfrom torch.utils.data import DataLoader\nfrom torch import nn\nimport torch\nimport torchvision.transforms as tvtfms\n\nfrom PIL import Image\n\nimport pandas as pd\nimport plotly.express as px\nfrom matplotlib import pyplot as plt"
+    "text": "Import Libraries\n\nfrom pathlib import Path\nfrom miniai.datasets import show_images\n\nfrom torch.utils.data import Dataset\nfrom torch.utils.data import DataLoader\nfrom torch import nn\nimport torch\nimport torchvision.transforms as tvtfms\n\nfrom PIL import Image\n\nimport pandas as pd\nimport plotly.express as px\nimport plotly.io as pio\nfrom matplotlib import pyplot as plt"
   },
   {
     "objectID": "posts/2023-03_Wwf_homework/Part_2__Wwf_Homework_PyTorch_Tower_Classification.html#image-data",

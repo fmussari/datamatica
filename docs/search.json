@@ -46,7 +46,7 @@
     "href": "posts/2023-03_Wwf_homework/Part_1__Tower_Parts_Classisfier_with_fastai.html#import-libraries",
     "title": "Telecommunication towers component clasification - Part 1. fastai",
     "section": "Import Libraries",
-    "text": "Import Libraries\n\nfrom fastai.vision.all import *\nimport timm\nimport plotly.express as px\n\n/home/fmussari/mambaforge/envs/fastaiv3/lib/python3.9/site-packages/torchvision/io/image.py:13: UserWarning:\n\nFailed to load image Python extension: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory"
+    "text": "Import Libraries\n\nfrom fastai.vision.all import *\nimport timm\nimport plotly.express as px\n\n/home/fmussari/mambaforge/envs/fastaiv3/lib/python3.9/site-packages/torchvision/io/image.py:13: UserWarning: Failed to load image Python extension: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory\n  warn(f\"Failed to load image Python extension: {e}\")"
   },
   {
     "objectID": "posts/2023-03_Wwf_homework/Part_1__Tower_Parts_Classisfier_with_fastai.html#dataset",
@@ -67,14 +67,14 @@
     "href": "posts/2023-03_Wwf_homework/Part_1__Tower_Parts_Classisfier_with_fastai.html#dataloaders",
     "title": "Telecommunication towers component clasification - Part 1. fastai",
     "section": "DataLoaders",
-    "text": "DataLoaders\n\ntower_parts = DataBlock(\n    blocks=(ImageBlock, CategoryBlock), \n    get_items=get_image_files, \n    splitter=GrandparentSplitter(train_name='train', valid_name='valid'),\n    get_y=parent_label,\n    item_tfms=Resize(224)\n)\n\n\ndls = tower_parts.dataloaders(path)\n\n\n%%time\nfor _ in dls.train: pass\n\nCPU times: user 178 ms, sys: 449 ms, total: 626 ms\nWall time: 25.5 s\n\n\n\ndls.train.show_batch(max_n=16, nrows=4, figsize=(10,10))"
+    "text": "DataLoaders\n\ntower_parts = DataBlock(\n    blocks=(ImageBlock, CategoryBlock), \n    get_items=get_image_files, \n    splitter=GrandparentSplitter(train_name='train', valid_name='valid'),\n    get_y=parent_label,\n    item_tfms=Resize(224)\n)\n\n\ndls = tower_parts.dataloaders(path)\n\n\n%%time\nfor _ in dls.train: pass\n\nCPU times: user 449 ms, sys: 506 ms, total: 955 ms\nWall time: 20.4 s\n\n\n\ndls.train.show_batch(max_n=16, nrows=4, figsize=(10,10))"
   },
   {
     "objectID": "posts/2023-03_Wwf_homework/Part_1__Tower_Parts_Classisfier_with_fastai.html#learner",
     "href": "posts/2023-03_Wwf_homework/Part_1__Tower_Parts_Classisfier_with_fastai.html#learner",
     "title": "Telecommunication towers component clasification - Part 1. fastai",
     "section": "Learner",
-    "text": "Learner\n\nlearn = vision_learner(dls, resnet34, metrics=error_rate)\n\n\nfastai’s lr_find\n\n%%time\nlearn.lr_find()\n\n\n\n\n\n\n\n\nCPU times: user 27 s, sys: 9.19 s, total: 36.2 s\nWall time: 7min 12s\n\n\nSuggestedLRs(valley=0.0014454397605732083)\n\n\n\n\n\n\ndls.num_workers\n\n1\n\n\n\n\n\n\n\n\nNote\n\n\n\nI experimented by setting dls.num_workers = 4 and it didn’t make any difference in the time it takes to run lr_find(), even though that, by watching at the progress bar, it seemed that the bottleneck was in pre-processing the batch. Not in GPU.\n\n\n\nlen(dls.train), len(dls.train.get_idxs())\n\n(6, 394)\n\n\n\nlen(dls.valid), len(dls.valid.get_idxs())\n\n(2, 120)\n\n\n\ndls.drop_last\n\nTrue"
+    "text": "Learner\n\nlearn = vision_learner(dls, resnet34, metrics=error_rate)\n\n\nfastai’s lr_find\n\n%%time\nlearn.lr_find()\n\n\n\n\n\n\n\n\nCPU times: user 24.4 s, sys: 8.72 s, total: 33.2 s\nWall time: 5min 38s\n\n\nSuggestedLRs(valley=0.0014454397605732083)\n\n\n\n\n\n\ndls.num_workers\n\n1\n\n\n\n\n\n\n\n\nNote\n\n\n\nI experimented by setting dls.num_workers = 4 and it didn’t make any difference in the time it takes to run lr_find(), even though that, by watching at the progress bar, it seemed that the bottleneck was in pre-processing the batch. Not in GPU.\n\n\n\nlen(dls.train), len(dls.train.get_idxs())\n\n(6, 394)\n\n\n\nlen(dls.valid), len(dls.valid.get_idxs())\n\n(2, 120)\n\n\n\ndls.drop_last\n\nTrue"
   },
   {
     "objectID": "posts/2023-03_Wwf_homework/Part_1__Tower_Parts_Classisfier_with_fastai.html#training",

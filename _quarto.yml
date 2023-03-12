@@ -16,4 +16,4 @@ format:
     theme: simplex
     css: styles.css
     fontsize: 1.0em
-    background-color: white
+    backgroundcolor: white

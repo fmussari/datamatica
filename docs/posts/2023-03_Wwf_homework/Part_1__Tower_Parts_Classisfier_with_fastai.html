@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Francisco Mussari">
-<meta name="dcterms.date" content="2023-03-06">
 
-<title>datamatica - Telecommunication towers component clasification - Part 1. fastai</title>
+<title>datamatica – part_1__tower_parts_classisfier_with_fastai</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -147,7 +145,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -183,67 +181,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body">
-      <h1 class="title">Telecommunication towers component clasification - Part 1. fastai</h1>
-                                <div class="quarto-categories">
-                <div class="quarto-category">fastai</div>
-                <div class="quarto-category">deeplearning</div>
-                <div class="quarto-category">Walk with fastai</div>
-                <div class="quarto-category">PyTorch</div>
-              </div>
-                  </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta">
-
-      <div>
-      <div class="quarto-title-meta-heading">Author</div>
-      <div class="quarto-title-meta-contents">
-               <p>Francisco Mussari </p>
-            </div>
-    </div>
-      
-      <div>
-      <div class="quarto-title-meta-heading">Published</div>
-      <div class="quarto-title-meta-contents">
-        <p class="date">March 6, 2023</p>
-      </div>
-    </div>
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#import-libraries" id="toc-import-libraries" class="nav-link" data-scroll-target="#import-libraries">Import Libraries</a></li>
-  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a>
-  <ul class="collapse">
-  <li><a href="#local-dataset" id="toc-local-dataset" class="nav-link" data-scroll-target="#local-dataset">Local Dataset</a></li>
-  </ul></li>
-  <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The Data</a></li>
-  <li><a href="#dataloaders" id="toc-dataloaders" class="nav-link" data-scroll-target="#dataloaders">DataLoaders</a></li>
-  <li><a href="#learner" id="toc-learner" class="nav-link" data-scroll-target="#learner">Learner</a>
-  <ul class="collapse">
-  <li><a href="#fastais-lr_find" id="toc-fastais-lr_find" class="nav-link" data-scroll-target="#fastais-lr_find">fastai’s <code>lr_find</code></a></li>
-  </ul></li>
-  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
-  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
-
 
 
 
@@ -256,7 +199,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="import-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="import-libraries">Import Libraries</h2>
-<div class="cell" data-execution_count="1">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastai.vision.<span class="bu">all</span> <span class="im">import</span> <span class="op">*</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timm</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -275,10 +218,10 @@ Failed to load image Python extension: libtorch_cuda_cu.so: cannot open shared o
 <section id="local-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="local-dataset">Local Dataset</h3>
 <p>For the 2022 course, thanks to the help of many great people in fastai forums, I was able to install fastai locally and to use my local GPU on WSL2.</p>
-<div class="cell" data-execution_count="2">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> Path(<span class="st">"photos"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="3">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>train_path <span class="op">=</span> path <span class="op">/</span> <span class="st">'train'</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>valid_path <span class="op">=</span> path <span class="op">/</span> <span class="st">'valid'</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -291,9 +234,9 @@ Failed to load image Python extension: libtorch_cuda_cu.so: cannot open shared o
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'set'</span>] <span class="op">=</span> [<span class="st">'train'</span>] <span class="op">*</span> <span class="dv">8</span> <span class="op">+</span> [<span class="st">'valid'</span>] <span class="op">*</span> <span class="dv">8</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'quantity'</span>] <span class="op">=</span> train_quantity <span class="op">+</span> valid_quantity</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display">
 
 <div>
 
@@ -408,14 +351,14 @@ Failed to load image Python extension: libtorch_cuda_cu.so: cannot open shared o
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>is_train <span class="op">=</span> df.<span class="bu">set</span> <span class="op">==</span> <span class="st">'train'</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df[is_train].quantity.<span class="bu">sum</span>(), df[<span class="op">~</span>is_train].quantity.<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display">
 <pre><code>(394, 120)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="6">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.bar(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    df, x<span class="op">=</span><span class="st">"set"</span>, y<span class="op">=</span><span class="st">"quantity"</span>,</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">'label'</span>, barmode<span class="op">=</span><span class="st">'group'</span>,</span>
@@ -467,7 +410,7 @@ if (outputEl) {{
 <li>Transmission lines</li>
 </ul>
 <p>There are two folders, one for the training (train) and the other for the validation set (valid).</p>
-<div class="cell" data-execution_count="7">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(path.ls())   </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'*'</span><span class="op">*</span><span class="dv">100</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>(path<span class="op">/</span><span class="st">'train'</span>).ls()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -475,18 +418,18 @@ if (outputEl) {{
 <pre><code>[Path('photos/train'), Path('photos/valid')]
 ****************************************************************************************************</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display">
 <pre><code>(#8) [Path('photos/train/base_plate'),Path('photos/train/grounding_bar'),Path('photos/train/identification'),Path('photos/train/ladder'),Path('photos/train/light'),Path('photos/train/lightning_rod'),Path('photos/train/platform'),Path('photos/train/transmission_lines')]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="8">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tower_parts_fns <span class="op">=</span> get_image_files(path)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>tower_parts_fns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display">
 <pre><code>(#514) [Path('photos/train/base_plate/Ac102-Corozopando-(64).jpg'),Path('photos/train/base_plate/Ac102-Corozopando-(75).jpg'),Path('photos/train/base_plate/camaguan-087.jpg'),Path('photos/train/base_plate/camaguan-098.jpg'),Path('photos/train/base_plate/cantv el yoco 015.JPG'),Path('photos/train/base_plate/cantv-capanaparo-011.jpg'),Path('photos/train/base_plate/cantv-cinaruco-018.jpg'),Path('photos/train/base_plate/cantv-cinaruco-025.jpg'),Path('photos/train/base_plate/cartanal-(7).jpg'),Path('photos/train/base_plate/CHUSPITA-II-AC-72-MTS-002.jpg')...]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>failed <span class="op">=</span> verify_images(tower_parts_fns)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(failed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -496,7 +439,7 @@ if (outputEl) {{
 </section>
 <section id="dataloaders" class="level2">
 <h2 class="anchored" data-anchor-id="dataloaders">DataLoaders</h2>
-<div class="cell" data-execution_count="10">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tower_parts <span class="op">=</span> DataBlock(</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    blocks<span class="op">=</span>(ImageBlock, CategoryBlock), </span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    get_items<span class="op">=</span>get_image_files, </span>
@@ -505,10 +448,10 @@ if (outputEl) {{
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    item_tfms<span class="op">=</span>Resize(<span class="dv">224</span>)</span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="11">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> tower_parts.dataloaders(path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="12">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> dls.train: <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -516,7 +459,7 @@ if (outputEl) {{
 Wall time: 25.5 s</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="13">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dls.train.show_batch(max_n<span class="op">=</span><span class="dv">16</span>, nrows<span class="op">=</span><span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="Part_1__Tower_Parts_Classisfier_with_fastai_files/figure-html/cell-14-output-1.png" class="img-fluid"></p>
@@ -525,12 +468,12 @@ Wall time: 25.5 s</code></pre>
 </section>
 <section id="learner" class="level2">
 <h2 class="anchored" data-anchor-id="learner">Learner</h2>
-<div class="cell" data-execution_count="14">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> vision_learner(dls, resnet34, metrics<span class="op">=</span>error_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="fastais-lr_find" class="level3">
 <h3 class="anchored" data-anchor-id="fastais-lr_find">fastai’s <code>lr_find</code></h3>
-<div class="cell" data-execution_count="15">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>learn.lr_find()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -555,16 +498,16 @@ Wall time: 25.5 s</code></pre>
 <pre><code>CPU times: user 27 s, sys: 9.19 s, total: 36.2 s
 Wall time: 7min 12s</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="15">
+<div class="cell-output cell-output-display">
 <pre><code>SuggestedLRs(valley=0.0014454397605732083)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="Part_1__Tower_Parts_Classisfier_with_fastai_files/figure-html/cell-16-output-5.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="16">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dls.num_workers</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
+<div class="cell-output cell-output-display">
 <pre><code>1</code></pre>
 </div>
 </div>
@@ -581,21 +524,21 @@ Note
 <p>I experimented by setting <code>dls.num_workers = 4</code> and it didn’t make any difference in the time it takes to run <code>lr_find()</code>, even though that, by watching at the progress bar, it seemed that the bottleneck was in pre-processing the batch. Not in GPU.</p>
 </div>
 </div>
-<div class="cell" data-execution_count="17">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(dls.train), <span class="bu">len</span>(dls.train.get_idxs())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display">
 <pre><code>(6, 394)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(dls.valid), <span class="bu">len</span>(dls.valid.get_idxs())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display">
 <pre><code>(2, 120)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="19">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>dls.drop_last</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display">
 <pre><code>True</code></pre>
 </div>
 </div>
@@ -603,7 +546,7 @@ Note
 </section>
 <section id="training" class="level2">
 <h2 class="anchored" data-anchor-id="training">Training</h2>
-<div class="cell" data-execution_count="20">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>learn.fine_tune(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -701,7 +644,7 @@ Note
 Wall time: 2min 55s</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>interp <span class="op">=</span> ClassificationInterpretation.from_learner(learn)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>interp.plot_confusion_matrix(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -744,7 +687,7 @@ Wall time: 2min 55s</code></pre>
 <p><img src="Part_1__Tower_Parts_Classisfier_with_fastai_files/figure-html/cell-22-output-5.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="22">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>interp.plot_top_losses(<span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
@@ -768,10 +711,10 @@ Wall time: 2min 55s</code></pre>
 <p><img src="Part_1__Tower_Parts_Classisfier_with_fastai_files/figure-html/cell-23-output-3.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="23">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>learn.export(<span class="st">'models/tower_parts_model'</span>)</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>learn.save(<span class="st">"exported_model_from_fastai"</span>, with_opt<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="23">
+<div class="cell-output cell-output-display">
 <pre><code>Path('models/exported_model_from_fastai.pth')</code></pre>
 </div>
 </div>

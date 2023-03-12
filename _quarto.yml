@@ -17,3 +17,4 @@ format:
     css: styles.css
     fontsize: 1.0em
     backgroundcolor: white
+    monobackgroundcolor: F1F1F1

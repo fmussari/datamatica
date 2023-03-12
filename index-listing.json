@@ -1,0 +1,14 @@
+{
+  "listing": "/index.html",
+  "items": [
+    "/posts/2023-03_Wwf_homework/jupyter.html",
+    "/posts/2023-03_Wwf_homework/Part_1__Tower_Parts_Classisfier_with_fastai.html",
+    "/posts/2023-03_Wwf_homework/Part_2__Wwf_Homework_PyTorch_Tower_Classification.html",
+    "/posts/fastai-api-levels-MNIST/API-levels-in-fastai-dataloaders.html",
+    "/posts/full-text-search-fastai-youtube-channel/Full-Text-Search-fastai-Youtube-Playlists-SQLite-FTS5-Part2.html",
+    "/posts/full-text-search-fastai-youtube-channel/Full-Text-Search-fastai-Youtube-Playlists-SQLite-FTS5.html",
+    "/posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_3.html",
+    "/posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_2.html",
+    "/posts/object-detection-with-azure-custom-vision/ObjectDetectionWithAzureCustomVision_Part_1.html"
+  ]
+}

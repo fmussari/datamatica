@@ -258,6 +258,7 @@ e.exports=function(t){return null!=t&&(n(t)||function(t){return"function"==typeo
                 <div class="quarto-category">Walk with fastai</div>
                 <div class="quarto-category">PyTorch</div>
                 <div class="quarto-category">fastai</div>
+                <div class="quarto-category">miniai</div>
               </div>
                   </div>
   </div>
@@ -595,7 +596,11 @@ Wall time: 1min 25s</code></pre>
 </section>
 <section id="callbacks" class="level2">
 <h2 class="anchored" data-anchor-id="callbacks">Callbacks</h2>
-<p>For more info about miniai and its callback system: - <a href="https://francescopochetti.com/fastai-course-part-2-2022-understanding-callbacks/">Fastai Course Part 2 2022: Understanding CallBacks</a> by Francesco Pochetti - <a href="https://dienhoa.github.io/dhblog/posts/Learner.html">Redesign your Training Loop with CallBacks</a></p>
+<p>For more info about miniai and its callback system:</p>
+<ul>
+<li><a href="https://francescopochetti.com/fastai-course-part-2-2022-understanding-callbacks/">Fastai Course Part 2 2022: Understanding CallBacks</a> by Francesco Pochetti</li>
+<li><a href="https://dienhoa.github.io/dhblog/posts/Learner.html">Redesign your Training Loop with CallBacks</a> by Dien-Hoa Truong</li>
+</ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> miniai.learner <span class="im">import</span> MetricsCB, DeviceCB, ProgressCB, TrainLearner</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torcheval.metrics <span class="im">import</span> MulticlassAccuracy</span>

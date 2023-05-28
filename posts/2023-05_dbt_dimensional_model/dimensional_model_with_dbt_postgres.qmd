@@ -15,42 +15,41 @@ format:
 
 This exploration of dbt (Data Build Tool) is almost a recreation of the awsome tutorial [Building a Kimball dimensional model with dbt](https://docs.getdbt.com/blog/kimball-dimensional-model) but with some twists.  
   
-I encourage you to read that document for a discussion of what a dimensional model is, the differences between 3N, star schema, snowflake, One Big Table (OBT)... and the likes
-
-I also
+I encourage you to read that document for a discussion of what a dimensional model is, its benefits, and the differences with other modeling techniques such as Third Normal Form (3NF) and One Big Table (OBT).
+  
 
 What I did different was the following:
 
-1. Worked with the AdventureWorks data already loaded into PostgreSQL, and not seeded from .csv files. For that I managed to create a backup that you can Restore. You can download it [here](./Adventureworks.backup).
+1. Worked with the AdventureWorks data already loaded into PostgreSQL, and not seeded from .csv files. For that I managed to create a backup that you can restore to postgres. You can download it [here](./Adventureworks.backup).
 
 2. Experimented with three flavors of Postgres:
-  - Local PostgreSQL.
-  - Supabase PostgreSQL as-a-service (free).
-  - AWS Aurora Serverless for PostgreSQL.
+    - Local PostgreSQL.
+    - Supabase PostgreSQL as-a-service (free).
+    - AWS Aurora Serverless for PostgreSQL.
 
-3. Created custom schema names.
+3. Created custom schema names [Deploy to custom schemas & override dbt defaults](https://youtu.be/CbhobcWZ3Hk).
 
-4. Created two date dimension tables, one with calogical [`dbt-date` extension](https://github.com/calogica/dbt-date#dbt-date), which a wraper around [`dbt_utils.date_spine`](https://github.com/dbt-labs/dbt-utils#date_spine-source), and the other with date_spine itself. I managed to create the calendar dynamically from the first day in the fact table to the last one.
+4. Created two date dimension tables, one with calogical [`dbt-date`](https://github.com/calogica/dbt-date#dbt-date)  extension, which is a wraper around [`dbt_utils.date_spine`](https://github.com/dbt-labs/dbt-utils#date_spine-source), and the other with `date_spine` itself. I managed to create the calendar dynamically ranging from the first day in the fact table to the last one.
 
 ## Setting up the project
 
-Is not in the scope of this document to explain how to get started with dbt. I had never used dbt and it was straight forward with this two tutorials:
+Is not in the scope of this document to explain how to get started with dbt. I had never used dbt and it was straight forward with these two tutorials:
 
 1. [Building a Kimball dimensional model with dbt](https://docs.getdbt.com/blog/kimball-dimensional-model)
 2. [Intro to Data Build Tool (dbt) // Create your first project!](https://youtu.be/5rNquRnNb4E)
 
-You can explore the whole exploration I did in this repository: [fmussari/dbt-dimensional-modeling-experiment](https://github.com/fmussari/dbt-dimensional-modeling-experiment/tree/master/dbt_dimensional_demo)
+You can explore the whole experiment I did in this repository: [fmussari/dbt-dimensional-modeling-experiment](https://github.com/fmussari/dbt-dimensional-modeling-experiment/tree/master/dbt_dimensional_demo)
 
 
-## Setting up the databsses
+## Defining the databases in `profiles.yml`
 
-dbt is a transformation tool, so it only works with one database at a time. That database is the source and the target. In this case we have the normalized AdventureWorks database and we are creating the transformations to create dimensions and fact tables. But I found interesting that multiple databases can be defined in a project, so you can test, for example, in your local database, and then create the models into the cloud database. 
+dbt is a transformation tool, so it only works with one database at a time. That database is the source and the target. In this case we have the normalized AdventureWorks database and we are creating the transformations to create dimensions and fact tables. I found interesting that multiple databases can be defined in a project, so you can test, for example, in your local database, and then create the models into the cloud database.  
   
-For storing the credentials I used [setting environment variables](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#setting-environment-variables).  
+For storing the credentials I used conda, based on [setting environment variables](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#setting-environment-variables).  
    
 The [`profiles.yml`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/profiles.yml) ended looking like this:
 
-```{{yml}}
+```{yml}
 dbt_dimensional_demo:
 
   outputs:
@@ -91,3 +90,5 @@ dbt_dimensional_demo:
 
   target: supabaseAdventure
 ```
+
+As you can see your experiment can run in any database specified by changing the `target`.

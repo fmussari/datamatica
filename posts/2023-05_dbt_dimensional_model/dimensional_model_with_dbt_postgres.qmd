@@ -49,7 +49,8 @@ For storing the credentials I used conda, based on [setting environment variable
    
 The [`profiles.yml`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/profiles.yml) ended looking like this:
 
-```{yml}
+
+```{.yaml filename="profiles.yml"}
 dbt_dimensional_demo:
 
   outputs:

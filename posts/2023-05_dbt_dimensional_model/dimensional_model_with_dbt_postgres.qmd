@@ -13,27 +13,26 @@ format:
 
 ## Overview
 
-This exploration of dbt (Data Build Tool) is almost a recreation of the awsome tutorial [Building a Kimball dimensional model with dbt](https://docs.getdbt.com/blog/kimball-dimensional-model) but with some twists.  
+The exploration I'm documenting here about dbt (Data Build Tool) is almost a recreation of the awsome tutorial [Building a Kimball dimensional model with dbt](https://docs.getdbt.com/blog/kimball-dimensional-model) but with some twists.  
   
-I encourage you to read that document for a discussion of what a dimensional model is, its benefits, and the differences with other modeling techniques such as Third Normal Form (3NF) and One Big Table (OBT).
-  
+I encourage you to read that tutorial for a discussion of what a dimensional model is, its benefits, and the differences with other modeling techniques such as Third Normal Form (3NF) and One Big Table (OBT).
 
-What I did different was the following:
+What I did different from that tutorial was the following:
 
-1. Worked with the AdventureWorks data already loaded into PostgreSQL, and not seeded from .csv files. For that I managed to create a backup that you can restore to postgres. You can download it [here](./Adventureworks.backup).
+1. Worked with the AdventureWorks data already loaded into PostgreSQL, and not seeded from .csv files. For that I managed to create a backup that you can restore to your Postgres database. You can download it [here](./Adventureworks.backup).
 
 2. Experimented with three flavors of Postgres:
-    - Local PostgreSQL.
-    - Supabase PostgreSQL as-a-service (free).
-    - AWS Aurora Serverless for PostgreSQL.
+    - [Local PostgreSQL](https://www.postgresql.org/download/).
+    - [Supabase PostgreSQL as-a-service (free)](https://supabase.com/docs/guides/database/overview).
+    - [AWS Aurora Serverless for PostgreSQL](https://aws.amazon.com/rds/aurora/serverless/).
 
 3. Created custom schema names [Deploy to custom schemas & override dbt defaults](https://youtu.be/CbhobcWZ3Hk).
 
-4. Created two date dimension tables, one with calogical [`dbt-date`](https://github.com/calogica/dbt-date#dbt-date)  extension, which is a wraper around [`dbt_utils.date_spine`](https://github.com/dbt-labs/dbt-utils#date_spine-source), and the other with `date_spine` itself. I managed to create the calendar dynamically ranging from the first day in the fact table to the last one.
+4. Created two date dimension tables, one with calogical [`dbt-date`](https://github.com/calogica/dbt-date#dbt-date) extension, which is a wraper around [`dbt_utils.date_spine`](https://github.com/dbt-labs/dbt-utils#date_spine-source), and the other with `date_spine` itself. I managed to create the calendar dynamically ranging from the first day in the fact table to the last one.
 
 ## Setting up the project
 
-Is not in the scope of this document to explain how to get started with dbt. I had never used dbt and it was straight forward with these two tutorials:
+It is not in the scope of this document to explain how to get started with dbt. I had never used dbt and it was straight forward with these two tutorials:
 
 1. [Building a Kimball dimensional model with dbt](https://docs.getdbt.com/blog/kimball-dimensional-model)
 2. [Intro to Data Build Tool (dbt) // Create your first project!](https://youtu.be/5rNquRnNb4E)
@@ -43,7 +42,7 @@ You can explore the whole experiment I did in this repository: [fmussari/dbt-dim
 
 ## Defining the databases in `profiles.yml`
 
-dbt is a transformation tool, so it only works with one database at a time. That database is the source and the target. In this case we have the normalized AdventureWorks database and we are creating the transformations to create dimensions and fact tables. I found interesting that multiple databases can be defined in a project, so you can test, for example, in your local database, and then create the models into the cloud database.  
+dbt is a transformation tool, so it only works with one database at a time, meaning that the same database is the source and the target. In this case we have the normalized AdventureWorks database and we are creating the transformations to create a model with dimensions and fact tables. I found interesting that multiple databases can be defined in a project, so you can test, for example, in your local database, and then create the models into the cloud database.  
   
 For storing the credentials I used conda, based on [setting environment variables](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#setting-environment-variables).  
    
@@ -64,10 +63,6 @@ dbt_dimensional_demo:
       pass: '10042076'
       database: Adventureworks
       schema: target  # this is override in each model's sql
-
-    # https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#setting-environment-variables
-    # C:\ProgramData\Miniconda3\envs\powerbi\etc\conda\activate.d
-    # C:\ProgramData\Miniconda3\envs\powerbi\etc\conda\deactivate.d
 
     supabaseAdventure:
       type: postgres
@@ -92,4 +87,80 @@ dbt_dimensional_demo:
   target: supabaseAdventure
 ```
 
-As you can see your experiment can run in any database specified by changing the `target`.
+As you can see your experiment can run in any database specified in the file, by only changing the `target`.
+
+## Creating the Dimensional Model
+
+This part is almost a copy from the aforementioned tutorial. The only difference being that based on the video [Deploy to custom schemas & override dbt defaults](https://youtu.be/CbhobcWZ3Hk) I added some lines to configure the Schema in the transformations file.
+  
+Another difference was that I specified my sources in in the file `schema.yml` that looks like this:
+
+```{.yaml filename="schema.yml"}
+# Copied from: https://docs.getdbt.com/docs/build/sources
+
+version: 2
+
+sources:
+  - name: pg_production
+    database: Adventureworks
+    description: 'Adventureworks, production schema'
+    schema: production
+    tables:
+      - name: product
+      - name: productcategory
+      - name: productsubcategory
+
+  - name: pg_person
+    database: Adventureworks
+    description: 'Adventureworks, person schema'
+    schema: person
+    tables:
+      - name: address
+      - name: stateprovince
+      - name: countryregion
+      - name: person
+
+  - name: pg_sales
+    database: Adventureworks
+    description: 'Adventureworks, sales schema, customer table'
+    schema: sales
+    tables:
+      - name: customer
+      - name: store
+      - name: creditcard
+      - name: salesorderheader
+      - name: salesorderdetail
+```
+
+So `dim_address.sql` had the lines on materialization and schema configuration, pointed to the sources defined in the previous `.yml`, and ended looking like this:
+  
+
+```{.sql filename="dim_address.sql"}
+{{ config(materialized='table') }}
+{{ config(schema='Dimensions') }}
+
+with stg_address as (
+    select *
+    from {{ source('pg_person', 'address') }}
+),
+
+stg_stateprovince as (
+    select *
+    from {{ source('pg_person', 'stateprovince') }}
+),
+
+stg_countryregion as (
+    select *
+    from {{ source('pg_person', 'countryregion') }}
+)
+
+select
+    {{ dbt_utils.generate_surrogate_key(['stg_address.addressid']) }} as address_key,
+    stg_address.addressid,
+    stg_address.city as city_name,
+    stg_stateprovince.name as state_name,
+    stg_countryregion.name as country_name
+from stg_address
+left join stg_stateprovince on stg_address.stateprovinceid = stg_stateprovince.stateprovinceid
+left join stg_countryregion on stg_stateprovince.countryregioncode = stg_countryregion.countryregioncode
+```

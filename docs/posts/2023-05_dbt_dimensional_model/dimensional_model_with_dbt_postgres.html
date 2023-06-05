@@ -208,7 +208,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#setting-up-the-project" id="toc-setting-up-the-project" class="nav-link" data-scroll-target="#setting-up-the-project">Setting up the project</a></li>
   <li><a href="#defining-the-databases-in-profiles.yml" id="toc-defining-the-databases-in-profiles.yml" class="nav-link" data-scroll-target="#defining-the-databases-in-profiles.yml">Defining the databases in <code>profiles.yml</code></a></li>
-  <li><a href="#creating-the-dimensional-model" id="toc-creating-the-dimensional-model" class="nav-link" data-scroll-target="#creating-the-dimensional-model">Creating the Dimensional Model</a></li>
+  <li><a href="#creating-the-dimensional-model" id="toc-creating-the-dimensional-model" class="nav-link" data-scroll-target="#creating-the-dimensional-model">Creating the Dimensional Model</a>
+  <ul class="collapse">
+  <li><a href="#fact-table" id="toc-fact-table" class="nav-link" data-scroll-target="#fact-table">Fact table:</a></li>
+  </ul></li>
+  <li><a href="#date-dimension" id="toc-date-dimension" class="nav-link" data-scroll-target="#date-dimension">Date Dimension</a>
+  <ul class="collapse">
+  <li><a href="#dbt_utils.date_spine" id="toc-dbt_utils.date_spine" class="nav-link" data-scroll-target="#dbt_utils.date_spine"><code>dbt_utils.date_spine</code></a></li>
+  <li><a href="#statement-blocks" id="toc-statement-blocks" class="nav-link" data-scroll-target="#statement-blocks">Statement Blocks</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -294,7 +302,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="creating-the-dimensional-model" class="level2">
 <h2 class="anchored" data-anchor-id="creating-the-dimensional-model">Creating the Dimensional Model</h2>
 <p>This part is almost a copy from the aforementioned tutorial. The only difference being that based on the video <a href="https://youtu.be/CbhobcWZ3Hk">Deploy to custom schemas &amp; override dbt defaults</a> I added some lines to configure the Schema in the transformations file.</p>
-<p>Another difference was that I specified my sources in in the file <code>schema.yml</code> that looks like this:</p>
+<p>Another difference was that I specified my sources in in the file <a href="https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/schema.yml"><code>schema.yml</code></a> that looks like this:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>schema.yml</strong></pre>
@@ -334,7 +342,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> salesorderheader</span></span>
 <span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> salesorderdetail</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>So <code>dim_address.sql</code> had the lines on materialization and schema configuration, pointed to the sources defined in the previous <code>.yml</code>, and ended looking like this:</p>
+<p>So <a href="https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_address.sql"><code>dim_address.sql</code></a> had the lines on materialization and schema configuration, pointed to the sources defined in the previous <code>.yml</code>, and ended looking like this:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>dim_address.sql</strong></pre>
@@ -367,8 +375,73 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="kw">left</span> <span class="kw">join</span> stg_stateprovince <span class="kw">on</span> stg_address.stateprovinceid <span class="op">=</span> stg_stateprovince.stateprovinceid</span>
 <span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="kw">left</span> <span class="kw">join</span> stg_countryregion <span class="kw">on</span> stg_stateprovince.countryregioncode <span class="op">=</span> stg_countryregion.countryregioncode</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>In the same way as the tutorial, there were created the other dimensions:</p>
+<ul>
+<li><a href="https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_credit_card.sql"><code>dim_credit_card.sql</code></a></li>
+<li><a href="https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_customer.sql"><code>dim_customer.sql</code></a></li>
+<li><a href="https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_order_status.sql"><code>dim_order_status.sql</code></a></li>
+<li><a href="https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_product.sql"><code>dim_product.sql</code></a></li>
+</ul>
+<section id="fact-table" class="level3">
+<h3 class="anchored" data-anchor-id="fact-table">Fact table:</h3>
+<ul>
+<li><a href="https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/fact_sales.sql"><code>fact_sales.sql</code></a></li>
+</ul>
+</section>
+</section>
+<section id="date-dimension" class="level2">
+<h2 class="anchored" data-anchor-id="date-dimension">Date Dimension</h2>
+<p>This is where I did most of my own experiments. I wanted to create a Date Domension or Calendar table ranging from the earliest to the latest date in the fact table, that comes from <code>salesorderheader</code>. I had little to no experience at all with Jinja templates, which is what dbt relies on for transformations, so maybe there are better ways to achieve what I intented to do, but I must say it did worked fine.</p>
+<section id="dbt_utils.date_spine" class="level3">
+<h3 class="anchored" data-anchor-id="dbt_utils.date_spine"><code>dbt_utils.date_spine</code></h3>
+<p>The first version of the date dimension was created using <code>dbt_utils</code>, based on <a href="https://automate-dv.readthedocs.io/en/latest/tutorial/tut_as_of_date/">As of Date Tables</a> tutorial. I simply changed <code>start_date</code> and <code>end_date</code> statements to get the aforementioned earliest and latest dates from <code>salesorderheader</code>. The transformation ended looking like this:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>dim_dates.sql</strong></pre>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>{{ config(<span class="kw">materialized</span><span class="op">=</span><span class="st">'table'</span>) }}</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>{{ config(<span class="kw">schema</span><span class="op">=</span><span class="st">'Dimensions'</span>) }}</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>{%<span class="op">-</span> <span class="kw">set</span> datepart <span class="op">=</span> <span class="ot">"day"</span> <span class="op">-</span>%}</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>{%<span class="op">-</span> <span class="kw">set</span> start_date <span class="op">=</span> <span class="ot">"(select MIN(cast(orderdate as date)) from sales.salesorderheader)"</span> <span class="op">-</span>%}</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>{%<span class="op">-</span> <span class="kw">set</span> end_date <span class="op">=</span> <span class="ot">"(select MAX(cast(orderdate as date)) + (interval '1 day') from sales.salesorderheader)"</span> <span class="op">-</span>%}</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">with</span> as_of_date <span class="kw">AS</span> (</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    {{ dbt_utils.date_spine(</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        datepart<span class="op">=</span>datepart, </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        start_date<span class="op">=</span>start_date,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        end_date<span class="op">=</span>end_date</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>       ) </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    }}</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> as_of_date</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This isn’t a full calendar but a sequence of dates from earliest to latest. For a full calendar we then would need to create all the columns as year, month, day, quarter…</p>
+</section>
+<section id="statement-blocks" class="level3">
+<h3 class="anchored" data-anchor-id="statement-blocks">Statement Blocks</h3>
+<p>I then made some experiments with <a href="https://docs.getdbt.com/reference/dbt-jinja-functions/statement-blocks">statement blocks</a> and created one called <code>get_dates</code> to generate a view with the earliest and latest dates from <code>salesorderheader</code>:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>dim_view_date_range.sql</strong></pre>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>{%<span class="op">-</span> <span class="kw">call</span> statement(<span class="st">'get_dates'</span>, fetch_result<span class="op">=</span><span class="kw">True</span>) <span class="op">-</span>%}</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span>  <span class="fu">MIN</span>(<span class="fu">cast</span>(orderdate <span class="kw">as</span> <span class="dt">date</span>)), <span class="fu">MAX</span>(<span class="fu">cast</span>(orderdate <span class="kw">as</span> <span class="dt">date</span>)) </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">FROM</span> {{ <span class="kw">source</span>(<span class="st">'pg_sales'</span>, <span class="st">'salesorderheader'</span>) }}</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>{%<span class="op">-</span> endcall <span class="op">-</span>%}</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>{%<span class="op">-</span> <span class="kw">set</span> earliest <span class="op">=</span> load_result(<span class="st">'get_dates'</span>)[<span class="st">'data'</span>][<span class="dv">0</span>][<span class="dv">0</span>] <span class="op">-</span>%}</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>{%<span class="op">-</span> <span class="kw">set</span> latest <span class="op">=</span> load_result(<span class="st">'get_dates'</span>)[<span class="st">'data'</span>][<span class="dv">0</span>][<span class="dv">1</span>] <span class="op">-</span>%}</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">cast</span>(<span class="st">'{{ earliest }}'</span> <span class="kw">as</span> <span class="dt">date</span>) <span class="kw">AS</span> earliest, <span class="fu">cast</span>(<span class="st">'{{ latest }}'</span> <span class="kw">as</span> <span class="dt">date</span>) <span class="kw">AS</span> latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>It worked, now we know how to create a statement that gets dates from <code>salesorderheader</code>,</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

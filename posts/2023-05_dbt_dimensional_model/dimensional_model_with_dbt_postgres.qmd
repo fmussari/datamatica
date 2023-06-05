@@ -93,7 +93,7 @@ As you can see your experiment can run in any database specified in the file, by
 
 This part is almost a copy from the aforementioned tutorial. The only difference being that based on the video [Deploy to custom schemas & override dbt defaults](https://youtu.be/CbhobcWZ3Hk) I added some lines to configure the Schema in the transformations file.
   
-Another difference was that I specified my sources in in the file `schema.yml` that looks like this:
+Another difference was that I specified my sources in in the file [`schema.yml`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/schema.yml) that looks like this:
 
 ```{.yaml filename="schema.yml"}
 # Copied from: https://docs.getdbt.com/docs/build/sources
@@ -132,7 +132,7 @@ sources:
       - name: salesorderdetail
 ```
 
-So `dim_address.sql` had the lines on materialization and schema configuration, pointed to the sources defined in the previous `.yml`, and ended looking like this:
+So [`dim_address.sql`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_address.sql) had the lines on materialization and schema configuration, pointed to the sources defined in the previous `.yml`, and ended looking like this:
   
 
 ```{.sql filename="dim_address.sql"}
@@ -164,3 +164,60 @@ from stg_address
 left join stg_stateprovince on stg_address.stateprovinceid = stg_stateprovince.stateprovinceid
 left join stg_countryregion on stg_stateprovince.countryregioncode = stg_countryregion.countryregioncode
 ```
+
+In the same way as the tutorial, there were created the other dimensions:
+  
+- [`dim_credit_card.sql`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_credit_card.sql)
+- [`dim_customer.sql`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_customer.sql)
+- [`dim_order_status.sql`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_order_status.sql)
+- [`dim_product.sql`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/dim_product.sql)
+
+### Fact table:
+- [`fact_sales.sql`](https://github.com/fmussari/dbt-dimensional-modeling-experiment/blob/master/dbt_dimensional_demo/models/advntrwrks_psql_local/fact_sales.sql)
+
+## Date Dimension
+
+This is where I did most of my own experiments. I wanted to create a Date Domension or Calendar table ranging from the earliest to the latest date in the fact table, that comes from `salesorderheader`. I had little to no experience at all with Jinja templates, which is what dbt relies on for transformations, so maybe there are better ways to achieve what I intented to do, but I must say it did worked fine.  
+
+### `dbt_utils.date_spine`
+The first version of the date dimension was created using `dbt_utils`, based on [As of Date Tables](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_as_of_date/) tutorial. I simply changed  `start_date` and `end_date` statements to get the aforementioned earliest and latest dates from `salesorderheader`. The transformation ended looking like this:
+
+```{.sql filename="dim_dates.sql"}
+{{ config(materialized='table') }}
+{{ config(schema='Dimensions') }}
+
+{%- set datepart = "day" -%}
+{%- set start_date = "(select MIN(cast(orderdate as date)) from sales.salesorderheader)" -%}
+{%- set end_date = "(select MAX(cast(orderdate as date)) + (interval '1 day') from sales.salesorderheader)" -%}
+
+with as_of_date AS (
+    {{ dbt_utils.date_spine(
+        datepart=datepart, 
+        start_date=start_date,
+        end_date=end_date
+       ) 
+    }}
+)
+
+SELECT * FROM as_of_date
+```
+This isn't a full calendar but a sequence of dates from earliest to latest. For a full calendar we then would need to create all the columns as year, month, day, quarter...
+
+### Statement Blocks
+
+I then made some experiments with [statement blocks](https://docs.getdbt.com/reference/dbt-jinja-functions/statement-blocks) and created one called `get_dates` to generate a view with the earliest and latest dates from `salesorderheader`:
+  
+```{.sql filename="dim_view_date_range.sql"}
+{%- call statement('get_dates', fetch_result=True) -%}
+
+      SELECT  MIN(cast(orderdate as date)), MAX(cast(orderdate as date)) 
+      FROM {{ source('pg_sales', 'salesorderheader') }}
+
+{%- endcall -%}
+
+{%- set earliest = load_result('get_dates')['data'][0][0] -%}
+{%- set latest = load_result('get_dates')['data'][0][1] -%}
+
+SELECT cast('{{ earliest }}' as date) AS earliest, cast('{{ latest }}' as date) AS latest
+```
+It worked, now we know how to create a statement that gets dates from `salesorderheader`, 

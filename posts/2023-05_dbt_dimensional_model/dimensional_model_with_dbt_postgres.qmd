@@ -180,7 +180,7 @@ In the same way as the tutorial, there were created the other dimensions:
 This is where I did most of my own experiments. I wanted to create a Date Domension or Calendar table ranging from the earliest to the latest date in the fact table, that comes from `salesorderheader`. I had little to no experience at all with Jinja templates, which is what dbt relies on for transformations, so maybe there are better ways to achieve what I intented to do, but I must say it did worked fine.  
 
 ### `dbt_utils.date_spine`
-The first version of the date dimension was created using `dbt_utils`, based on [As of Date Tables](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_as_of_date/) tutorial. I simply changed  `start_date` and `end_date` statements to get the aforementioned earliest and latest dates from `salesorderheader`. The transformation ended looking like this:
+The first version of the date dimension was created using `dbt_utils`, based on the tutorial [As of Date Tables](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_as_of_date/). I simply changed `start_date` and `end_date` statements to get the aforementioned earliest and latest dates from `salesorderheader`. The transformation ended looking like this:
 
 ```{.sql filename="dim_dates.sql"}
 {{ config(materialized='table') }}
@@ -220,4 +220,41 @@ I then made some experiments with [statement blocks](https://docs.getdbt.com/ref
 
 SELECT cast('{{ earliest }}' as date) AS earliest, cast('{{ latest }}' as date) AS latest
 ```
-It worked, now we know how to create a statement that gets dates from `salesorderheader`, 
+It worked, now we know how to create a statement that gets dates from `salesorderheader`. Lets use it for our final step in this experiment which is creating the Calendar with calogical. 
+
+### `dbt_date.get_date_dimension`
+
+This wraper creates a full calendar dimensio, the  transformation 
+
+```{.sql filename="dim_dates_calogical.sql"}
+{{ config(materialized='table') }}
+{{ config(schema='Dimensions') }}
+
+{%- call statement('get_dates', fetch_result=True) -%}
+
+      SELECT  MIN(cast(orderdate as date)), MAX(cast(orderdate as date)) + (interval '1 day')
+      FROM {{ source('pg_sales', 'salesorderheader') }}
+
+{%- endcall -%}
+
+{%- set earliest = load_result('get_dates')['data'][0][0] -%}
+{%- set latest = load_result('get_dates')['data'][0][1] -%}
+
+{{ dbt_date.get_date_dimension(
+        start_date=earliest, 
+        end_date=latest
+    ) 
+}}
+```
+
+This script creates the following columns:
+`date_day`, `prior_date_day`, `next_date_day`, `prior_year_date_day`, `prior_year_over_year_date_day`, `day_of_week`, `day_of_week_name`, `day_of_week_name_short`, `day_of_month`, `day_of_year`, `week_start_date`, `week_end_date`, `prior_year_week_start_date`, `prior_year_week_end_date`, `week_of_year`, `iso_week_start_date`, `iso_week_end_date`, `prior_year_iso_week_start_date`, `prior_year_iso_week_end_date`, `iso_week_of_year`, `prior_year_week_of_year`, `prior_year_iso_week_of_year`, `month_of_year`, `month_name`, `month_name_short`, `month_start_date`, `month_end_date`, `prior_year_month_start_date`, `prior_year_month_end_date`, `quarter_of_year`, `quarter_start_date`, `quarter_end_date`, `year_number`, `year_start_date` and `year_end_date`.
+
+## Wrap Up
+dbt is one of most representative tool of the called Modern Data Stack and the Analytics Engineering, claiming the incorporation of Software Engineering practices to the data stack. What I found interesting is the fact that (at least in theory) we can create the tranformations collaboratively, version control them and then deploy those models to any supported datawarehouse.  
+
+To get deepen in the data landscape, Modern Data Stack and dbt I highly recommend:
+
+- [Hot Takes on the Modern Data Stack](https://mattpalmer.io/posts/hot-takes/)
+- [MAD 2023, PART III: TRENDS IN DATA INFRASTRUCTURE](https://mattturck.com/mad2023-part-iii/)
+- [The Next Layer of the Modern Data Stack | dbt's Tristan Handy](https://youtu.be/3Fb_o7NuERQ)

@@ -1,0 +1,43 @@
+---
+title: Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline
+author: "Francisco Mussari"  
+date: 2023-07-17  
+image: "pipeline.PNG"  
+categories: [BigQuery, BigQuery ML, RecSys, Recommender, Pipeline, Vertex AI, Movielens]  
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    
+---
+
+## Overview
+
+This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.  
+  
+The post is strongly based on this tutorial:
+- [YouTube: Recommendation Engine Pipeline with BigQuery ML and Vertex AI Pipelines using Matrix Factorization](https://youtu.be/S0wNWOR4WoE)
+
+But there are a few differences:
+1. This post documents the whole process, from loading the date to BigQuery to how to make recomendations in different ways.
+2. On July 5th there was a [Transition to BigQuery editions](https://cloud.google.com/bigquery/docs/editions-transition) which resulted in some changes being made to adapt the scripts showed in the video.
+
+::: {.callout-important}
+## This is Important
+
+This is an example of a callout with a title.
+:::
+
+
+3. When trying to replicate the video tutorial I had to solve some issues with the pipeline failing to run. Most of the issues were very hard to debug, with misleading error messages and layers over layer of abstraction between python libraries and component definitions. At the end most of the errors were about the Default Service Account not having the requiered permission. So,
+4. In this post we can see and run each step and command to create a Service Account and grant this account granular permissions to the Google Cloud resources needed for the end to end process to run. This is what the Google documentation recommends.
+5. There are also the commands to enable each service API needed for the project.
+
+## Additional Resources
+- [YouTube: Lesson 7: Practical Deep Learning for Coders 2022 - Collaborative filtering deep dive](https://youtu.be/p4ZZq0736Po?t=3720)
+- [Tutorial: Use BigQuery ML to make recommendations from Google analytics data](https://cloud.google.com/bigquery/docs/bigqueryml-mf-implicit-tutorial)
+
+## Before you begin
+
+1. [Select or create a Google Cloud project](https://console.cloud.google.com/cloud-resource-manager). 
+2. [Make sure that billing is enabled for your project](https://cloud.google.com/billing/docs/how-to/modify-project).

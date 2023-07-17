@@ -22,6 +22,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -148,6 +211,19 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
   <li><a href="#before-you-begin" id="toc-before-you-begin" class="nav-link" data-scroll-target="#before-you-begin">Before you begin</a></li>
+  <li><a href="#loading-data-into-bigquery" id="toc-loading-data-into-bigquery" class="nav-link" data-scroll-target="#loading-data-into-bigquery">Loading data into BigQuery</a>
+  <ul class="collapse">
+  <li><a href="#authenticate-your-google-cloud-account" id="toc-authenticate-your-google-cloud-account" class="nav-link" data-scroll-target="#authenticate-your-google-cloud-account">Authenticate your Google Cloud account</a></li>
+  <li><a href="#set-your-project-id" id="toc-set-your-project-id" class="nav-link" data-scroll-target="#set-your-project-id">Set your project ID</a></li>
+  <li><a href="#download-movielens-1m-movier-ratings-dataset" id="toc-download-movielens-1m-movier-ratings-dataset" class="nav-link" data-scroll-target="#download-movielens-1m-movier-ratings-dataset">Download MovieLens 1M movier ratings dataset</a></li>
+  <li><a href="#create-bigquery-datasets-and-populate-the-tables" id="toc-create-bigquery-datasets-and-populate-the-tables" class="nav-link" data-scroll-target="#create-bigquery-datasets-and-populate-the-tables">Create BigQuery datasets and populate the tables</a></li>
+  </ul></li>
+  <li><a href="#vertex-ai-pipeline" id="toc-vertex-ai-pipeline" class="nav-link" data-scroll-target="#vertex-ai-pipeline">Vertex AI Pipeline</a>
+  <ul class="collapse">
+  <li><a href="#install-libraries" id="toc-install-libraries" class="nav-link" data-scroll-target="#install-libraries">Install Libraries</a></li>
+  <li><a href="#restart-the-kernel" id="toc-restart-the-kernel" class="nav-link" data-scroll-target="#restart-the-kernel">Restart the Kernel</a></li>
+  <li><a href="#set-project-variables" id="toc-set-project-variables" class="nav-link" data-scroll-target="#set-project-variables">Set Project Variables</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -161,7 +237,11 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.</p>
 <p>The post is strongly based on this tutorial: - <a href="https://youtu.be/S0wNWOR4WoE">YouTube: Recommendation Engine Pipeline with BigQuery ML and Vertex AI Pipelines using Matrix Factorization</a></p>
-<p>But there are a few differences: 1. This post documents the whole process, from loading the date to BigQuery to how to make recomendations in different ways. 2. On July 5th there was a <a href="https://cloud.google.com/bigquery/docs/editions-transition">Transition to BigQuery editions</a> which resulted in some changes being made to adapt the scripts showed in the video.</p>
+<p>But there are key differences:</p>
+<ol type="1">
+<li>This post documents the whole process, from loading the date to BigQuery to how to make recomendations in different ways.</li>
+<li>On July 5th there was a <a href="https://cloud.google.com/bigquery/docs/editions-transition">Transition to BigQuery editions</a> which resulted in some changes being made to adapt the scripts showed in the video.</li>
+</ol>
 <div class="callout-important callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -193,9 +273,95 @@ This is Important
 <ol type="1">
 <li><a href="https://console.cloud.google.com/cloud-resource-manager">Select or create a Google Cloud project</a>.</li>
 <li><a href="https://cloud.google.com/billing/docs/how-to/modify-project">Make sure that billing is enabled for your project</a>.</li>
+<li>You can run the code locally or in Colab. If you are locally you need to install the <a href="https://cloud.google.com/sdk/docs/install">gcloud CLI</a>.</li>
 </ol>
+</section>
+<section id="loading-data-into-bigquery" class="level2">
+<h2 class="anchored" data-anchor-id="loading-data-into-bigquery">Loading data into BigQuery</h2>
+<p>Reference: <a href="https://cloud.google.com/bigquery/docs/bigqueryml-mf-explicit-tutorial#step_two_load_the_movielens_dataset_into">Load the Movielens dataset into BigQuery</a></p>
+<section id="authenticate-your-google-cloud-account" class="level3">
+<h3 class="anchored" data-anchor-id="authenticate-your-google-cloud-account">Authenticate your Google Cloud account</h3>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> google.colab <span class="im">import</span> auth <span class="im">as</span> google_auth</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>google_auth.authenticate_user()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="set-your-project-id" class="level3">
+<h3 class="anchored" data-anchor-id="set-your-project-id">Set your project ID</h3>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>PROJECT_ID <span class="op">=</span> <span class="st">"[your-project-id]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="download-movielens-1m-movier-ratings-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="download-movielens-1m-movier-ratings-dataset">Download MovieLens 1M movier ratings dataset</h3>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl <span class="op">-</span>O <span class="st">'http://files.grouplens.org/datasets/movielens/ml-1m.zip'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> unzip <span class="op">-</span>o ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span>.<span class="bu">zip</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Change <code>::</code> delimiter to comma <code>,</code> and save as <code>.csv</code> files:</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> sed <span class="st">'s/::/,/g'</span> ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span><span class="op">/</span>ratings.dat <span class="op">&gt;</span> ratings.csv</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> sed <span class="st">'s/::/@/g'</span> ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span><span class="op">/</span>movies.dat <span class="op">&gt;</span> movie_titles.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-bigquery-datasets-and-populate-the-tables" class="level3">
+<h3 class="anchored" data-anchor-id="create-bigquery-datasets-and-populate-the-tables">Create BigQuery datasets and populate the tables</h3>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>MODEL_DATASET <span class="op">=</span> <span class="st">"[bq-model-dataset]"</span>  <span class="co"># @param {type:"string"}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>MOVIELENS_DATASET <span class="op">=</span> <span class="st">"[bq-data-dataset]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># To store the model</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq mk <span class="op">--</span>location<span class="op">=</span>US <span class="op">--</span>dataset {PROJECT_ID}:{MODEL_DATASET}</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># To store movies and reviews tables</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq mk <span class="op">--</span>location<span class="op">=</span>US <span class="op">--</span>dataset {PROJECT_ID}:{MOVIELENS_DATASET}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Populate the tables</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reviews table</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq load <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>source_format<span class="op">=</span>CSV {PROJECT_ID}:{MOVIELENS_DATASET}.movielens_1m ratings.csv user_id:INT64,item_id:INT64,rating:FLOAT64,timestamp:TIMESTAMP</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Movies table</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq load <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>source_format<span class="op">=</span>CSV <span class="op">--</span>field_delimiter<span class="op">=@</span> {PROJECT_ID}:{MOVIELENS_DATASET}.movie_titles movie_titles.csv movie_id:INT64,movie_title:STRING,genre:STRING</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="vertex-ai-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="vertex-ai-pipeline">Vertex AI Pipeline</h2>
+<section id="install-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="install-libraries">Install Libraries</h3>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>capture</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> pip install google<span class="op">-</span>cloud<span class="op">-</span>aiplatform<span class="op">==</span><span class="fl">1.21.0</span> <span class="op">--</span>upgrade</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> pip install kfp<span class="op">==</span><span class="fl">2.0.1</span> <span class="op">--</span>upgrade</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> pip install google<span class="op">-</span>cloud<span class="op">-</span>pipeline<span class="op">-</span>components<span class="op">==</span><span class="fl">2.0.0</span> <span class="op">--</span>upgrade</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="restart-the-kernel" class="level3">
+<h3 class="anchored" data-anchor-id="restart-the-kernel">Restart the Kernel</h3>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Automatically restart kernel after installs so that your environment can access the new packages</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> IPython</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> IPython.Application.instance()</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>app.kernel.do_shutdown(<span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="set-project-variables" class="level3">
+<h3 class="anchored" data-anchor-id="set-project-variables">Set Project Variables</h3>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>PROJECT_ID <span class="op">=</span> <span class="st">"[your-project-id]"</span>  <span class="co"># @param {type:"string"}</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>REGION <span class="op">=</span> <span class="st">"us-central1"</span>              <span class="co"># @param {type: "string"}</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>BUCKET_NAME <span class="op">=</span> <span class="st">"[pipeline-bucket]"</span> <span class="co"># @param {type: "string"}</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>PIPELINE_ROOT <span class="op">=</span> <span class="ss">f"gs://</span><span class="sc">{</span>BUCKET_NAME<span class="sc">}</span><span class="ss">/"</span>   </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>MODEL_DIR <span class="op">=</span> PIPELINE_ROOT <span class="op">+</span> <span class="st">"recommender_model"</span>    <span class="co"># @param {type: "string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

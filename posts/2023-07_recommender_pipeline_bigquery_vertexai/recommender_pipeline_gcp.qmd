@@ -1,5 +1,6 @@
 ---
 title: Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline
+
 author: "Francisco Mussari"  
 date: 2023-07-17  
 image: "pipeline.PNG"  
@@ -17,8 +18,9 @@ This post is about training a Matrix Factorization model with BigQuery ML and de
   
 The post is strongly based on this tutorial:
 - [YouTube: Recommendation Engine Pipeline with BigQuery ML and Vertex AI Pipelines using Matrix Factorization](https://youtu.be/S0wNWOR4WoE)
+  
+But there are key differences:  
 
-But there are a few differences:
 1. This post documents the whole process, from loading the date to BigQuery to how to make recomendations in different ways.
 2. On July 5th there was a [Transition to BigQuery editions](https://cloud.google.com/bigquery/docs/editions-transition) which resulted in some changes being made to adapt the scripts showed in the video.
 
@@ -41,3 +43,97 @@ This is an example of a callout with a title.
 
 1. [Select or create a Google Cloud project](https://console.cloud.google.com/cloud-resource-manager). 
 2. [Make sure that billing is enabled for your project](https://cloud.google.com/billing/docs/how-to/modify-project).
+3. You can run the code locally or in Colab. If you are locally you need to install the [gcloud CLI](https://cloud.google.com/sdk/docs/install).
+
+## Loading data into BigQuery
+
+Reference: [Load the Movielens dataset into BigQuery](https://cloud.google.com/bigquery/docs/bigqueryml-mf-explicit-tutorial#step_two_load_the_movielens_dataset_into)
+
+### Authenticate your Google Cloud account
+```{python}
+#| eval: false
+from google.colab import auth as google_auth
+google_auth.authenticate_user()
+```
+
+### Set your project ID
+```{python}
+#| eval: false
+PROJECT_ID = "[your-project-id]"  # @param {type:"string"}
+```
+
+### Download MovieLens 1M movier ratings dataset
+```{python}
+#| eval: false
+! curl -O 'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
+! unzip -o ml-1m.zip
+```
+Change `::` delimiter to comma `,` and save as `.csv` files:
+```{python}
+#| eval: false
+! sed 's/::/,/g' ml-1m/ratings.dat > ratings.csv
+! sed 's/::/@/g' ml-1m/movies.dat > movie_titles.csv
+```
+
+### Create BigQuery datasets and populate the tables
+
+```{python}
+#| eval: false
+MODEL_DATASET = "[bq-model-dataset]"  # @param {type:"string"}
+MOVIELENS_DATASET = "[bq-data-dataset]"  # @param {type:"string"}
+```
+
+```{python}
+#| eval: false
+# To store the model
+! bq mk --location=US --dataset {PROJECT_ID}:{MODEL_DATASET}
+
+# To store movies and reviews tables
+! bq mk --location=US --dataset {PROJECT_ID}:{MOVIELENS_DATASET}
+```
+
+Populate the tables
+```{python}
+#| eval: false
+# Reviews table
+! bq load --project_id={PROJECT_ID} --source_format=CSV {PROJECT_ID}:{MOVIELENS_DATASET}.movielens_1m ratings.csv user_id:INT64,item_id:INT64,rating:FLOAT64,timestamp:TIMESTAMP
+
+# Movies table
+! bq load --project_id={PROJECT_ID} --source_format=CSV --field_delimiter=@ {PROJECT_ID}:{MOVIELENS_DATASET}.movie_titles movie_titles.csv movie_id:INT64,movie_title:STRING,genre:STRING
+```
+
+## Vertex AI Pipeline
+
+### Install Libraries
+
+```{python}
+#| eval: false
+%%capture
+! pip install google-cloud-aiplatform==1.21.0 --upgrade
+! pip install kfp==2.0.1 --upgrade
+! pip install google-cloud-pipeline-components==2.0.0 --upgrade
+```
+
+### Restart the Kernel
+
+```{python}
+#| eval: false
+# Automatically restart kernel after installs so that your environment can access the new packages
+import IPython
+app = IPython.Application.instance()
+app.kernel.do_shutdown(True)
+```
+
+### Set Project Variables
+
+```{python}
+#| eval: false
+PROJECT_ID = "[your-project-id]"  # @param {type:"string"}
+REGION = "us-central1"              # @param {type: "string"}
+
+BUCKET_NAME = "[pipeline-bucket]" # @param {type: "string"}
+
+PIPELINE_ROOT = f"gs://{BUCKET_NAME}/"   
+
+MODEL_DIR = PIPELINE_ROOT + "recommender_model"    # @param {type: "string"}
+```

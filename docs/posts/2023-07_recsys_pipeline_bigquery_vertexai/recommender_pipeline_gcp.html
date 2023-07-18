@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.251">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Francisco Mussari">
+<meta name="dcterms.date" content="2023-07-17">
+
+<title>datamatica - Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">datamatica</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/fmussari"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/francisco-mussari-432b781a6/"><i class="bi bi-linkedin" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">BigQuery</div>
+                <div class="quarto-category">BigQuery ML</div>
+                <div class="quarto-category">RecSys</div>
+                <div class="quarto-category">Recommender</div>
+                <div class="quarto-category">Pipeline</div>
+                <div class="quarto-category">Vertex AI</div>
+                <div class="quarto-category">Movielens</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Francisco Mussari </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">July 17, 2023</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
+  <li><a href="#before-you-begin" id="toc-before-you-begin" class="nav-link" data-scroll-target="#before-you-begin">Before you begin</a></li>
+  <li><a href="#loading-data-into-bigquery" id="toc-loading-data-into-bigquery" class="nav-link" data-scroll-target="#loading-data-into-bigquery">Loading data into BigQuery</a>
+  <ul class="collapse">
+  <li><a href="#authenticate-your-google-cloud-account" id="toc-authenticate-your-google-cloud-account" class="nav-link" data-scroll-target="#authenticate-your-google-cloud-account">Authenticate your Google Cloud account</a></li>
+  <li><a href="#set-your-project-id" id="toc-set-your-project-id" class="nav-link" data-scroll-target="#set-your-project-id">Set your project ID</a></li>
+  <li><a href="#download-movielens-1m-movier-ratings-dataset" id="toc-download-movielens-1m-movier-ratings-dataset" class="nav-link" data-scroll-target="#download-movielens-1m-movier-ratings-dataset">Download MovieLens 1M movier ratings dataset</a></li>
+  <li><a href="#create-bigquery-datasets-and-populate-the-tables" id="toc-create-bigquery-datasets-and-populate-the-tables" class="nav-link" data-scroll-target="#create-bigquery-datasets-and-populate-the-tables">Create BigQuery datasets and populate the tables</a></li>
+  </ul></li>
+  <li><a href="#vertex-ai-pipeline.-install-libraries-and-setup-services-and-accounts" id="toc-vertex-ai-pipeline.-install-libraries-and-setup-services-and-accounts" class="nav-link" data-scroll-target="#vertex-ai-pipeline.-install-libraries-and-setup-services-and-accounts">Vertex AI Pipeline. Install Libraries and Setup Services and Accounts</a>
+  <ul class="collapse">
+  <li><a href="#install-libraries" id="toc-install-libraries" class="nav-link" data-scroll-target="#install-libraries">Install Libraries</a></li>
+  <li><a href="#restart-the-kernel" id="toc-restart-the-kernel" class="nav-link" data-scroll-target="#restart-the-kernel">Restart the Kernel</a></li>
+  <li><a href="#set-project-variables" id="toc-set-project-variables" class="nav-link" data-scroll-target="#set-project-variables">Set Project Variables</a></li>
+  <li><a href="#authenticate-your-google-cloud-account-again" id="toc-authenticate-your-google-cloud-account-again" class="nav-link" data-scroll-target="#authenticate-your-google-cloud-account-again">Authenticate your Google Cloud account (again)</a></li>
+  <li><a href="#enable-service-apis" id="toc-enable-service-apis" class="nav-link" data-scroll-target="#enable-service-apis">Enable Service APIs</a></li>
+  <li><a href="#create-the-service-account-for-the-pipeline-to-run" id="toc-create-the-service-account-for-the-pipeline-to-run" class="nav-link" data-scroll-target="#create-the-service-account-for-the-pipeline-to-run">Create the Service Account for the pipeline to run</a></li>
+  <li><a href="#grant-the-service-account-granular-permissions-to-gcp-resources" id="toc-grant-the-service-account-granular-permissions-to-gcp-resources" class="nav-link" data-scroll-target="#grant-the-service-account-granular-permissions-to-gcp-resources">Grant the Service Account granular permissions to GCP resources</a></li>
+  </ul></li>
+  <li><a href="#vertex-ai-pipeline---create-and-run-the-pipeline" id="toc-vertex-ai-pipeline---create-and-run-the-pipeline" class="nav-link" data-scroll-target="#vertex-ai-pipeline---create-and-run-the-pipeline">Vertex AI Pipeline - Create and Run the Pipeline</a>
+  <ul class="collapse">
+  <li><a href="#initialize-vertex-ai-sdk-for-python" id="toc-initialize-vertex-ai-sdk-for-python" class="nav-link" data-scroll-target="#initialize-vertex-ai-sdk-for-python">Initialize Vertex AI SDK for Python</a></li>
+  <li><a href="#declare-pipeline-components" id="toc-declare-pipeline-components" class="nav-link" data-scroll-target="#declare-pipeline-components">Declare Pipeline Components</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.</p>
+<p>The post is strongly based on this tutorial: - <a href="https://youtu.be/S0wNWOR4WoE">YouTube: Recommendation Engine Pipeline with BigQuery ML and Vertex AI Pipelines using Matrix Factorization</a></p>
+<p>But there are key differences:</p>
+<ol type="1">
+<li>This post documents the whole process, from loading the date to BigQuery to how to make recomendations in different ways.</li>
+<li>On July 5th there was a <a href="https://cloud.google.com/bigquery/docs/editions-transition">Transition to BigQuery editions</a> which resulted in some changes being made to adapt the scripts showed in the video.</li>
+</ol>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+This is Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is an example of a callout with a title.</p>
+</div>
+</div>
+<ol start="3" type="1">
+<li>When trying to replicate the video tutorial I had to solve some issues with the pipeline failing to run. Most of the issues were very hard to debug, with misleading error messages and layers over layer of abstraction between python libraries and component definitions. At the end most of the errors were about the Default Service Account not having the requiered permission. So,</li>
+<li>In this post we can see and run each step and command to create a Service Account and grant this account granular permissions to the Google Cloud resources needed for the end to end process to run. This is what the Google documentation recommends.</li>
+<li>There are also the commands to enable each service API needed for the project.</li>
+</ol>
+</section>
+<section id="additional-resources" class="level2">
+<h2 class="anchored" data-anchor-id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="https://youtu.be/p4ZZq0736Po?t=3720">YouTube: Lesson 7: Practical Deep Learning for Coders 2022 - Collaborative filtering deep dive</a></li>
+<li><a href="https://cloud.google.com/bigquery/docs/bigqueryml-mf-implicit-tutorial">Tutorial: Use BigQuery ML to make recommendations from Google analytics data</a></li>
+</ul>
+</section>
+<section id="before-you-begin" class="level2">
+<h2 class="anchored" data-anchor-id="before-you-begin">Before you begin</h2>
+<ol type="1">
+<li><a href="https://console.cloud.google.com/cloud-resource-manager">Select or create a Google Cloud project</a>.</li>
+<li><a href="https://cloud.google.com/billing/docs/how-to/modify-project">Make sure that billing is enabled for your project</a>.</li>
+<li>You can run the code locally or in Colab. If you are locally you need to install the <a href="https://cloud.google.com/sdk/docs/install">gcloud CLI</a>.</li>
+</ol>
+</section>
+<section id="loading-data-into-bigquery" class="level2">
+<h2 class="anchored" data-anchor-id="loading-data-into-bigquery">Loading data into BigQuery</h2>
+<p>Reference: <a href="https://cloud.google.com/bigquery/docs/bigqueryml-mf-explicit-tutorial#step_two_load_the_movielens_dataset_into">Load the Movielens dataset into BigQuery</a></p>
+<section id="authenticate-your-google-cloud-account" class="level3">
+<h3 class="anchored" data-anchor-id="authenticate-your-google-cloud-account">Authenticate your Google Cloud account</h3>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">"google.colab"</span> <span class="kw">in</span> sys.modules:</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    IS_COLAB <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.colab <span class="im">import</span> auth <span class="im">as</span> google_auth</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    google_auth.authenticate_user()</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">!</span> gcloud auth login</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="set-your-project-id" class="level3">
+<h3 class="anchored" data-anchor-id="set-your-project-id">Set your project ID</h3>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>PROJECT_ID <span class="op">=</span> <span class="st">"[your-project-id]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="download-movielens-1m-movier-ratings-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="download-movielens-1m-movier-ratings-dataset">Download MovieLens 1M movier ratings dataset</h3>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl <span class="op">-</span>O <span class="st">'http://files.grouplens.org/datasets/movielens/ml-1m.zip'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> unzip <span class="op">-</span>o ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span>.<span class="bu">zip</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Change <code>::</code> delimiter to comma <code>,</code> and save as <code>.csv</code> files:</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> sed <span class="st">'s/::/,/g'</span> ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span><span class="op">/</span>ratings.dat <span class="op">&gt;</span> ratings.csv</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> sed <span class="st">'s/::/@/g'</span> ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span><span class="op">/</span>movies.dat <span class="op">&gt;</span> movie_titles.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-bigquery-datasets-and-populate-the-tables" class="level3">
+<h3 class="anchored" data-anchor-id="create-bigquery-datasets-and-populate-the-tables">Create BigQuery datasets and populate the tables</h3>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>MODEL_DATASET <span class="op">=</span> <span class="st">"[bq-model-dataset]"</span>  <span class="co"># @param {type:"string"}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>MOVIELENS_DATASET <span class="op">=</span> <span class="st">"[bq-data-dataset]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># To store the model</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq mk <span class="op">--</span>location<span class="op">=</span>US <span class="op">--</span>dataset {PROJECT_ID}:{MODEL_DATASET}</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># To store movies and reviews tables</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq mk <span class="op">--</span>location<span class="op">=</span>US <span class="op">--</span>dataset {PROJECT_ID}:{MOVIELENS_DATASET}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Populate the tables</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reviews table</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq load <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>source_format<span class="op">=</span>CSV {PROJECT_ID}:{MOVIELENS_DATASET}.movielens_1m ratings.csv user_id:INT64,item_id:INT64,rating:FLOAT64,timestamp:TIMESTAMP</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Movies table</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq load <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>source_format<span class="op">=</span>CSV <span class="op">--</span>field_delimiter<span class="op">=@</span> {PROJECT_ID}:{MOVIELENS_DATASET}.movie_titles movie_titles.csv movie_id:INT64,movie_title:STRING,genre:STRING</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="vertex-ai-pipeline.-install-libraries-and-setup-services-and-accounts" class="level2">
+<h2 class="anchored" data-anchor-id="vertex-ai-pipeline.-install-libraries-and-setup-services-and-accounts">Vertex AI Pipeline. Install Libraries and Setup Services and Accounts</h2>
+<section id="install-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="install-libraries">Install Libraries</h3>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>capture</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> pip install google<span class="op">-</span>cloud<span class="op">-</span>aiplatform<span class="op">==</span><span class="fl">1.21.0</span> <span class="op">--</span>upgrade</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> pip install kfp<span class="op">==</span><span class="fl">2.0.1</span> <span class="op">--</span>upgrade</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> pip install google<span class="op">-</span>cloud<span class="op">-</span>pipeline<span class="op">-</span>components<span class="op">==</span><span class="fl">2.0.0</span> <span class="op">--</span>upgrade</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="restart-the-kernel" class="level3">
+<h3 class="anchored" data-anchor-id="restart-the-kernel">Restart the Kernel</h3>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Automatically restart kernel after installs so that your environment can access the new packages</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> IPython</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> IPython.Application.instance()</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>app.kernel.do_shutdown(<span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="set-project-variables" class="level3">
+<h3 class="anchored" data-anchor-id="set-project-variables">Set Project Variables</h3>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>PROJECT_ID <span class="op">=</span> <span class="st">"[your-project-id]"</span>  <span class="co"># @param {type:"string"}</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>REGION <span class="op">=</span> <span class="st">"us-central1"</span>              <span class="co"># @param {type: "string"}</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>BUCKET_NAME <span class="op">=</span> <span class="st">"[pipeline-bucket]"</span> <span class="co"># @param {type: "string"}</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>PIPELINE_ROOT <span class="op">=</span> <span class="ss">f"gs://</span><span class="sc">{</span>BUCKET_NAME<span class="sc">}</span><span class="ss">/"</span>   </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>MODEL_DIR <span class="op">=</span> PIPELINE_ROOT <span class="op">+</span> <span class="st">"recommender_model"</span>    <span class="co"># @param {type: "string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="authenticate-your-google-cloud-account-again" class="level3">
+<h3 class="anchored" data-anchor-id="authenticate-your-google-cloud-account-again">Authenticate your Google Cloud account (again)</h3>
+<p>Since the kernel was restarted, authenticate again.</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">"google.colab"</span> <span class="kw">in</span> sys.modules:</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    IS_COLAB <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.colab <span class="im">import</span> auth <span class="im">as</span> google_auth</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    google_auth.authenticate_user()</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">!</span> gcloud auth login</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud config <span class="bu">set</span> project {PROJECT_ID}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="enable-service-apis" class="level3">
+<h3 class="anchored" data-anchor-id="enable-service-apis">Enable Service APIs</h3>
+<p>It is great to enabling the APIs with commands because everything stays documented. We need the following services: - Identity and Access Management (IAM) API - Vertex AI API - Cloud Build API - BigQuery API (Although this should be enabled already if the datasets were created and the tables populated) - BigQuery Reservation API - Cloud Run Admin API - Cloud Storage API</p>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable iam.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable aiplatform.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable cloudbuild.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable bigquery.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable bigqueryreservation.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable run.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable storage<span class="op">-</span>component.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-the-service-account-for-the-pipeline-to-run" class="level3">
+<h3 class="anchored" data-anchor-id="create-the-service-account-for-the-pipeline-to-run">Create the Service Account for the pipeline to run</h3>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>SERVICE_ACCOUNT_ID <span class="op">=</span> <span class="st">"[your-service-account-id]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the following cell returns an error in Colab, run it in your local machine. Or create the account directly in the Google Cloud Console UI.</p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud iam service<span class="op">-</span>accounts create {SERVICE_ACCOUNT_ID} <span class="op">--</span>description<span class="op">=</span><span class="st">"Vertex AI Pipeline Service Account"</span> <span class="op">--</span>display<span class="op">-</span>name<span class="op">=</span><span class="st">"vertex_service_account"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>SERVICE_ACCOUNT <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>SERVICE_ACCOUNT_ID<span class="sc">}</span><span class="ss">@</span><span class="sc">{</span>PROJECT_ID<span class="sc">}</span><span class="ss">.iam.gserviceaccount.com"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="if-not-use-the-default-service-account" class="level4">
+<h4 class="anchored" data-anchor-id="if-not-use-the-default-service-account">If not, use the Default Service Account</h4>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>shell_output <span class="op">=</span> <span class="op">!</span> gcloud projects describe {PROJECT_ID}</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>PROJECT_NUMBER <span class="op">=</span> shell_output[<span class="op">-</span><span class="dv">1</span>].split(<span class="st">":"</span>)[<span class="dv">1</span>].strip().replace(<span class="st">"'"</span>, <span class="st">""</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>DEFAULT_SERVICE_ACCOUNT <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>PROJECT_NUMBER<span class="sc">}</span><span class="ss">-compute@developer.gserviceaccount.com"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>IS_COLAB <span class="op">=</span> <span class="st">"google.colab"</span> <span class="kw">in</span> sys.modules</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    SERVICE_ACCOUNT_ID <span class="op">==</span> <span class="st">""</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">or</span> SERVICE_ACCOUNT_ID <span class="kw">is</span> <span class="va">None</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">or</span> SERVICE_ACCOUNT_ID <span class="op">==</span> <span class="st">"[your-service-account-id]"</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get your service account from gcloud</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> IS_COLAB:</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>        shell_output <span class="op">=</span> <span class="op">!</span>gcloud auth <span class="bu">list</span> <span class="dv">2</span><span class="op">&gt;/</span>dev<span class="op">/</span>null</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>        DEFAULT_SERVICE_ACCOUNT <span class="op">=</span> shell_output[<span class="dv">2</span>].replace(<span class="st">"*"</span>, <span class="st">""</span>).strip()</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> IS_COLAB:</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>        shell_output <span class="op">=</span> <span class="op">!</span> gcloud projects describe {PROJECT_ID}</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>        PROJECT_NUMBER <span class="op">=</span> shell_output[<span class="op">-</span><span class="dv">1</span>].split(<span class="st">":"</span>)[<span class="dv">1</span>].strip().replace(<span class="st">"'"</span>, <span class="st">""</span>)</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>        DEFAULT_SERVICE_ACCOUNT <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>PROJECT_NUMBER<span class="sc">}</span><span class="ss">-compute@developer.gserviceaccount.com"</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Service Account:"</span>, DEFAULT_SERVICE_ACCOUNT)</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    SERVICE_ACCOUNT <span class="op">=</span> DEFAULT_SERVICE_ACCOUNT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="grant-the-service-account-granular-permissions-to-gcp-resources" class="level3">
+<h3 class="anchored" data-anchor-id="grant-the-service-account-granular-permissions-to-gcp-resources">Grant the Service Account granular permissions to GCP resources</h3>
+<p>The most challenging part of the project was figuring out how to give the service account the right granular permissions. I didn’t want to give the service account the Editor or Owner rol. It took me a while to find the right roles. As I mentioned some errors in the pipeline were because lack of permissions, but it was hard to troubleshoot as there wasn’t any mention to the actual rol needed.</p>
+<section id="aiplatform.user-rol" class="level4">
+<h4 class="anchored" data-anchor-id="aiplatform.user-rol"><code>aiplatform.user</code> rol</h4>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>service_arg <span class="op">=</span> <span class="ss">f"serviceAccount:</span><span class="sc">{</span>SERVICE_ACCOUNT<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud projects add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {PROJECT_ID} <span class="op">--</span>member<span class="op">=</span>{service_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/aiplatform.user"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-the-gcs-bucket-and-assign-storage.objectadmin-rol" class="level4">
+<h4 class="anchored" data-anchor-id="create-the-gcs-bucket-and-assign-storage.objectadmin-rol">Create the GCS bucket and assign <code>storage.objectAdmin</code> rol</h4>
+<p>I first assign the rols of <code>storage.objectCreator</code> and <code>objectViewer</code>. Took me hours to find out that the trained model couldn’t be exported without the rol of <code>storage.objectAdmin</code> which is needed to modify existing data in the bucket.</p>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gsutil mb <span class="op">-</span>p {PROJECT_ID} <span class="op">-</span>l {REGION} {PIPELINE_ROOT}</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gsutil iam ch serviceAccount:{SERVICE_ACCOUNT}:roles<span class="op">/</span>storage.objectAdmin {PIPELINE_ROOT}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="cloud-runs-run.developer-rol" class="level4">
+<h4 class="anchored" data-anchor-id="cloud-runs-run.developer-rol">Cloud Run’s <code>run.developer</code> rol</h4>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud projects add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {PROJECT_ID} <span class="op">--</span>member<span class="op">=</span>{service_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/run.developer"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="cloud-builds-cloudbuild.builds.editor-rol" class="level4">
+<h4 class="anchored" data-anchor-id="cloud-builds-cloudbuild.builds.editor-rol">Cloud Build’s <code>cloudbuild.builds.editor</code> rol</h4>
+<p>I thought that Cloud Run developer rol was enough for the model to be deployed. Took me a while to find out the service account needed a permission from Cloud Build service.</p>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud projects add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {PROJECT_ID} <span class="op">--</span>member<span class="op">=</span>{service_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/cloudbuild.builds.editor"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="assign-roles-to-cloud-builds-service-account" class="level4">
+<h4 class="anchored" data-anchor-id="assign-roles-to-cloud-builds-service-account">Assign roles to Cloud Build’s service account</h4>
+<p>When Cloud Build’s API is enabled, its service account is automatically created.</p>
+<blockquote class="blockquote">
+<p>By default – for security reasons – the Cloud Build Service Account does not have the permissions to manage Cloud Run. <a href="https://www.bram.us/2020/02/13/google-cloud-build-google-cloud-run-fixing-error-gcloud-run-deploy-permission_denied-the-caller-does-not-have-permission/">Google Cloud Build + Google Cloud Run</a></p>
+</blockquote>
+<p>First lets grab the default service accounts.</p>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cloud Build default service account</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>cloud_build_sa <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>PROJECT_NUMBER<span class="sc">}</span><span class="ss">@cloudbuild.gserviceaccount.com"</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>service_build_arg <span class="op">=</span> <span class="ss">f"serviceAccount:</span><span class="sc">{</span>cloud_build_sa<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Engine default service account</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>compute_engine_sa <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>PROJECT_NUMBER<span class="sc">}</span><span class="ss">-compute@developer.gserviceaccount.com"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud projects add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {PROJECT_ID} <span class="op">--</span>member<span class="op">=</span>{service_build_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/run.admin"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And the last part is “<a href="https://www.bram.us/2020/02/13/google-cloud-build-google-cloud-run-fixing-error-gcloud-run-deploy-permission_denied-the-caller-does-not-have-permission/">Grant the IAM Service Account User role to the Cloud Build service account on the Cloud Run runtime service account</a>”.</p>
+<p>Meaning that the Cloud Build service account is going to be able to impersonate the Cloud Run runtime service account, which is Compute Engine default service account. More on impersonation here: <a href="https://youtu.be/pHdQ13HSCq8">Youtube: Service Account Impersonation in Google Cloud - IAM in GCP</a></p>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud iam service<span class="op">-</span>accounts add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {compute_engine_sa} <span class="op">--</span>member<span class="op">=</span>{service_build_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/iam.serviceAccountUser"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And thats it, all services are enabled and the service accounts has the granular permission for the pipeline to run.</p>
+</section>
+</section>
+</section>
+<section id="vertex-ai-pipeline---create-and-run-the-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="vertex-ai-pipeline---create-and-run-the-pipeline">Vertex AI Pipeline - Create and Run the Pipeline</h2>
+<section id="import-libraries" class="level4">
+<h4 class="anchored" data-anchor-id="import-libraries">Import Libraries</h4>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> kfp</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> NamedTuple</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> kfp.dsl <span class="im">import</span> (</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    pipeline, component, OutputPath, InputPath, Model, </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    Input, Artifact, Output, Metrics</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> kfp <span class="im">import</span> compiler</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> google.cloud <span class="im">import</span> aiplatform</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> google.cloud.aiplatform <span class="im">import</span> pipeline_jobs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="initialize-vertex-ai-sdk-for-python" class="level3">
+<h3 class="anchored" data-anchor-id="initialize-vertex-ai-sdk-for-python">Initialize Vertex AI SDK for Python</h3>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>aiplatform.init(project<span class="op">=</span>PROJECT_ID, location<span class="op">=</span>REGION)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="declare-pipeline-components" class="level3">
+<h3 class="anchored" data-anchor-id="declare-pipeline-components">Declare Pipeline Components</h3>
+<section id="create-reservation-component" class="level4">
+<h4 class="anchored" data-anchor-id="create-reservation-component">Create Reservation Component</h4>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="at">@component</span>(packages_to_install<span class="op">=</span>[<span class="st">"google-cloud-bigquery-reservation==1.11.2"</span>])</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_reservation(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    project: <span class="bu">str</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    location: <span class="bu">str</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    commitment_slots: <span class="bu">int</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    reservation_id: <span class="bu">str</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> NamedTuple(<span class="st">"outputs"</span>, [(<span class="st">"reservation_name"</span>, <span class="bu">str</span>), (<span class="st">"assignment_name"</span>, <span class="bu">str</span>)]):</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Create BigQuery Reservation and Assignment</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'project'</span>, project, <span class="st">'location'</span>, location, <span class="st">'commitment_slots'</span>, commitment_slots, <span class="st">'reservation_id'</span>, reservation_id)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># import libraries</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> time</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.cloud.bigquery_reservation_v1 <span class="im">import</span> (</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>        CapacityCommitment, Reservation, Assignment, ReservationServiceClient</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    reservation_client <span class="op">=</span> ReservationServiceClient()</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>    parent_arg <span class="op">=</span> <span class="ss">f"projects/</span><span class="sc">{</span>project<span class="sc">}</span><span class="ss">/locations/</span><span class="sc">{</span>location<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Reservation (autoscaling)</span></span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>    autosc <span class="op">=</span> Reservation.Autoscale(current_slots<span class="op">=</span><span class="dv">0</span>, max_slots<span class="op">=</span>commitment_slots) <span class="co"># NEW Jul-05 Update</span></span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">#reservation_slots = commitment_slots</span></span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>    slot_capacity <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>    reservation_config <span class="op">=</span> Reservation(</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>        <span class="co">#slot_capacity=reservation_slots,</span></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>        slot_capacity<span class="op">=</span>slot_capacity, autoscale<span class="op">=</span>autosc,  <span class="co"># NEW Jul-05 Update</span></span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>        edition<span class="op">=</span><span class="st">'ENTERPRISE'</span>,   <span class="co"># NEW Jul-05 Update (Could be "STANDARD" ?)</span></span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>        ignore_idle_slots<span class="op">=</span><span class="va">False</span></span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>    reservation <span class="op">=</span> reservation_client.create_reservation(</span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>        parent<span class="op">=</span>parent_arg, reservation_id<span class="op">=</span>reservation_id, reservation<span class="op">=</span>reservation_config</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>    reservation_name <span class="op">=</span> reservation.name</span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'reservation_name'</span>, reservation_name)</span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assignment</span></span>
+<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Creating Assignment..."</span>)</span>
+<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a>    assignment_config <span class="op">=</span> Assignment(</span>
+<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>        job_type<span class="op">=</span><span class="st">'QUERY'</span>, assignee<span class="op">=</span><span class="st">'projects/</span><span class="sc">{}</span><span class="st">'</span>.<span class="bu">format</span>(project)</span>
+<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>    assignment <span class="op">=</span> reservation_client.create_assignment(</span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>        parent<span class="op">=</span>reservation_name, assignment<span class="op">=</span>assignment_config</span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>    assignment_name <span class="op">=</span> assignment.name</span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'assignment_name'</span>, assignment_name)</span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># it can take a lot for the slots to be available</span></span>
+<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Waiting for 300 seconds..."</span>)</span>
+<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="dv">300</span>)</span>
+<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> reservation_name, assignment_name</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+This is Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>After the reservation is created, the account is going to be billed by time and number of slots. It can cost about $3 for each pipeline run, <strong>but you need to be very cautious about the pipeline failing before the reservation is deleted</strong>. To be sure the reservation is deleted you can go to <a href="https://console.cloud.google.com/bigquery/admin/reservations">https://console.cloud.google.com/bigquery/admin/reservations</a> and select the project of interest. Check that <strong>SLOT RESERVATIONS</strong> and <strong>SLOT COMMITMENTS</strong> are empty and look like this:</p>
+</div>
+</div>
+<p><strong>SLOT RESERVATIONS</strong> <img src="reservations.PNG" class="img-fluid"></p>
+<p><strong>SLOT COMMITMENTS</strong> <img src="commitments.PNG" class="img-fluid"></p>
+</section>
+<section id="delete-reservation-component" class="level4">
+<h4 class="anchored" data-anchor-id="delete-reservation-component">Delete Reservation Component</h4>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="at">@component</span>(packages_to_install<span class="op">=</span>[<span class="st">"google-cloud-bigquery-reservation==1.11.2"</span>])   <span class="co"># NEW Jul-05 Update</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> delete_reservation(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># commitment_name: str, # NEW Jul-05 Update</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    reservation_name: <span class="bu">str</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    assignment_name: <span class="bu">str</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># import libraries</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.cloud.bigquery_reservation_v1 <span class="im">import</span> ReservationServiceClient</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Delete Assignment, Reservation and Capacity</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    reservation_client <span class="op">=</span> ReservationServiceClient()</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    reservation_client.delete_assignment(name<span class="op">=</span>assignment_name)</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    reservation_client.delete_reservation(name<span class="op">=</span>reservation_name)</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'reservation_name'</span>, reservation_name, <span class="st">'deleted'</span>)</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'assignment_name'</span>, assignment_name, <span class="st">'deleted'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="log-eval-metrics" class="level4">
+<h4 class="anchored" data-anchor-id="log-eval-metrics">Log Eval Metrics</h4>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="at">@component</span>()</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_eval_metrics(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    eval_metrics: Input[Artifact], metrics: Output[Metrics]</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">dict</span>:</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># import libraries</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> math</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    metadata <span class="op">=</span> eval_metrics.metadata</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> metadata[<span class="st">"rows"</span>]:</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>        rows <span class="op">=</span> r[<span class="st">"f"</span>]</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>        schema <span class="op">=</span> metadata[<span class="st">"schema"</span>][<span class="st">"fields"</span>]</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> {}</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> metric, value <span class="kw">in</span> <span class="bu">zip</span>(schema, rows):</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>            metric_name <span class="op">=</span> metric[<span class="st">"name"</span>]</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>            val <span class="op">=</span> <span class="bu">float</span>(value[<span class="st">"v"</span>])</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>            output[metric_name] <span class="op">=</span> val</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>            metrics.log_metric(metric_name, val)</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(output)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

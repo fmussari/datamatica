@@ -107,7 +107,7 @@ Populate the tables
 ! bq load --project_id={PROJECT_ID} --source_format=CSV --field_delimiter=@ {PROJECT_ID}:{MOVIELENS_DATASET}.movie_titles movie_titles.csv movie_id:INT64,movie_title:STRING,genre:STRING
 ```
 
-## Vertex AI Pipeline - Install Libraries and Setup Services and Accounts
+## Vertex AI Pipeline. Install Libraries and Setup Services and Accounts
 
 ### Install Libraries
 
@@ -143,6 +143,7 @@ PIPELINE_ROOT = f"gs://{BUCKET_NAME}/"
 MODEL_DIR = PIPELINE_ROOT + "recommender_model"    # @param {type: "string"}
 ```
 
+  
 ### Authenticate your Google Cloud account (again)
 
 Since the kernel was restarted, authenticate again.
@@ -172,7 +173,6 @@ It is great to enabling the APIs with commands because everything stays document
 - BigQuery Reservation API
 - Cloud Run Admin API
 - Cloud Storage API
-
 
 ```{python}
 #| eval: false

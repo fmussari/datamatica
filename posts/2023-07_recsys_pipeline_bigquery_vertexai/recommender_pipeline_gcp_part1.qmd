@@ -1,5 +1,5 @@
 ---
-title: Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline
+title: Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline. Part 1
 
 author: "Francisco Mussari"  
 date: 2023-07-17  
@@ -14,6 +14,20 @@ format:
 ![](pipeline.PNG)
 
 
+## Parts
+
+### Part 1. Train and Deploy
+- Loading MovieLens data into BigQuery
+- Setup services and accounts for the Vertex AI Pipeline to run
+- Create and run the Pipeline and its Components
+- Make sure no reservation or slot assignment remains active
+  
+### Part 2. Inference
+- Use the Cloud Run endpoint to get recommendations
+- Get recommendations from BigQuery ML
+- Get Weights and Bias (Embeddings) and interpret them
+- Cosine similarity with NumPy
+
 ## Overview
 
 This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.  
@@ -25,14 +39,6 @@ But there are key differences:
 
 1. This post documents the whole process, from loading the date to BigQuery to how to make recomendations in different ways.
 2. On July 5th there was a [Transition to BigQuery editions](https://cloud.google.com/bigquery/docs/editions-transition) which resulted in some changes being made to adapt the scripts showed in the video.
-
-::: {.callout-important}
-## This is Important
-
-This is an example of a callout with a title.
-:::
-
-
 3. When trying to replicate the video tutorial I had to solve some issues with the pipeline failing to run. Most of the issues were very hard to debug, with misleading error messages and layers over layer of abstraction between python libraries and component definitions. At the end most of the errors were about the Default Service Account not having the requiered permission. So,
 4. In this post we can see and run each step and command to create a Service Account and grant this account granular permissions to the Google Cloud resources needed for the end to end process to run. This is what the Google documentation recommends.
 5. There are also the commands to enable each service API needed for the project.

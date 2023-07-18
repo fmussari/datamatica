@@ -11,7 +11,6 @@ format:
     toc-depth: 3
     
 ---
-
 ![](pipeline.PNG)
 
 
@@ -658,12 +657,14 @@ If the pipeline fails before deleting the reservation, this command lists the re
 
 And this command shows the assignment. 
 ```{python}
+#| eval: false
 ! bq show --project_id={PROJECT_ID} --location=us --reservation_assignment --job_type=QUERY --assignee_id={PROJECT_ID} --assignee_type=PROJECT
 ```
 
 ### Delete any reservation and assignment
 
 ```{python}
+#| eval: false
 shell_output = ! bq show --project_id={PROJECT_ID} --location=us --reservation_assignment --job_type=QUERY --assignee_id={PROJECT_ID} --assignee_type=PROJECT
 
 assignment_id = shell_output[2].split(' ')[2].split('.')[-1]

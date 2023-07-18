@@ -230,8 +230,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#vertex-ai-pipeline---create-and-run-the-pipeline" id="toc-vertex-ai-pipeline---create-and-run-the-pipeline" class="nav-link" data-scroll-target="#vertex-ai-pipeline---create-and-run-the-pipeline">Vertex AI Pipeline - Create and Run the Pipeline</a>
   <ul class="collapse">
+  <li><a href="#import-libraries" id="toc-import-libraries" class="nav-link" data-scroll-target="#import-libraries">Import Libraries</a></li>
   <li><a href="#initialize-vertex-ai-sdk-for-python" id="toc-initialize-vertex-ai-sdk-for-python" class="nav-link" data-scroll-target="#initialize-vertex-ai-sdk-for-python">Initialize Vertex AI SDK for Python</a></li>
   <li><a href="#declare-pipeline-components" id="toc-declare-pipeline-components" class="nav-link" data-scroll-target="#declare-pipeline-components">Declare Pipeline Components</a></li>
+  <li><a href="#pipeline-and-job" id="toc-pipeline-and-job" class="nav-link" data-scroll-target="#pipeline-and-job">Pipeline and Job</a></li>
+  </ul></li>
+  <li><a href="#make-sure-no-reservation-or-slot-assignment-is-active" id="toc-make-sure-no-reservation-or-slot-assignment-is-active" class="nav-link" data-scroll-target="#make-sure-no-reservation-or-slot-assignment-is-active">Make sure no reservation or slot assignment is active</a>
+  <ul class="collapse">
+  <li><a href="#delete-any-reservation-and-assignment" id="toc-delete-any-reservation-and-assignment" class="nav-link" data-scroll-target="#delete-any-reservation-and-assignment">Delete any reservation and assignment</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -242,6 +248,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<p><img src="pipeline.PNG" class="img-fluid"></p>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.</p>
@@ -506,8 +513,8 @@ This is Important
 </section>
 <section id="vertex-ai-pipeline---create-and-run-the-pipeline" class="level2">
 <h2 class="anchored" data-anchor-id="vertex-ai-pipeline---create-and-run-the-pipeline">Vertex AI Pipeline - Create and Run the Pipeline</h2>
-<section id="import-libraries" class="level4">
-<h4 class="anchored" data-anchor-id="import-libraries">Import Libraries</h4>
+<section id="import-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="import-libraries">Import Libraries</h3>
 <div class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> kfp</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> NamedTuple</span>
@@ -597,34 +604,36 @@ This is Important
 </div>
 <div class="callout-body-container callout-body">
 <p>After the reservation is created, the account is going to be billed by time and number of slots. It can cost about $3 for each pipeline run, <strong>but you need to be very cautious about the pipeline failing before the reservation is deleted</strong>. To be sure the reservation is deleted you can go to <a href="https://console.cloud.google.com/bigquery/admin/reservations">https://console.cloud.google.com/bigquery/admin/reservations</a> and select the project of interest. Check that <strong>SLOT RESERVATIONS</strong> and <strong>SLOT COMMITMENTS</strong> are empty and look like this:</p>
+<p><strong>SLOT RESERVATIONS</strong><br>
+<img src="reservations.PNG" class="img-fluid"></p>
+<p><strong>SLOT COMMITMENTS</strong><br>
+<img src="commitments.PNG" class="img-fluid"></p>
+<p>If not empty, delete them in the UI. Below you can find some scripts you can run to delete the reservations in case the pipeline fails before doing it.</p>
 </div>
 </div>
-<p><strong>SLOT RESERVATIONS</strong> <img src="reservations.PNG" class="img-fluid"></p>
-<p><strong>SLOT COMMITMENTS</strong> <img src="commitments.PNG" class="img-fluid"></p>
 </section>
 <section id="delete-reservation-component" class="level4">
 <h4 class="anchored" data-anchor-id="delete-reservation-component">Delete Reservation Component</h4>
 <div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="at">@component</span>(packages_to_install<span class="op">=</span>[<span class="st">"google-cloud-bigquery-reservation==1.11.2"</span>])   <span class="co"># NEW Jul-05 Update</span></span>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="at">@component</span>(packages_to_install<span class="op">=</span>[<span class="st">"google-cloud-bigquery-reservation==1.11.2"</span>])</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> delete_reservation(</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># commitment_name: str, # NEW Jul-05 Update</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    reservation_name: <span class="bu">str</span>,</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    assignment_name: <span class="bu">str</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>):</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># import libraries</span></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.cloud.bigquery_reservation_v1 <span class="im">import</span> ReservationServiceClient</span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Delete Assignment, Reservation and Capacity</span></span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    reservation_client <span class="op">=</span> ReservationServiceClient()</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    reservation_client.delete_assignment(name<span class="op">=</span>assignment_name)</span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    reservation_client.delete_reservation(name<span class="op">=</span>reservation_name)</span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'reservation_name'</span>, reservation_name, <span class="st">'deleted'</span>)</span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'assignment_name'</span>, assignment_name, <span class="st">'deleted'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    reservation_name: <span class="bu">str</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    assignment_name: <span class="bu">str</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># import libraries</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.cloud.bigquery_reservation_v1 <span class="im">import</span> ReservationServiceClient</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Delete Assignment, Reservation and Capacity</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    reservation_client <span class="op">=</span> ReservationServiceClient()</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    reservation_client.delete_assignment(name<span class="op">=</span>assignment_name)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    reservation_client.delete_reservation(name<span class="op">=</span>reservation_name)</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'reservation_name'</span>, reservation_name, <span class="st">'deleted'</span>)</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'assignment_name'</span>, assignment_name, <span class="st">'deleted'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="log-eval-metrics" class="level4">
-<h4 class="anchored" data-anchor-id="log-eval-metrics">Log Eval Metrics</h4>
+<section id="log-eval-metrics-component" class="level4">
+<h4 class="anchored" data-anchor-id="log-eval-metrics-component">Log Eval Metrics Component</h4>
 <div class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="at">@component</span>()</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_eval_metrics(</span>
@@ -646,9 +655,218 @@ This is Important
 <span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(output)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-
-
 </section>
+<section id="deploy-model-component" class="level4">
+<h4 class="anchored" data-anchor-id="deploy-model-component">Deploy Model Component</h4>
+<p>The names in this function are hard coded. It assumes you keep <code>recommender_model</code> as the model dir. If it was changed previously, change it here accordingly. Also edit [PIPELINE_ROOT] with your chosen name.</p>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="at">@component</span>(packages_to_install<span class="op">=</span>[</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"google-cloud-build==3.18.0"</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"google-api-python-client==2.93.0"</span>])</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> deploy_recommendations_model(</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    artifact_uri: <span class="bu">str</span>,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    project: <span class="bu">str</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># import libraries</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.cloud.devtools <span class="im">import</span> cloudbuild</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> googleapiclient.discovery <span class="im">import</span> build</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Deploy Model</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    client <span class="op">=</span> cloudbuild.CloudBuildClient()</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    build <span class="op">=</span> cloudbuild.Build()</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fill [PIPELINE_ROOT] with your selected parameter</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If you didn't keep `recommender_model` change it accordingly</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    build.steps <span class="op">=</span> [</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>        {   <span class="st">"name"</span>: <span class="st">"gcr.io/cloud-builders/gsutil"</span>,</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">"args"</span>: [<span class="st">"cp"</span>, <span class="st">"-r"</span>, <span class="st">'[PIPELINE_ROOT]/recommender_model'</span>, <span class="st">"."</span>]  },</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>        {   <span class="st">"name"</span>: <span class="st">"gcr.io/cloud-builders/gsutil"</span>,</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">"args"</span>: [<span class="st">"cp"</span>, <span class="st">"-r"</span>, <span class="st">'[PIPELINE_ROOT]/dockerfile/Dockerfile/'</span>, <span class="st">"Dockerfile"</span>] },</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>        {   <span class="st">"name"</span>: <span class="st">"gcr.io/cloud-builders/docker"</span>,</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">"args"</span>: [<span class="st">"build"</span>, <span class="st">"-t"</span>, <span class="ss">f"gcr.io/</span><span class="sc">{</span>project<span class="sc">}</span><span class="ss">/recommender_model"</span>, <span class="st">"."</span> ]   },</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>        {   <span class="st">"name"</span>: <span class="st">"gcr.io/cloud-builders/docker"</span>,</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>            <span class="st">"args"</span>: [<span class="st">"push"</span>, <span class="ss">f"gcr.io/</span><span class="sc">{</span>project<span class="sc">}</span><span class="ss">/recommender_model"</span>]    },</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>        {   <span class="st">"name"</span>: <span class="st">"gcr.io/cloud-builders/gcloud"</span>,</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>            <span class="st">"args"</span>: [</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>                <span class="st">"run"</span>, <span class="st">"deploy"</span>,</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>                <span class="st">"recommender-model"</span>, <span class="st">"--image"</span>, <span class="ss">f"gcr.io/</span><span class="sc">{</span>project<span class="sc">}</span><span class="ss">/recommender_model"</span>,</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--region"</span>, <span class="st">"us-central1"</span>, <span class="st">"--platform"</span>, <span class="st">"managed"</span>, <span class="st">"--memory"</span>, <span class="st">"500Mi"</span>,</span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--allow-unauthenticated"</span>, <span class="st">"--max-instances"</span>, <span class="st">"5"</span>, <span class="st">"--port"</span>, <span class="st">"8501"</span></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>            ]</span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>    operation <span class="op">=</span> client.create_build(project_id<span class="op">=</span>project, build<span class="op">=</span>build)</span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Print the in-progress operation</span></span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"IN PROGRESS:"</span>)</span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(operation.metadata)</span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> operation.result()</span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Print the completed status</span></span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"RESULT:"</span>, result.status)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-the-docker-file-and-copy-it-to-gcs" class="level4">
+<h4 class="anchored" data-anchor-id="create-the-docker-file-and-copy-it-to-gcs">Create the Docker file and copy it to GCS</h4>
+<p>Keep <code>recommender_model</code> or change it accordingly.</p>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile Dockerfile</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>FROM tensorflow<span class="op">/</span>serving:<span class="fl">2.4.4</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>ENTRYPOINT [<span class="st">"/usr/bin/env"</span>]</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>ENV MODEL_NAME<span class="op">=</span>recommender_model</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>ENV PORT<span class="op">=</span><span class="dv">8501</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>COPY recommender_model <span class="op">/</span>models<span class="op">/</span>recommender_model<span class="op">/</span><span class="dv">1</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>CMD tensorflow_model_server <span class="op">--</span>port<span class="op">=</span><span class="dv">8500</span> <span class="op">--</span>rest_api_port<span class="op">=</span>$PORT <span class="op">--</span>model_base_path<span class="op">=/</span>models<span class="op">/</span>recommender_model <span class="op">--</span>model_name<span class="op">=</span>$MODEL_NAME</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>docker_path <span class="op">=</span> PIPELINE_ROOT <span class="op">+</span> <span class="st">'dockerfile/'</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gsutil cp Dockerfile {docker_path}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="pipeline-and-job" class="level3">
+<h3 class="anchored" data-anchor-id="pipeline-and-job">Pipeline and Job</h3>
+<section id="declare-the-pipeline" class="level4">
+<h4 class="anchored" data-anchor-id="declare-the-pipeline">Declare the Pipeline</h4>
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="at">@pipeline</span>(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"bigquery-recommender-pipeline"</span>,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    pipeline_root<span class="op">=</span>PIPELINE_ROOT <span class="op">+</span> <span class="st">"bigquery-recommender-pipeline"</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> recommendation_pipeline(</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    artifact_uri: <span class="bu">str</span>,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    display_name: <span class="bu">str</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># import libraries</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google_cloud_pipeline_components.v1.bigquery <span class="im">import</span> (</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>        BigqueryCreateModelJobOp,</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>        BigqueryEvaluateModelJobOp,</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        BigqueryExportModelJobOp</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># NODE create-reservation</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    project <span class="op">=</span> PROJECT_ID</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>    location <span class="op">=</span> <span class="st">"us"</span></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>    slots <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>    reservation_id <span class="op">=</span> <span class="st">"matrix-factorization-reservation"</span></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>    create_reservation_task <span class="op">=</span> create_reservation(</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>        project<span class="op">=</span>project, location<span class="op">=</span>location, commitment_slots<span class="op">=</span>slots, reservation_id<span class="op">=</span>reservation_id</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># NODE create-model-task</span></span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Query for training</span></span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a>    num_factors <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a><span class="ss">    CREATE OR REPLACE MODEL </span><span class="sc">{</span>MODEL_DATASET<span class="sc">}</span><span class="ss">.model_00</span></span>
+<span id="cb34-32"><a href="#cb34-32" aria-hidden="true" tabindex="-1"></a><span class="ss">    OPTIONS</span></span>
+<span id="cb34-33"><a href="#cb34-33" aria-hidden="true" tabindex="-1"></a><span class="ss">        (model_type='matrix_factorization',</span></span>
+<span id="cb34-34"><a href="#cb34-34" aria-hidden="true" tabindex="-1"></a><span class="ss">        user_col='user_id',</span></span>
+<span id="cb34-35"><a href="#cb34-35" aria-hidden="true" tabindex="-1"></a><span class="ss">        item_col='item_id',</span></span>
+<span id="cb34-36"><a href="#cb34-36" aria-hidden="true" tabindex="-1"></a><span class="ss">        RATING_COL='rating',</span></span>
+<span id="cb34-37"><a href="#cb34-37" aria-hidden="true" tabindex="-1"></a><span class="ss">        feedback_type='EXPLICIT',</span></span>
+<span id="cb34-38"><a href="#cb34-38" aria-hidden="true" tabindex="-1"></a><span class="ss">        l2_reg=9.83,</span></span>
+<span id="cb34-39"><a href="#cb34-39" aria-hidden="true" tabindex="-1"></a><span class="ss">        num_factors=</span><span class="sc">{</span>num_factors<span class="sc">}</span><span class="ss">) AS</span></span>
+<span id="cb34-40"><a href="#cb34-40" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT user_id, item_id, rating FROM </span><span class="sc">{</span>MOVIELENS_DATASET<span class="sc">}</span><span class="ss">.movielens_1m</span></span>
+<span id="cb34-41"><a href="#cb34-41" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb34-42"><a href="#cb34-42" aria-hidden="true" tabindex="-1"></a>    create_model_task <span class="op">=</span> BigqueryCreateModelJobOp(</span>
+<span id="cb34-43"><a href="#cb34-43" aria-hidden="true" tabindex="-1"></a>        project<span class="op">=</span>project,</span>
+<span id="cb34-44"><a href="#cb34-44" aria-hidden="true" tabindex="-1"></a>        location<span class="op">=</span>location,</span>
+<span id="cb34-45"><a href="#cb34-45" aria-hidden="true" tabindex="-1"></a>        query<span class="op">=</span>q,</span>
+<span id="cb34-46"><a href="#cb34-46" aria-hidden="true" tabindex="-1"></a>    ).after(create_reservation_task)</span>
+<span id="cb34-47"><a href="#cb34-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-48"><a href="#cb34-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># NODE evaluate-model-task</span></span>
+<span id="cb34-49"><a href="#cb34-49" aria-hidden="true" tabindex="-1"></a>    bq_evaluate_task <span class="op">=</span> BigqueryEvaluateModelJobOp(</span>
+<span id="cb34-50"><a href="#cb34-50" aria-hidden="true" tabindex="-1"></a>        project<span class="op">=</span>project, location<span class="op">=</span>location, model<span class="op">=</span>create_model_task.outputs[<span class="st">"model"</span>]</span>
+<span id="cb34-51"><a href="#cb34-51" aria-hidden="true" tabindex="-1"></a>    ).after(create_model_task)</span>
+<span id="cb34-52"><a href="#cb34-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-53"><a href="#cb34-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># NODE delete-reservation</span></span>
+<span id="cb34-54"><a href="#cb34-54" aria-hidden="true" tabindex="-1"></a>    delete_reservation_task <span class="op">=</span> delete_reservation(</span>
+<span id="cb34-55"><a href="#cb34-55" aria-hidden="true" tabindex="-1"></a>        reservation_name<span class="op">=</span>create_reservation_task.outputs[<span class="st">"reservation_name"</span>],</span>
+<span id="cb34-56"><a href="#cb34-56" aria-hidden="true" tabindex="-1"></a>        assignment_name<span class="op">=</span>create_reservation_task.outputs[<span class="st">"assignment_name"</span>]</span>
+<span id="cb34-57"><a href="#cb34-57" aria-hidden="true" tabindex="-1"></a>    ).after(bq_evaluate_task)</span>
+<span id="cb34-58"><a href="#cb34-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-59"><a href="#cb34-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># NODE log-eval-metrics</span></span>
+<span id="cb34-60"><a href="#cb34-60" aria-hidden="true" tabindex="-1"></a>    bqml_eval_metrics_raw <span class="op">=</span> bq_evaluate_task.outputs[<span class="st">"evaluation_metrics"</span>]</span>
+<span id="cb34-61"><a href="#cb34-61" aria-hidden="true" tabindex="-1"></a>    log_eval_metrics_task <span class="op">=</span> log_eval_metrics(</span>
+<span id="cb34-62"><a href="#cb34-62" aria-hidden="true" tabindex="-1"></a>        eval_metrics<span class="op">=</span>bqml_eval_metrics_raw</span>
+<span id="cb34-63"><a href="#cb34-63" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb34-64"><a href="#cb34-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-65"><a href="#cb34-65" aria-hidden="true" tabindex="-1"></a>    <span class="co"># NODE export-bq-model-to-gcs</span></span>
+<span id="cb34-66"><a href="#cb34-66" aria-hidden="true" tabindex="-1"></a>    bq_export_task <span class="op">=</span> BigqueryExportModelJobOp(</span>
+<span id="cb34-67"><a href="#cb34-67" aria-hidden="true" tabindex="-1"></a>        project<span class="op">=</span>project,</span>
+<span id="cb34-68"><a href="#cb34-68" aria-hidden="true" tabindex="-1"></a>        location<span class="op">=</span>location,</span>
+<span id="cb34-69"><a href="#cb34-69" aria-hidden="true" tabindex="-1"></a>        model<span class="op">=</span>create_model_task.outputs[<span class="st">"model"</span>],</span>
+<span id="cb34-70"><a href="#cb34-70" aria-hidden="true" tabindex="-1"></a>        model_destination_path<span class="op">=</span>artifact_uri,</span>
+<span id="cb34-71"><a href="#cb34-71" aria-hidden="true" tabindex="-1"></a>    ).after(create_model_task)</span>
+<span id="cb34-72"><a href="#cb34-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-73"><a href="#cb34-73" aria-hidden="true" tabindex="-1"></a>    <span class="co"># NODE deploy-model-cloud-run</span></span>
+<span id="cb34-74"><a href="#cb34-74" aria-hidden="true" tabindex="-1"></a>    deploy_recommendations_model_task <span class="op">=</span> deploy_recommendations_model(</span>
+<span id="cb34-75"><a href="#cb34-75" aria-hidden="true" tabindex="-1"></a>        artifact_uri<span class="op">=</span>artifact_uri,</span>
+<span id="cb34-76"><a href="#cb34-76" aria-hidden="true" tabindex="-1"></a>        project<span class="op">=</span>project</span>
+<span id="cb34-77"><a href="#cb34-77" aria-hidden="true" tabindex="-1"></a>    ).after(bq_export_task)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="compile-the-pipeline" class="level4">
+<h4 class="anchored" data-anchor-id="compile-the-pipeline">Compile the Pipeline</h4>
+<div class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>compiler.Compiler().<span class="bu">compile</span>(</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    pipeline_func<span class="op">=</span>recommendation_pipeline,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    package_path<span class="op">=</span><span class="st">"recommendation_pipeline.json"</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-and-run-job" class="level4">
+<h4 class="anchored" data-anchor-id="create-and-run-job">Create and Run Job</h4>
+<div class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>job <span class="op">=</span> pipeline_jobs.PipelineJob(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    enable_caching<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    display_name<span class="op">=</span><span class="st">"recommendation-pipeline"</span>,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    template_path<span class="op">=</span><span class="st">"recommendation_pipeline.json"</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    parameter_values<span class="op">=</span>{</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"artifact_uri"</span>: MODEL_DIR,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"display_name"</span>: <span class="st">"recommendation"</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>job.run(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    service_account<span class="op">=</span>SERVICE_ACCOUNT,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    sync<span class="op">=</span><span class="va">False</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can monitor the pipeline here: - <a href="https://console.cloud.google.com/vertex-ai/pipelines">GCP COnsole: Vertex AI Pipelines</a></p>
+<p>And if all went fine, you must see this beautiful picture:</p>
+<p><img src="pipeline.PNG" class="img-fluid"></p>
+</section>
+</section>
+</section>
+<section id="make-sure-no-reservation-or-slot-assignment-is-active" class="level2">
+<h2 class="anchored" data-anchor-id="make-sure-no-reservation-or-slot-assignment-is-active">Make sure no reservation or slot assignment is active</h2>
+<p>If the pipeline fails before deleting the reservation, this command lists the reservations, if any.</p>
+<div class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq ls <span class="op">--</span>reservation <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>location<span class="op">=</span>us</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And this command shows the assignment.</p>
+<div class="cell" data-execution_count="39">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq show <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>location<span class="op">=</span>us <span class="op">--</span>reservation_assignment <span class="op">--</span>job_type<span class="op">=</span>QUERY <span class="op">--</span>assignee_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>assignee_type<span class="op">=</span>PROJECT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="delete-any-reservation-and-assignment" class="level3">
+<h3 class="anchored" data-anchor-id="delete-any-reservation-and-assignment">Delete any reservation and assignment</h3>
+<div class="cell" data-execution_count="40">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>shell_output <span class="op">=</span> <span class="op">!</span> bq show <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>location<span class="op">=</span>us <span class="op">--</span>reservation_assignment <span class="op">--</span>job_type<span class="op">=</span>QUERY <span class="op">--</span>assignee_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>assignee_type<span class="op">=</span>PROJECT</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>assignment_id <span class="op">=</span> shell_output[<span class="dv">2</span>].split(<span class="st">' '</span>)[<span class="dv">2</span>].split(<span class="st">'.'</span>)[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>reservation_id <span class="op">=</span> <span class="st">'matrix-factorization-reservation'</span> <span class="co"># As declared in the pipeline</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co"># remove assignment</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq rm <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>location<span class="op">=</span>us <span class="op">--</span>reservation_assignment {reservation_id}.{assignment_id}</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co"># remove reservation</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq rm <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>location<span class="op">=</span>us <span class="op">--</span>reservation {reservation_id}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
 </section>
 </section>
 

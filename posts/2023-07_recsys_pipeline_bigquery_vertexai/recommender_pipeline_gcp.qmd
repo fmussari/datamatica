@@ -12,6 +12,9 @@ format:
     
 ---
 
+![](pipeline.PNG)
+
+
 ## Overview
 
 This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.  
@@ -307,7 +310,7 @@ And thats it, all services are enabled and the service accounts has the granular
 
 ## Vertex AI Pipeline - Create and Run the Pipeline
 
-#### Import Libraries
+### Import Libraries
 
 ```{python}
 #| eval: false
@@ -393,22 +396,23 @@ def create_reservation(
 ## This is Important
 
 After the reservation is created, the account is going to be billed by time and number of slots. It can cost about $3 for each pipeline run, **but you need to be very cautious about the pipeline failing before the reservation is deleted**. To be sure the reservation is deleted you can go to [https://console.cloud.google.com/bigquery/admin/reservations](https://console.cloud.google.com/bigquery/admin/reservations) and select the project of interest. Check that **SLOT RESERVATIONS** and **SLOT COMMITMENTS** are empty and look like this:
-:::
+
   
-**SLOT RESERVATIONS**
+**SLOT RESERVATIONS**  
 ![](reservations.PNG)
 
-**SLOT COMMITMENTS**
+**SLOT COMMITMENTS**  
 ![](commitments.PNG)
 
+If not empty, delete them in the UI. Below you can find some scripts you can run to delete the reservations in case the pipeline fails before doing it.
+:::
 
 #### Delete Reservation Component
 
 ```{python}
 #| eval: false
-@component(packages_to_install=["google-cloud-bigquery-reservation==1.11.2"])   # NEW Jul-05 Update
+@component(packages_to_install=["google-cloud-bigquery-reservation==1.11.2"])
 def delete_reservation(
-    # commitment_name: str, # NEW Jul-05 Update
     reservation_name: str,
     assignment_name: str
 ):
@@ -424,7 +428,7 @@ def delete_reservation(
     print('assignment_name', assignment_name, 'deleted')
 ```
 
-#### Log Eval Metrics
+#### Log Eval Metrics Component
 ```{python}
 #| eval: false
 @component()
@@ -446,4 +450,227 @@ def log_eval_metrics(
             metrics.log_metric(metric_name, val)
 
     print(output)
+```
+
+#### Deploy Model Component
+
+The names in this function are hard coded. It assumes you keep `recommender_model` as the model dir. If it was changed previously, change it here accordingly. Also edit [PIPELINE_ROOT] with your chosen name.
+
+```{python}
+#| eval: false
+@component(packages_to_install=[
+    "google-cloud-build==3.18.0",
+    "google-api-python-client==2.93.0"])
+def deploy_recommendations_model(
+    artifact_uri: str,
+    project: str
+):
+    # import libraries
+    from google.cloud.devtools import cloudbuild
+    from googleapiclient.discovery import build
+
+    # Deploy Model
+    client = cloudbuild.CloudBuildClient()
+    build = cloudbuild.Build()
+
+    # Fill [PIPELINE_ROOT] with your selected parameter
+    # If you didn't keep `recommender_model` change it accordingly
+    build.steps = [
+        {   "name": "gcr.io/cloud-builders/gsutil",
+            "args": ["cp", "-r", '[PIPELINE_ROOT]/recommender_model', "."]  },
+        {   "name": "gcr.io/cloud-builders/gsutil",
+            "args": ["cp", "-r", '[PIPELINE_ROOT]/dockerfile/Dockerfile/', "Dockerfile"] },
+        {   "name": "gcr.io/cloud-builders/docker",
+            "args": ["build", "-t", f"gcr.io/{project}/recommender_model", "." ]   },
+        {   "name": "gcr.io/cloud-builders/docker",
+            "args": ["push", f"gcr.io/{project}/recommender_model"]    },
+        {   "name": "gcr.io/cloud-builders/gcloud",
+            "args": [
+                "run", "deploy",
+                "recommender-model", "--image", f"gcr.io/{project}/recommender_model",
+                "--region", "us-central1", "--platform", "managed", "--memory", "500Mi",
+                "--allow-unauthenticated", "--max-instances", "5", "--port", "8501"
+            ]
+        }
+    ]
+
+    operation = client.create_build(project_id=project, build=build)
+    # Print the in-progress operation
+    print("IN PROGRESS:")
+    print(operation.metadata)
+
+    result = operation.result()
+    # Print the completed status
+    print("RESULT:", result.status)
+```
+
+#### Create the Docker file and copy it to GCS
+
+Keep `recommender_model` or change it accordingly.
+
+```{python}
+#| eval: false
+%%writefile Dockerfile
+FROM tensorflow/serving:2.4.4
+ENTRYPOINT ["/usr/bin/env"]
+ENV MODEL_NAME=recommender_model
+ENV PORT=8501
+COPY recommender_model /models/recommender_model/1
+CMD tensorflow_model_server --port=8500 --rest_api_port=$PORT --model_base_path=/models/recommender_model --model_name=$MODEL_NAME
+```
+
+```{python}
+#| eval: false
+docker_path = PIPELINE_ROOT + 'dockerfile/'
+! gsutil cp Dockerfile {docker_path}
+```
+
+### Pipeline and Job
+
+#### Declare the Pipeline
+```{python}
+#| eval: false
+@pipeline(
+    name="bigquery-recommender-pipeline",
+    pipeline_root=PIPELINE_ROOT + "bigquery-recommender-pipeline"
+)
+def recommendation_pipeline(
+    artifact_uri: str,
+    display_name: str
+):
+
+    # import libraries
+    from google_cloud_pipeline_components.v1.bigquery import (
+        BigqueryCreateModelJobOp,
+        BigqueryEvaluateModelJobOp,
+        BigqueryExportModelJobOp
+    )
+
+    # NODE create-reservation
+    project = PROJECT_ID
+    location = "us"
+    slots = 100
+    reservation_id = "matrix-factorization-reservation"
+
+    create_reservation_task = create_reservation(
+        project=project, location=location, commitment_slots=slots, reservation_id=reservation_id
+    )
+
+    # NODE create-model-task
+    # Query for training
+    num_factors = 60
+    q = f"""
+    CREATE OR REPLACE MODEL {MODEL_DATASET}.model_00
+    OPTIONS
+        (model_type='matrix_factorization',
+        user_col='user_id',
+        item_col='item_id',
+        RATING_COL='rating',
+        feedback_type='EXPLICIT',
+        l2_reg=9.83,
+        num_factors={num_factors}) AS
+    SELECT user_id, item_id, rating FROM {MOVIELENS_DATASET}.movielens_1m
+    """
+    create_model_task = BigqueryCreateModelJobOp(
+        project=project,
+        location=location,
+        query=q,
+    ).after(create_reservation_task)
+
+    # NODE evaluate-model-task
+    bq_evaluate_task = BigqueryEvaluateModelJobOp(
+        project=project, location=location, model=create_model_task.outputs["model"]
+    ).after(create_model_task)
+
+    # NODE delete-reservation
+    delete_reservation_task = delete_reservation(
+        reservation_name=create_reservation_task.outputs["reservation_name"],
+        assignment_name=create_reservation_task.outputs["assignment_name"]
+    ).after(bq_evaluate_task)
+
+    # NODE log-eval-metrics
+    bqml_eval_metrics_raw = bq_evaluate_task.outputs["evaluation_metrics"]
+    log_eval_metrics_task = log_eval_metrics(
+        eval_metrics=bqml_eval_metrics_raw
+    )
+
+    # NODE export-bq-model-to-gcs
+    bq_export_task = BigqueryExportModelJobOp(
+        project=project,
+        location=location,
+        model=create_model_task.outputs["model"],
+        model_destination_path=artifact_uri,
+    ).after(create_model_task)
+
+    # NODE deploy-model-cloud-run
+    deploy_recommendations_model_task = deploy_recommendations_model(
+        artifact_uri=artifact_uri,
+        project=project
+    ).after(bq_export_task)
+```
+
+#### Compile the Pipeline
+```{python}
+#| eval: false
+compiler.Compiler().compile(
+    pipeline_func=recommendation_pipeline,
+    package_path="recommendation_pipeline.json"
+)
+```
+
+#### Create and Run Job
+```{python}
+#| eval: false
+job = pipeline_jobs.PipelineJob(
+    enable_caching=False,
+    display_name="recommendation-pipeline",
+    template_path="recommendation_pipeline.json",
+    parameter_values={
+        "artifact_uri": MODEL_DIR,
+        "display_name": "recommendation",
+    }
+)
+```
+
+```{python}
+#| eval: false
+job.run(
+    service_account=SERVICE_ACCOUNT,
+    sync=False
+)
+```
+
+
+You can monitor the pipeline here:
+- [GCP COnsole: Vertex AI Pipelines](https://console.cloud.google.com/vertex-ai/pipelines)
+  
+And if all went fine, you must see this beautiful picture:
+
+![](pipeline.PNG)
+
+## Make sure no reservation or slot assignment is active
+
+If the pipeline fails before deleting the reservation, this command lists the reservations, if any. 
+```{python}
+#| eval: false
+! bq ls --reservation --project_id={PROJECT_ID} --location=us
+```
+
+And this command shows the assignment. 
+```{python}
+! bq show --project_id={PROJECT_ID} --location=us --reservation_assignment --job_type=QUERY --assignee_id={PROJECT_ID} --assignee_type=PROJECT
+```
+
+### Delete any reservation and assignment
+
+```{python}
+shell_output = ! bq show --project_id={PROJECT_ID} --location=us --reservation_assignment --job_type=QUERY --assignee_id={PROJECT_ID} --assignee_type=PROJECT
+
+assignment_id = shell_output[2].split(' ')[2].split('.')[-1]
+reservation_id = 'matrix-factorization-reservation' # As declared in the pipeline
+
+# remove assignment
+! bq rm --project_id={PROJECT_ID} --location=us --reservation_assignment {reservation_id}.{assignment_id}
+# remove reservation
+! bq rm --project_id={PROJECT_ID} --location=us --reservation {reservation_id}
 ```

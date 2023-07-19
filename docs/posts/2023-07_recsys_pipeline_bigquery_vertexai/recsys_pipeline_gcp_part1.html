@@ -167,7 +167,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline</h1>
+      <h1 class="title">Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline. Part 1</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">BigQuery</div>
                 <div class="quarto-category">BigQuery ML</div>
@@ -208,7 +208,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#part-1.-train-and-deploy" id="toc-part-1.-train-and-deploy" class="nav-link active" data-scroll-target="#part-1.-train-and-deploy">Part 1. Train and Deploy</a></li>
+  <li><a href="#part-2.-inference" id="toc-part-2.-inference" class="nav-link" data-scroll-target="#part-2.-inference">Part 2. Inference</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
   <li><a href="#before-you-begin" id="toc-before-you-begin" class="nav-link" data-scroll-target="#before-you-begin">Before you begin</a></li>
   <li><a href="#loading-data-into-bigquery" id="toc-loading-data-into-bigquery" class="nav-link" data-scroll-target="#loading-data-into-bigquery">Loading data into BigQuery</a>
@@ -248,7 +250,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<section id="part-1.-train-and-deploy" class="level3">
+<h3 class="anchored" data-anchor-id="part-1.-train-and-deploy">Part 1. Train and Deploy</h3>
+<ul>
+<li>Loading MovieLens data into BigQuery</li>
+<li>Setup services and accounts for the Vertex AI Pipeline to run</li>
+<li>Create and run the Pipeline and its Components</li>
+<li>Make sure no reservation or slot assignment remains active</li>
+</ul>
+</section>
+<section id="part-2.-inference" class="level3">
+<h3 class="anchored" data-anchor-id="part-2.-inference">Part 2. Inference</h3>
+<ul>
+<li>Use the Cloud Run endpoint to get recommendations</li>
+<li>Get recommendations from BigQuery ML</li>
+<li>Get Weights and Bias (Embeddings) and interpret them</li>
+<li>Cosine similarity with NumPy</li>
+</ul>
 <p><img src="pipeline.PNG" class="img-fluid"></p>
+</section>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.</p>
@@ -257,21 +277,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ol type="1">
 <li>This post documents the whole process, from loading the date to BigQuery to how to make recomendations in different ways.</li>
 <li>On July 5th there was a <a href="https://cloud.google.com/bigquery/docs/editions-transition">Transition to BigQuery editions</a> which resulted in some changes being made to adapt the scripts showed in the video.</li>
-</ol>
-<div class="callout-important callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-This is Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This is an example of a callout with a title.</p>
-</div>
-</div>
-<ol start="3" type="1">
 <li>When trying to replicate the video tutorial I had to solve some issues with the pipeline failing to run. Most of the issues were very hard to debug, with misleading error messages and layers over layer of abstraction between python libraries and component definitions. At the end most of the errors were about the Default Service Account not having the requiered permission. So,</li>
 <li>In this post we can see and run each step and command to create a Service Account and grant this account granular permissions to the Google Cloud resources needed for the end to end process to run. This is what the Google documentation recommends.</li>
 <li>There are also the commands to enable each service API needed for the project.</li>

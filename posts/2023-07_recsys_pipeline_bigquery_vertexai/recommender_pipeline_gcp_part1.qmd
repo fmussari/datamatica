@@ -11,10 +11,6 @@ format:
     toc-depth: 3
     
 ---
-![](pipeline.PNG)
-
-
-## Parts
 
 ### Part 1. Train and Deploy
 - Loading MovieLens data into BigQuery
@@ -27,6 +23,9 @@ format:
 - Get recommendations from BigQuery ML
 - Get Weights and Bias (Embeddings) and interpret them
 - Cosine similarity with NumPy
+  
+![](pipeline.PNG)
+
 
 ## Overview
 

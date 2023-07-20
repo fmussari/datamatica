@@ -2,7 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/2023-07_recsys_pipeline_bigquery_vertexai/recsys_pipeline_gcp_part1.html",
+      "/posts/2023-07_bigqueryml_vertexai_recsys/bqml_vertex_recsys__part2.html",
+      "/posts/2023-07_bigqueryml_vertexai_recsys/bqml_vertex_recsys__part1.html",
       "/posts/2023-05_dbt_dimensional_model/dimensional_model_with_dbt_postgres.html",
       "/posts/2023-03_Wwf_homework/Part_3__Tower_Parts_Classisfier_with_miniai.html",
       "/posts/2023-03_Wwf_homework/Part_2__Wwf_Homework_PyTorch_Tower_Classification.html",

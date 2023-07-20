@@ -9,7 +9,7 @@
 <meta name="author" content="Francisco Mussari">
 <meta name="dcterms.date" content="2023-07-17">
 
-<title>datamatica - Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline. Part 1</title>
+<title>datamatica - RecSys MLOps. BigQuery ML and Vertex AI. Part 1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -167,15 +167,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Train and Deploy a RecSys using BigQuery ML and Vertex AI Pipeline. Part 1</h1>
+      <h1 class="title">RecSys MLOps. BigQuery ML and Vertex AI. Part 1</h1>
                                 <div class="quarto-categories">
+                <div class="quarto-category">Movielens</div>
                 <div class="quarto-category">BigQuery</div>
                 <div class="quarto-category">BigQuery ML</div>
                 <div class="quarto-category">RecSys</div>
                 <div class="quarto-category">Recommender</div>
                 <div class="quarto-category">Pipeline</div>
                 <div class="quarto-category">Vertex AI</div>
-                <div class="quarto-category">Movielens</div>
+                <div class="quarto-category">MLOps</div>
               </div>
                   </div>
   </div>
@@ -208,16 +209,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#part-1.-train-and-deploy" id="toc-part-1.-train-and-deploy" class="nav-link active" data-scroll-target="#part-1.-train-and-deploy">Part 1. Train and Deploy</a></li>
-  <li><a href="#part-2.-inference" id="toc-part-2.-inference" class="nav-link" data-scroll-target="#part-2.-inference">Part 2. Inference</a></li>
-  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
+  <ul class="collapse">
   <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
+  </ul></li>
+  <li><a href="#blog-post-parts" id="toc-blog-post-parts" class="nav-link" data-scroll-target="#blog-post-parts">Blog Post Parts</a>
+  <ul class="collapse">
+  <li><a href="#part-1.-train-and-deploy" id="toc-part-1.-train-and-deploy" class="nav-link" data-scroll-target="#part-1.-train-and-deploy">Part 1. Train and Deploy</a></li>
+  <li><a href="#part-2.-inference" id="toc-part-2.-inference" class="nav-link" data-scroll-target="#part-2.-inference">Part 2. Inference</a></li>
+  </ul></li>
   <li><a href="#before-you-begin" id="toc-before-you-begin" class="nav-link" data-scroll-target="#before-you-begin">Before you begin</a></li>
   <li><a href="#loading-data-into-bigquery" id="toc-loading-data-into-bigquery" class="nav-link" data-scroll-target="#loading-data-into-bigquery">Loading data into BigQuery</a>
   <ul class="collapse">
   <li><a href="#authenticate-your-google-cloud-account" id="toc-authenticate-your-google-cloud-account" class="nav-link" data-scroll-target="#authenticate-your-google-cloud-account">Authenticate your Google Cloud account</a></li>
   <li><a href="#set-your-project-id" id="toc-set-your-project-id" class="nav-link" data-scroll-target="#set-your-project-id">Set your project ID</a></li>
-  <li><a href="#download-movielens-1m-movier-ratings-dataset" id="toc-download-movielens-1m-movier-ratings-dataset" class="nav-link" data-scroll-target="#download-movielens-1m-movier-ratings-dataset">Download MovieLens 1M movier ratings dataset</a></li>
+  <li><a href="#download-movielens-1m-movie-ratings-dataset" id="toc-download-movielens-1m-movie-ratings-dataset" class="nav-link" data-scroll-target="#download-movielens-1m-movie-ratings-dataset">Download MovieLens 1M movie ratings dataset</a></li>
   <li><a href="#create-bigquery-datasets-and-populate-the-tables" id="toc-create-bigquery-datasets-and-populate-the-tables" class="nav-link" data-scroll-target="#create-bigquery-datasets-and-populate-the-tables">Create BigQuery datasets and populate the tables</a></li>
   </ul></li>
   <li><a href="#vertex-ai-pipeline.-install-libraries-and-setup-services-and-accounts" id="toc-vertex-ai-pipeline.-install-libraries-and-setup-services-and-accounts" class="nav-link" data-scroll-target="#vertex-ai-pipeline.-install-libraries-and-setup-services-and-accounts">Vertex AI Pipeline. Install Libraries and Setup Services and Accounts</a>
@@ -227,7 +233,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#set-project-variables" id="toc-set-project-variables" class="nav-link" data-scroll-target="#set-project-variables">Set Project Variables</a></li>
   <li><a href="#authenticate-your-google-cloud-account-again" id="toc-authenticate-your-google-cloud-account-again" class="nav-link" data-scroll-target="#authenticate-your-google-cloud-account-again">Authenticate your Google Cloud account (again)</a></li>
   <li><a href="#enable-service-apis" id="toc-enable-service-apis" class="nav-link" data-scroll-target="#enable-service-apis">Enable Service APIs</a></li>
-  <li><a href="#create-the-service-account-for-the-pipeline-to-run" id="toc-create-the-service-account-for-the-pipeline-to-run" class="nav-link" data-scroll-target="#create-the-service-account-for-the-pipeline-to-run">Create the Service Account for the pipeline to run</a></li>
+  <li><a href="#create-a-service-account-for-the-pipeline-to-run" id="toc-create-a-service-account-for-the-pipeline-to-run" class="nav-link" data-scroll-target="#create-a-service-account-for-the-pipeline-to-run">Create a Service Account for the pipeline to run</a></li>
   <li><a href="#grant-the-service-account-granular-permissions-to-gcp-resources" id="toc-grant-the-service-account-granular-permissions-to-gcp-resources" class="nav-link" data-scroll-target="#grant-the-service-account-granular-permissions-to-gcp-resources">Grant the Service Account granular permissions to GCP resources</a></li>
   </ul></li>
   <li><a href="#vertex-ai-pipeline---create-and-run-the-pipeline" id="toc-vertex-ai-pipeline---create-and-run-the-pipeline" class="nav-link" data-scroll-target="#vertex-ai-pipeline---create-and-run-the-pipeline">Vertex AI Pipeline - Create and Run the Pipeline</a>
@@ -241,6 +247,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#delete-any-reservation-and-assignment" id="toc-delete-any-reservation-and-assignment" class="nav-link" data-scroll-target="#delete-any-reservation-and-assignment">Delete any reservation and assignment</a></li>
   </ul></li>
+  <li><a href="#monitor-the-process" id="toc-monitor-the-process" class="nav-link" data-scroll-target="#monitor-the-process">Monitor the process</a></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a></li>
   </ul>
 </nav>
     </div>
@@ -250,6 +258,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.</p>
+<p>The post is strongly based on this tutorial: - <a href="https://youtu.be/S0wNWOR4WoE">YouTube: Recommendation Engine Pipeline with BigQuery ML and Vertex AI Pipelines using Matrix Factorization</a></p>
+<p>But there are some key differences:</p>
+<ol type="1">
+<li>This post documents the whole process, from loading the data into BigQuery to how to make recommendations in different ways.</li>
+<li>On July 5th there was a <a href="https://cloud.google.com/bigquery/docs/editions-transition">Transition to BigQuery editions</a> which resulted in some changes being made to adapt the scripts shown in the original video.</li>
+<li>When trying to replicate the video tutorial I had to solve some issues with the pipeline failing to run. Most of the issues were very hard to debug, with misleading error messages and layers over layer of abstraction between python libraries and component definitions. At the end most of the errors were about the Default Service Account not having the requiered permission. So,</li>
+<li>In this post we can see and run each step and command to create a Service Account and grant this account granular permissions to the Google Cloud resources needed for the end to end process to run. This is what the Google documentation recommends.</li>
+<li>There are also the commands to enable each service API needed for the project.</li>
+</ol>
+<p>At the end we shoud get a flow like this:</p>
+<p><img src="pipeline.PNG" class="img-fluid"></p>
+<section id="additional-resources" class="level3">
+<h3 class="anchored" data-anchor-id="additional-resources">Additional Resources</h3>
+<ul>
+<li><a href="https://youtu.be/p4ZZq0736Po?t=3720">YouTube: Lesson 7: Practical Deep Learning for Coders 2022 - Collaborative filtering deep dive</a></li>
+<li><a href="https://cloud.google.com/bigquery/docs/bigqueryml-mf-implicit-tutorial">Tutorial: Use BigQuery ML to make recommendations from Google analytics data</a></li>
+</ul>
+</section>
+</section>
+<section id="blog-post-parts" class="level2">
+<h2 class="anchored" data-anchor-id="blog-post-parts">Blog Post Parts</h2>
 <section id="part-1.-train-and-deploy" class="level3">
 <h3 class="anchored" data-anchor-id="part-1.-train-and-deploy">Part 1. Train and Deploy</h3>
 <ul>
@@ -267,27 +299,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Get Weights and Bias (Embeddings) and interpret them</li>
 <li>Cosine similarity with NumPy</li>
 </ul>
-<p><img src="pipeline.PNG" class="img-fluid"></p>
 </section>
-<section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This post is about training a Matrix Factorization model with BigQuery ML and deploying it as Docker container. The end-to-end process is orchestrated through a Vertex AI pipeline.</p>
-<p>The post is strongly based on this tutorial: - <a href="https://youtu.be/S0wNWOR4WoE">YouTube: Recommendation Engine Pipeline with BigQuery ML and Vertex AI Pipelines using Matrix Factorization</a></p>
-<p>But there are key differences:</p>
-<ol type="1">
-<li>This post documents the whole process, from loading the date to BigQuery to how to make recomendations in different ways.</li>
-<li>On July 5th there was a <a href="https://cloud.google.com/bigquery/docs/editions-transition">Transition to BigQuery editions</a> which resulted in some changes being made to adapt the scripts showed in the video.</li>
-<li>When trying to replicate the video tutorial I had to solve some issues with the pipeline failing to run. Most of the issues were very hard to debug, with misleading error messages and layers over layer of abstraction between python libraries and component definitions. At the end most of the errors were about the Default Service Account not having the requiered permission. So,</li>
-<li>In this post we can see and run each step and command to create a Service Account and grant this account granular permissions to the Google Cloud resources needed for the end to end process to run. This is what the Google documentation recommends.</li>
-<li>There are also the commands to enable each service API needed for the project.</li>
-</ol>
-</section>
-<section id="additional-resources" class="level2">
-<h2 class="anchored" data-anchor-id="additional-resources">Additional Resources</h2>
-<ul>
-<li><a href="https://youtu.be/p4ZZq0736Po?t=3720">YouTube: Lesson 7: Practical Deep Learning for Coders 2022 - Collaborative filtering deep dive</a></li>
-<li><a href="https://cloud.google.com/bigquery/docs/bigqueryml-mf-implicit-tutorial">Tutorial: Use BigQuery ML to make recommendations from Google analytics data</a></li>
-</ul>
 </section>
 <section id="before-you-begin" class="level2">
 <h2 class="anchored" data-anchor-id="before-you-begin">Before you begin</h2>
@@ -309,7 +321,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.colab <span class="im">import</span> auth <span class="im">as</span> google_auth</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    google_auth.authenticate_user()</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">!</span> gcloud auth login</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If you are running this notebook locally, replace the string below with the</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># path to your service account key and run this cell to authenticate your GCP</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># account.</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">%</span>env GOOGLE_APPLICATION_CREDENTIALS <span class="st">''</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="set-your-project-id" class="level3">
@@ -318,13 +333,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>PROJECT_ID <span class="op">=</span> <span class="st">"[your-project-id]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="download-movielens-1m-movier-ratings-dataset" class="level3">
-<h3 class="anchored" data-anchor-id="download-movielens-1m-movier-ratings-dataset">Download MovieLens 1M movier ratings dataset</h3>
+<section id="download-movielens-1m-movie-ratings-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="download-movielens-1m-movie-ratings-dataset">Download MovieLens 1M movie ratings dataset</h3>
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl <span class="op">-</span>O <span class="st">'http://files.grouplens.org/datasets/movielens/ml-1m.zip'</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> unzip <span class="op">-</span>o ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span>.<span class="bu">zip</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Change <code>::</code> delimiter to comma <code>,</code> and save as <code>.csv</code> files:</p>
+<p>Change te existing <code>::</code> delimiter to comma and save the files as <code>.csv</code>:</p>
 <div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> sed <span class="st">'s/::/,/g'</span> ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span><span class="op">/</span>ratings.dat <span class="op">&gt;</span> ratings.csv</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> sed <span class="st">'s/::/@/g'</span> ml<span class="op">-</span><span class="dv">1</span><span class="er">m</span><span class="op">/</span>movies.dat <span class="op">&gt;</span> movie_titles.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -332,6 +347,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="create-bigquery-datasets-and-populate-the-tables" class="level3">
 <h3 class="anchored" data-anchor-id="create-bigquery-datasets-and-populate-the-tables">Create BigQuery datasets and populate the tables</h3>
+<p>Define the names of the datasets.</p>
 <div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>MODEL_DATASET <span class="op">=</span> <span class="st">"[bq-model-dataset]"</span>  <span class="co"># @param {type:"string"}</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>MOVIELENS_DATASET <span class="op">=</span> <span class="st">"[bq-data-dataset]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -343,7 +359,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># To store movies and reviews tables</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq mk <span class="op">--</span>location<span class="op">=</span>US <span class="op">--</span>dataset {PROJECT_ID}:{MOVIELENS_DATASET}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Populate the tables</p>
+<p>Create and populate the tables <code>movielens_1m</code> and <code>movie_titles</code>.</p>
 <div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reviews table</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq load <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>source_format<span class="op">=</span>CSV {PROJECT_ID}:{MOVIELENS_DATASET}.movielens_1m ratings.csv user_id:INT64,item_id:INT64,rating:FLOAT64,timestamp:TIMESTAMP</span>
@@ -396,7 +412,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.colab <span class="im">import</span> auth <span class="im">as</span> google_auth</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    google_auth.authenticate_user()</span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">!</span> gcloud auth login</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If you are running this notebook locally, replace the string below with the</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># path to your service account key and run this cell to authenticate your GCP</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># account.</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">%</span>env GOOGLE_APPLICATION_CREDENTIALS <span class="st">''</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud config <span class="bu">set</span> project {PROJECT_ID}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -404,7 +423,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="enable-service-apis" class="level3">
 <h3 class="anchored" data-anchor-id="enable-service-apis">Enable Service APIs</h3>
-<p>It is great to enabling the APIs with commands because everything stays documented. We need the following services: - Identity and Access Management (IAM) API - Vertex AI API - Cloud Build API - BigQuery API (Although this should be enabled already if the datasets were created and the tables populated) - BigQuery Reservation API - Cloud Run Admin API - Cloud Storage API</p>
+<p>Enabling the APIs with commands instead of doing it in the UI keeps everythong documented. For this project the following services are needed: - Identity and Access Management (IAM) API - Vertex AI API - Cloud Build API - BigQuery API (Although this should be enabled already if the datasets were created and the tables populated) - BigQuery Reservation API - Cloud Run Admin API - Cloud Storage API</p>
 <div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable iam.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable aiplatform.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span>
@@ -415,8 +434,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud services enable storage<span class="op">-</span>component.googleapis.com <span class="op">--</span>project<span class="op">=</span>{PROJECT_ID}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="create-the-service-account-for-the-pipeline-to-run" class="level3">
-<h3 class="anchored" data-anchor-id="create-the-service-account-for-the-pipeline-to-run">Create the Service Account for the pipeline to run</h3>
+<section id="create-a-service-account-for-the-pipeline-to-run" class="level3">
+<h3 class="anchored" data-anchor-id="create-a-service-account-for-the-pipeline-to-run">Create a Service Account for the pipeline to run</h3>
 <div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>SERVICE_ACCOUNT_ID <span class="op">=</span> <span class="st">"[your-service-account-id]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -427,8 +446,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>SERVICE_ACCOUNT <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>SERVICE_ACCOUNT_ID<span class="sc">}</span><span class="ss">@</span><span class="sc">{</span>PROJECT_ID<span class="sc">}</span><span class="ss">.iam.gserviceaccount.com"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="if-not-use-the-default-service-account" class="level4">
-<h4 class="anchored" data-anchor-id="if-not-use-the-default-service-account">If not, use the Default Service Account</h4>
+<section id="if-not-use-the-default-service-account-instead" class="level4">
+<h4 class="anchored" data-anchor-id="if-not-use-the-default-service-account-instead">If not, use the Default Service Account instead</h4>
 <div class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>shell_output <span class="op">=</span> <span class="op">!</span> gcloud projects describe {PROJECT_ID}</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>PROJECT_NUMBER <span class="op">=</span> shell_output[<span class="op">-</span><span class="dv">1</span>].split(<span class="st">":"</span>)[<span class="dv">1</span>].strip().replace(<span class="st">"'"</span>, <span class="st">""</span>)</span>
@@ -462,8 +481,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="grant-the-service-account-granular-permissions-to-gcp-resources" class="level3">
 <h3 class="anchored" data-anchor-id="grant-the-service-account-granular-permissions-to-gcp-resources">Grant the Service Account granular permissions to GCP resources</h3>
 <p>The most challenging part of the project was figuring out how to give the service account the right granular permissions. I didn’t want to give the service account the Editor or Owner rol. It took me a while to find the right roles. As I mentioned some errors in the pipeline were because lack of permissions, but it was hard to troubleshoot as there wasn’t any mention to the actual rol needed.</p>
-<section id="aiplatform.user-rol" class="level4">
-<h4 class="anchored" data-anchor-id="aiplatform.user-rol"><code>aiplatform.user</code> rol</h4>
+<section id="grant-aiplatform.user-rol" class="level4">
+<h4 class="anchored" data-anchor-id="grant-aiplatform.user-rol">Grant <code>aiplatform.user</code> rol</h4>
 <div class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>service_arg <span class="op">=</span> <span class="ss">f"serviceAccount:</span><span class="sc">{</span>SERVICE_ACCOUNT<span class="sc">}</span><span class="ss">"</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud projects add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {PROJECT_ID} <span class="op">--</span>member<span class="op">=</span>{service_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/aiplatform.user"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -471,7 +490,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="create-the-gcs-bucket-and-assign-storage.objectadmin-rol" class="level4">
 <h4 class="anchored" data-anchor-id="create-the-gcs-bucket-and-assign-storage.objectadmin-rol">Create the GCS bucket and assign <code>storage.objectAdmin</code> rol</h4>
-<p>I first assign the rols of <code>storage.objectCreator</code> and <code>objectViewer</code>. Took me hours to find out that the trained model couldn’t be exported without the rol of <code>storage.objectAdmin</code> which is needed to modify existing data in the bucket.</p>
+<p>I first assigned <code>storage.objectCreator</code> and <code>objectViewer</code> roles. Took me hours to find out that the trained model couldn’t be exported without the rol of <code>storage.objectAdmin</code>, which is needed to modify existing data in the bucket.</p>
 <div class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gsutil mb <span class="op">-</span>p {PROJECT_ID} <span class="op">-</span>l {REGION} {PIPELINE_ROOT}</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gsutil iam ch serviceAccount:{SERVICE_ACCOUNT}:roles<span class="op">/</span>storage.objectAdmin {PIPELINE_ROOT}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -485,7 +504,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="cloud-builds-cloudbuild.builds.editor-rol" class="level4">
 <h4 class="anchored" data-anchor-id="cloud-builds-cloudbuild.builds.editor-rol">Cloud Build’s <code>cloudbuild.builds.editor</code> rol</h4>
-<p>I thought that Cloud Run developer rol was enough for the model to be deployed. Took me a while to find out the service account needed a permission from Cloud Build service.</p>
+<p>I thought that Cloud Run developer rol was enough for the model to be deployed. Took me a while to find out the service account needed a permission from Cloud Build service also.</p>
 <div class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud projects add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {PROJECT_ID} <span class="op">--</span>member<span class="op">=</span>{service_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/cloudbuild.builds.editor"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -496,7 +515,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <blockquote class="blockquote">
 <p>By default – for security reasons – the Cloud Build Service Account does not have the permissions to manage Cloud Run. <a href="https://www.bram.us/2020/02/13/google-cloud-build-google-cloud-run-fixing-error-gcloud-run-deploy-permission_denied-the-caller-does-not-have-permission/">Google Cloud Build + Google Cloud Run</a></p>
 </blockquote>
-<p>First lets grab the default service accounts.</p>
+<p>First lets grab the default Cloud Build and Compute Engine service accounts.</p>
 <div class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cloud Build default service account</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>cloud_build_sa <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>PROJECT_NUMBER<span class="sc">}</span><span class="ss">@cloudbuild.gserviceaccount.com"</span></span>
@@ -507,12 +526,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud projects add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {PROJECT_ID} <span class="op">--</span>member<span class="op">=</span>{service_build_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/run.admin"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>And the last part is “<a href="https://www.bram.us/2020/02/13/google-cloud-build-google-cloud-run-fixing-error-gcloud-run-deploy-permission_denied-the-caller-does-not-have-permission/">Grant the IAM Service Account User role to the Cloud Build service account on the Cloud Run runtime service account</a>”.</p>
-<p>Meaning that the Cloud Build service account is going to be able to impersonate the Cloud Run runtime service account, which is Compute Engine default service account. More on impersonation here: <a href="https://youtu.be/pHdQ13HSCq8">Youtube: Service Account Impersonation in Google Cloud - IAM in GCP</a></p>
+<p>And the last part was to “<a href="https://www.bram.us/2020/02/13/google-cloud-build-google-cloud-run-fixing-error-gcloud-run-deploy-permission_denied-the-caller-does-not-have-permission/">Grant the IAM Service Account User role to the Cloud Build service account on the Cloud Run runtime service account</a>”.</p>
+<p>Meaning that Cloud Build service account is going to be able to impersonate Cloud Run runtime service account, which is Compute Engine default service account. More on impersonation here: <a href="https://youtu.be/pHdQ13HSCq8">Youtube: Service Account Impersonation in Google Cloud - IAM in GCP</a></p>
 <div class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> gcloud iam service<span class="op">-</span>accounts add<span class="op">-</span>iam<span class="op">-</span>policy<span class="op">-</span>binding {compute_engine_sa} <span class="op">--</span>member<span class="op">=</span>{service_build_arg} <span class="op">--</span>role<span class="op">=</span><span class="st">"roles/iam.serviceAccountUser"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>And thats it, all services are enabled and the service accounts has the granular permission for the pipeline to run.</p>
+<p>And that’s it, all services are enabled and the service accounts has the granular permission for the pipeline to run.</p>
 </section>
 </section>
 </section>
@@ -541,8 +560,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="declare-pipeline-components" class="level3">
 <h3 class="anchored" data-anchor-id="declare-pipeline-components">Declare Pipeline Components</h3>
-<section id="create-reservation-component" class="level4">
-<h4 class="anchored" data-anchor-id="create-reservation-component">Create Reservation Component</h4>
+<section id="create-bigquery-reservation-component" class="level4">
+<h4 class="anchored" data-anchor-id="create-bigquery-reservation-component">Create BigQuery Reservation Component</h4>
 <div class="cell" data-execution_count="28">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="at">@component</span>(packages_to_install<span class="op">=</span>[<span class="st">"google-cloud-bigquery-reservation==1.11.2"</span>])</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_reservation(</span>
@@ -822,8 +841,8 @@ This is Important
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="create-and-run-job" class="level4">
-<h4 class="anchored" data-anchor-id="create-and-run-job">Create and Run Job</h4>
+<section id="create-and-run-the-job" class="level4">
+<h4 class="anchored" data-anchor-id="create-and-run-the-job">Create and Run the Job</h4>
 <div class="cell" data-execution_count="36">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>job <span class="op">=</span> pipeline_jobs.PipelineJob(</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    enable_caching<span class="op">=</span><span class="va">False</span>,</span>
@@ -841,8 +860,8 @@ This is Important
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    sync<span class="op">=</span><span class="va">False</span></span>
 <span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>You can monitor the pipeline here: - <a href="https://console.cloud.google.com/vertex-ai/pipelines">GCP COnsole: Vertex AI Pipelines</a></p>
-<p>And if all went fine, you must see this beautiful picture:</p>
+<p>The pipeline can be monitored here: - <a href="https://console.cloud.google.com/vertex-ai/pipelines">GCP COnsole: Vertex AI Pipelines</a></p>
+<p>And if all went fine, you must see a beautiful picture like this:</p>
 <p><img src="pipeline.PNG" class="img-fluid"></p>
 </section>
 </section>
@@ -870,9 +889,21 @@ This is Important
 <span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co"># remove reservation</span></span>
 <span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> bq rm <span class="op">--</span>project_id<span class="op">=</span>{PROJECT_ID} <span class="op">--</span>location<span class="op">=</span>us <span class="op">--</span>reservation {reservation_id}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-
-
 </section>
+</section>
+<section id="monitor-the-process" class="level2">
+<h2 class="anchored" data-anchor-id="monitor-the-process">Monitor the process</h2>
+<ul>
+<li>https://console.cloud.google.com/cloud-build/builds?project=[your-project-id]</li>
+<li>https://console.cloud.google.com/run?project=[your-project-id]</li>
+<li>https://console.cloud.google.com/vertex-ai/pipelines/runs?project=[your-project-id]</li>
+</ul>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<p>An that’s about it. The automated process for training an deploying the model using BigQuery ML and Vertex AI pipeline. In <a href="../../posts/2023-07_bigqueryml_vertexai_recsys/bqml_vertex_recsys__part2.html">Part 2</a> we will see how to do inference and how to get insight from the embeddings (latent factors) learned by the model for each item and user.</p>
+
+
 </section>
 
 </main> <!-- /main -->

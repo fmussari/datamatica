@@ -1,0 +1,11 @@
+---
+title: RecSys MLOps. BigQuery ML and Vertex AI. Part 2
+author: "Francisco Mussari"  
+date: 2023-07-20  
+image: "pipeline.PNG"
+categories: [Movielens, BigQuery, BigQuery ML, RecSys, Recommender, Pipeline, Vertex AI, MLOps]  
+format:
+  html:
+    toc: true
+    toc-depth: 3
+---

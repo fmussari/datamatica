@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.1.251">
+<meta name="generator" content="quarto-1.3.433">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Francisco Mussari">
-<meta name="dcterms.date" content="2023-07-20">
+<meta name="dcterms.date" content="2023-07-24">
 
 <title>datamatica - RecSys MLOps. BigQuery ML and Vertex AI. Part 2</title>
 <style>
@@ -19,8 +19,42 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -57,9 +91,13 @@ ul.task-list li input[type="checkbox"] {
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -76,26 +114,29 @@ ul.task-list li input[type="checkbox"] {
     <span class="navbar-title">datamatica</span>
     </a>
   </div>
+            <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html">About</a>
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/fmussari"><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/fmussari" rel="" target=""><i class="bi bi-github" role="img">
 </i> 
- </a>
+ <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/francisco-mussari-432b781a6/"><i class="bi bi-linkedin" role="img">
+    <a class="nav-link" href="https://www.linkedin.com/in/francisco-mussari-432b781a6/" rel="" target=""><i class="bi bi-linkedin" role="img">
 </i> 
- </a>
+ <span class="menu-text"></span></a>
   </li>  
 </ul>
-              <div id="quarto-search" class="" title="Search"></div>
+            <div class="quarto-navbar-tools">
+</div>
           </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
@@ -131,9 +172,10 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 20, 2023</p>
+        <p class="date">July 24, 2023</p>
       </div>
     </div>
+    
       
     </div>
     
@@ -142,7 +184,43 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#authenticate" id="toc-authenticate" class="nav-link" data-scroll-target="#authenticate">Authenticate</a></li>
+  <li><a href="#get-recommendations-from-deployed-endpoint" id="toc-get-recommendations-from-deployed-endpoint" class="nav-link" data-scroll-target="#get-recommendations-from-deployed-endpoint">Get recommendations from deployed endpoint</a>
+  <ul class="collapse">
+  <li><a href="#call-the-deployed-model-endpoint" id="toc-call-the-deployed-model-endpoint" class="nav-link" data-scroll-target="#call-the-deployed-model-endpoint">Call the deployed model endpoint</a></li>
+  </ul></li>
+  <li><a href="#bigquery" id="toc-bigquery" class="nav-link" data-scroll-target="#bigquery">BigQuery</a>
+  <ul class="collapse">
+  <li><a href="#authenticate-to-bigquery" id="toc-authenticate-to-bigquery" class="nav-link" data-scroll-target="#authenticate-to-bigquery">Authenticate to BigQuery</a></li>
+  <li><a href="#query-the-data-tables" id="toc-query-the-data-tables" class="nav-link" data-scroll-target="#query-the-data-tables">Query the data tables</a></li>
+  <li><a href="#information-about-models-created" id="toc-information-about-models-created" class="nav-link" data-scroll-target="#information-about-models-created">Information about model(s) created</a></li>
+  <li><a href="#training-statistics" id="toc-training-statistics" class="nav-link" data-scroll-target="#training-statistics">Training statistics</a></li>
+  <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation">Evaluation</a></li>
+  </ul></li>
+  <li><a href="#rating-predictions" id="toc-rating-predictions" class="nav-link" data-scroll-target="#rating-predictions">Rating predictions</a>
+  <ul class="collapse">
+  <li><a href="#compare-to-endpoint-results" id="toc-compare-to-endpoint-results" class="nav-link" data-scroll-target="#compare-to-endpoint-results">Compare to endpoint results</a></li>
+  </ul></li>
+  <li><a href="#latent-factors-embeddings-and-bias" id="toc-latent-factors-embeddings-and-bias" class="nav-link" data-scroll-target="#latent-factors-embeddings-and-bias">Latent Factors (Embeddings) and Bias</a>
+  <ul class="collapse">
+  <li><a href="#global-bias" id="toc-global-bias" class="nav-link" data-scroll-target="#global-bias">Global Bias</a></li>
+  <li><a href="#movie-embeddings" id="toc-movie-embeddings" class="nav-link" data-scroll-target="#movie-embeddings">Movie Embeddings</a></li>
+  <li><a href="#user-embeddings" id="toc-user-embeddings" class="nav-link" data-scroll-target="#user-embeddings">User Embeddings</a></li>
+  <li><a href="#do-the-math-for-a-prediction" id="toc-do-the-math-for-a-prediction" class="nav-link" data-scroll-target="#do-the-math-for-a-prediction">Do the math for a prediction</a></li>
+  </ul></li>
+  <li><a href="#full-pair-predictions" id="toc-full-pair-predictions" class="nav-link" data-scroll-target="#full-pair-predictions">Full Pair Predictions</a>
+  <ul class="collapse">
+  <li><a href="#user-item-interaction" id="toc-user-item-interaction" class="nav-link" data-scroll-target="#user-item-interaction">User Item interaction</a></li>
+  <li><a href="#top-10-predictions-for-each-pair" id="toc-top-10-predictions-for-each-pair" class="nav-link" data-scroll-target="#top-10-predictions-for-each-pair">Top 10 predictions for each pair</a></li>
+  </ul></li>
+  <li><a href="#getting-top-movies-for-each-user-from-bigquery" id="toc-getting-top-movies-for-each-user-from-bigquery" class="nav-link" data-scroll-target="#getting-top-movies-for-each-user-from-bigquery">Getting Top Movies for each User from BigQuery</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
@@ -150,8 +228,1410 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p><a href="bqml_vertex_recsys__part1.qmd">Part 1</a> was about creating a Vertex AI pipeline for training and deploying Matrix Factorization model using BigQuery ML.</p>
+<p>We ended with a model we can use from BigQuery, but that is also available as a Cloud Run endpoint, deployed as a Docker container.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This notebook is better suited for running in Colab.</p>
+</div>
+</div>
+</section>
+<section id="authenticate" class="level2">
+<h2 class="anchored" data-anchor-id="authenticate">Authenticate</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> google.colab <span class="im">import</span> auth</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>auth.authenticate_user()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="get-recommendations-from-deployed-endpoint" class="level2">
+<h2 class="anchored" data-anchor-id="get-recommendations-from-deployed-endpoint">Get recommendations from deployed endpoint</h2>
+<p>As defined in part 1, the service was deployed as <code>recommender-model</code>.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>SERVICE <span class="op">=</span> <span class="st">"recommender-model"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>REGION <span class="op">=</span> <span class="st">'us-central1'</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>PROJECT_ID <span class="op">=</span> <span class="st">"[your-project-id]"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To get the endpoint url, you can navigate to Cloud Run console (insert your Project ID):</p>
+<p><a href="">https://console.cloud.google.com/run/detail/<region>/recommender-model/metrics?project=[PROJECT_ID]</region></a></p>
+<p>Or you can run the following command:</p>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>service_url <span class="op">=</span> <span class="op">!</span> gcloud run services describe {SERVICE} <span class="op">--</span>platform managed <span class="op">--</span>region {REGION} <span class="op">--</span><span class="bu">format</span> <span class="st">'value(status.url)'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>service_url <span class="op">=</span> service_url[<span class="dv">0</span>] <span class="op">+</span> <span class="st">"/v1/models/recommender_model:predict"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>service_url</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And the endpoint should look something like this:<br>
+<code>https://recommender-model-&lt;ENDPOINT_ID&gt;-uc.a.run.app/v1/models/recommender_model:predict</code></p>
+<section id="call-the-deployed-model-endpoint" class="level3">
+<h3 class="anchored" data-anchor-id="call-the-deployed-model-endpoint">Call the deployed model endpoint</h3>
+<p>To call the API simply use <code>curl</code>. In this case we get recommendations for the <code>user_id</code> equals <code>1</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl <span class="op">--</span>header <span class="st">"Content-Type: application/json"</span> \</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">--</span>request POST <span class="op">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">--</span>data <span class="st">'{"instances": [{"user_id": 1}]}'</span> \</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  https:<span class="op">//</span>recommender<span class="op">-</span>model<span class="op">-&lt;</span>ENDPOINT_ID<span class="op">&gt;-</span>uc.a.run.app<span class="op">/</span>v1<span class="op">/</span>models<span class="op">/</span>recommender_model:predict</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+    "predictions": [
+        {
+            "predicted_rating": [7.1595457186221525, 6.931200454403859, 6.7487105522542379, 6.6099371431826093, 6.3368375925279663, 6.3162291916598949, 6.2034087300038294, 6.1908018877869777, 6.095065519595515, 6.0748385283824344, 6.0707896719918022, 6.0115152056191317, 5.9950883198035312, 5.9266960142259579, 5.8977393292303706, 5.8963543166167049, 5.8879213166109317, 5.8651216371567951, 5.8157813717342961, 5.7918400837633026, 5.7728366859651743, 5.7459233895973343, 5.7286289144902627, 5.7236862593334399, 5.6735891385114323, 5.6712837959564055, 5.6344651298840862, 5.6144777548802312, 5.6136065773986719, 5.5966244955484585, 5.5826125214031448, 5.5438993473737597, 5.5405328509132108, 5.5156535458862912, 5.5060371378140998, 5.4983916934699879, 5.4779312652757479, 5.4381644519356804, 5.436539915444734, 5.4274984607954586, 5.4162018042063238, 5.4131954911985822, 5.4112950178511134, 5.3977833272890878, 5.3924309392602101, 5.3921355023131454, 5.3795566101479775, 5.3784815662419794, 5.3724805166998593, 5.3716275159116167],
+            "predicted_item_id": ["3382", "3920", "2178", "662", "469", "199", "215", "2073", "881", "3132", "1900", "1615", "3141", "2928", "445", "973", "3605", "766", "935", "1841", "2330", "944", "2314", "3447", "2171", "3327", "2419", "2351", "557", "3720", "156", "2066", "2475", "2970", "26", "2360", "3018", "2272", "2506", "3670", "1631", "414", "2165", "1177", "2264", "743", "2725", "1934", "2710", "3275"]
+        }
+    ]
+}</code></pre>
+</div>
+</div>
+<p>Which return the top 50 items (movies) by predicted rating for the specified user.</p>
+<p>After processing the output, we can get a dataframe like this (remember this are predictions for user_id=1):</p>
+<div class="cell" data-execution_count="47">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>endpoint_predictions_df.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="47">
+<div>
 
 
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">predicted_rating</th>
+<th data-quarto-table-cell-role="th">predicted_item_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>7.159546</td>
+<td>3382</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>6.931200</td>
+<td>3920</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>6.748711</td>
+<td>2178</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>6.609937</td>
+<td>662</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>6.336838</td>
+<td>469</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>6.316229</td>
+<td>199</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>6.203409</td>
+<td>215</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>6.190802</td>
+<td>2073</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>6.095066</td>
+<td>881</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>6.074839</td>
+<td>3132</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="bigquery" class="level2">
+<h2 class="anchored" data-anchor-id="bigquery">BigQuery</h2>
+<section id="authenticate-to-bigquery" class="level3">
+<h3 class="anchored" data-anchor-id="authenticate-to-bigquery">Authenticate to BigQuery</h3>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> google.cloud <span class="im">import</span> bigquery</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> bigquery.Client(project<span class="op">=</span>PROJECT_ID)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="set-the-same-parameters-as-in-part-1" class="level4">
+<h4 class="anchored" data-anchor-id="set-the-same-parameters-as-in-part-1">Set the same parameters as in Part 1</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>MODEL_DATASET <span class="op">=</span> <span class="st">"[bq-model-dataset]"</span>  <span class="co"># @param {type:"string"}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>MOVIELENS_DATASET <span class="op">=</span> <span class="st">"[bq-data-dataset]"</span>  <span class="co"># @param {type:"string"}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="query-the-data-tables" class="level3">
+<h3 class="anchored" data-anchor-id="query-the-data-tables">Query the data tables</h3>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>movies_df <span class="op">=</span> client.query(<span class="ss">f'''</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT *</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM `</span><span class="sc">{</span>MOVIELENS_DATASET<span class="sc">}</span><span class="ss">.movie_titles`</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>).to_dataframe()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>movies_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">movie_id</th>
+<th data-quarto-table-cell-role="th">movie_title</th>
+<th data-quarto-table-cell-role="th">genre</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>632</td>
+<td>Land and Freedom (Tierra y libertad) (1995)</td>
+<td>War</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>665</td>
+<td>Underground (1995)</td>
+<td>War</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>760</td>
+<td>Stalingrad (1993)</td>
+<td>War</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>777</td>
+<td>Pharaoh's Army (1995)</td>
+<td>War</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1450</td>
+<td>Prisoner of the Mountains (Kavkazsky Plennik) ...</td>
+<td>War</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>user_ratings_df <span class="op">=</span> client.query(<span class="ss">f'''</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT t1.user_id, t1.rating, t1.item_id, t2.movie_title, t2.genre</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM `</span><span class="sc">{</span>MOVIELENS_DATASET<span class="sc">}</span><span class="ss">.movielens_1m` t1</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ss">  LEFT JOIN </span><span class="sc">{</span>MOVIELENS_DATASET<span class="sc">}</span><span class="ss">.movie_titles t2</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ss">  ON t1.item_id=t2.movie_id</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ss">  --WHERE t1.user_id=1</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="ss">  ORDER BY rating DESC</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>).to_dataframe()</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>user_ratings_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">user_id</th>
+<th data-quarto-table-cell-role="th">rating</th>
+<th data-quarto-table-cell-role="th">item_id</th>
+<th data-quarto-table-cell-role="th">movie_title</th>
+<th data-quarto-table-cell-role="th">genre</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>5.0</td>
+<td>1193</td>
+<td>One Flew Over the Cuckoo's Nest (1975)</td>
+<td>Drama</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>5.0</td>
+<td>2355</td>
+<td>Bug's Life, A (1998)</td>
+<td>Animation|Children's|Comedy</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1</td>
+<td>5.0</td>
+<td>1287</td>
+<td>Ben-Hur (1959)</td>
+<td>Action|Adventure|Drama</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1</td>
+<td>5.0</td>
+<td>2804</td>
+<td>Christmas Story, A (1983)</td>
+<td>Comedy|Drama</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1</td>
+<td>5.0</td>
+<td>595</td>
+<td>Beauty and the Beast (1991)</td>
+<td>Animation|Children's|Musical</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="information-about-models-created" class="level3">
+<h3 class="anchored" data-anchor-id="information-about-models-created">Information about model(s) created</h3>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> client.list_models(MODEL_DATASET)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Models contained in '</span><span class="sc">{}</span><span class="st">':"</span>.<span class="bu">format</span>(MODEL_DATASET))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>models_fmid <span class="op">=</span> []</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model <span class="kw">in</span> models:</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    full_model_id <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>model<span class="sc">.</span>project<span class="sc">}</span><span class="ss">.</span><span class="sc">{</span>model<span class="sc">.</span>dataset_id<span class="sc">}</span><span class="ss">.</span><span class="sc">{</span>model<span class="sc">.</span>model_id<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    models_fmid.append(full_model_id)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>full_model_id<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Models contained in 'bqml_modelos':
+pythonapi-205723.bqml_modelos.mf_model_pipe_01
+pythonapi-205723.bqml_modelos.mf_model_pipe_02
+pythonapi-205723.bqml_modelos.mf_model_pipe_03</code></pre>
+</div>
+</div>
+<p>As you can see, I created three models in <code>bqml_modelos</code> dataset.</p>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>client.get_model(models_fmid[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>Model(reference=ModelReference(project_id='pythonapi-205723', dataset_id='bqml_modelos', model_id='mf_model_pipe_01'))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>model.model_type</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>'MATRIX_FACTORIZATION'</code></pre>
+</div>
+</div>
+</section>
+<section id="training-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="training-statistics">Training statistics</h3>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>client.query(<span class="ss">f'''</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT *</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM ML.TRAINING_INFO(MODEL `</span><span class="sc">{</span>models_fmid[<span class="dv">2</span>]<span class="sc">}</span><span class="ss">`)</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>).to_dataframe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">training_run</th>
+<th data-quarto-table-cell-role="th">iteration</th>
+<th data-quarto-table-cell-role="th">loss</th>
+<th data-quarto-table-cell-role="th">eval_loss</th>
+<th data-quarto-table-cell-role="th">duration_ms</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0</td>
+<td>15</td>
+<td>0.259132</td>
+<td>NaN</td>
+<td>64410</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>0</td>
+<td>14</td>
+<td>0.261374</td>
+<td>NaN</td>
+<td>107980</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>0</td>
+<td>13</td>
+<td>0.265850</td>
+<td>NaN</td>
+<td>60169</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>0</td>
+<td>12</td>
+<td>0.268827</td>
+<td>NaN</td>
+<td>29616</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>0</td>
+<td>11</td>
+<td>0.274483</td>
+<td>NaN</td>
+<td>57306</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>0</td>
+<td>10</td>
+<td>0.278608</td>
+<td>NaN</td>
+<td>117195</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>0</td>
+<td>9</td>
+<td>0.286101</td>
+<td>NaN</td>
+<td>59622</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>0</td>
+<td>8</td>
+<td>0.292234</td>
+<td>NaN</td>
+<td>115613</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>0</td>
+<td>7</td>
+<td>0.302932</td>
+<td>NaN</td>
+<td>62337</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>0</td>
+<td>6</td>
+<td>0.313072</td>
+<td>NaN</td>
+<td>101301</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>0</td>
+<td>5</td>
+<td>0.330243</td>
+<td>NaN</td>
+<td>131648</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>0</td>
+<td>4</td>
+<td>0.350469</td>
+<td>NaN</td>
+<td>118377</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>0</td>
+<td>3</td>
+<td>0.385341</td>
+<td>NaN</td>
+<td>55254</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>0</td>
+<td>2</td>
+<td>0.449968</td>
+<td>NaN</td>
+<td>103391</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>0</td>
+<td>1</td>
+<td>0.581976</td>
+<td>NaN</td>
+<td>64919</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>0</td>
+<td>0</td>
+<td>4.047567</td>
+<td>NaN</td>
+<td>168618</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="evaluation" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation">Evaluation</h3>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>client.query(<span class="ss">f'''</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ss">SELECT *</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ss">FROM ML.EVALUATE(MODEL `</span><span class="sc">{</span>models_fmid[<span class="dv">2</span>]<span class="sc">}</span><span class="ss">`,</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="ss">    (</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="ss">      user_id,</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="ss">      item_id,</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="ss">      rating</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="ss">     FROM</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="ss">      </span><span class="sc">{</span>MOVIELENS_DATASET<span class="sc">}</span><span class="ss">.movielens_1m))</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>).to_dataframe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">mean_absolute_error</th>
+<th data-quarto-table-cell-role="th">mean_squared_error</th>
+<th data-quarto-table-cell-role="th">mean_squared_log_error</th>
+<th data-quarto-table-cell-role="th">median_absolute_error</th>
+<th data-quarto-table-cell-role="th">r2_score</th>
+<th data-quarto-table-cell-role="th">explained_variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0.382252</td>
+<td>0.259132</td>
+<td>0.016406</td>
+<td>0.293064</td>
+<td>0.792348</td>
+<td>0.792348</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="rating-predictions" class="level2">
+<h2 class="anchored" data-anchor-id="rating-predictions">Rating predictions</h2>
+<p>Lets get predicted ratings for all user-item pairs.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This query generates a predicted rating for every user-item pair. As a result, this can be a rather large output. It is recommended that the output is saved in a table which is then used in other queries for analysis.</p>
+</div>
+</div>
+<p>Lets create one table to store all predictions called <code>recommend_m2_1m</code> and another one with top predictions by user called <code>recommend_m2_1m_top</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>recommend_m2_1m_df <span class="op">=</span> client.query(<span class="ss">f'''</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ss">SELECT *</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ss">FROM ML.RECOMMEND(MODEL bqml_modelos.mf_model_pipe_03)</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span>).to_dataframe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="51">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>recommend_m2_1m_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="51">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">predicted_rating</th>
+<th data-quarto-table-cell-role="th">user_id</th>
+<th data-quarto-table-cell-role="th">item_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>3.489891</td>
+<td>3575</td>
+<td>1376</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>6.627501</td>
+<td>2213</td>
+<td>1362</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2.694415</td>
+<td>5876</td>
+<td>1330</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>-1.662953</td>
+<td>4817</td>
+<td>3042</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2.208275</td>
+<td>5448</td>
+<td>563</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22384235</td>
+<td>3.183006</td>
+<td>933</td>
+<td>2282</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">22384236</td>
+<td>1.201612</td>
+<td>5843</td>
+<td>391</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22384237</td>
+<td>2.886981</td>
+<td>4321</td>
+<td>3525</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">22384238</td>
+<td>2.488141</td>
+<td>1000</td>
+<td>2881</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22384239</td>
+<td>2.805384</td>
+<td>5148</td>
+<td>1049</td>
+</tr>
+</tbody>
+</table>
+
+<p>22384240 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="59">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of users: </span><span class="sc">{</span><span class="bu">len</span>(user_ratings_df.user_id.unique())<span class="sc">:,}</span><span class="ss">"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of movies: </span><span class="sc">{</span><span class="bu">len</span>(user_ratings_df.item_id.unique())<span class="sc">:,}</span><span class="ss">"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(user_ratings_df.user_id.unique()) <span class="op">*</span> <span class="bu">len</span>(user_ratings_df.item_id.unique()) <span class="op">==</span> <span class="bu">len</span>(recommend_m2_1m_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of users: 6,040
+Number of movies: 3,706</code></pre>
+</div>
+</div>
+<p>As we can see, the full table has 22,384,240 rows, equals to 6,040 users x 3,706 movies.</p>
+<section id="compare-to-endpoint-results" class="level3">
+<h3 class="anchored" data-anchor-id="compare-to-endpoint-results">Compare to endpoint results</h3>
+<div class="cell" data-execution_count="69">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>recommend_m2_1m_df[recommend_m2_1m_df.user_id<span class="op">==</span><span class="dv">1</span>].sort_values(by<span class="op">=</span><span class="st">'predicted_rating'</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="69">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">predicted_rating</th>
+<th data-quarto-table-cell-role="th">user_id</th>
+<th data-quarto-table-cell-role="th">item_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">50602</td>
+<td>7.159546</td>
+<td>1</td>
+<td>3382</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">22190133</td>
+<td>6.931200</td>
+<td>1</td>
+<td>3920</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5356399</td>
+<td>6.748711</td>
+<td>1</td>
+<td>2178</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15157835</td>
+<td>6.609937</td>
+<td>1</td>
+<td>662</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4687764</td>
+<td>6.336838</td>
+<td>1</td>
+<td>469</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17892355</td>
+<td>6.316229</td>
+<td>1</td>
+<td>199</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1365223</td>
+<td>6.203409</td>
+<td>1</td>
+<td>215</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16742143</td>
+<td>6.190802</td>
+<td>1</td>
+<td>2073</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8094661</td>
+<td>6.095066</td>
+<td>1</td>
+<td>881</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21623544</td>
+<td>6.074839</td>
+<td>1</td>
+<td>3132</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="70">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>endpoint_predictions_df.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="70">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">predicted_rating</th>
+<th data-quarto-table-cell-role="th">predicted_item_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>7.159546</td>
+<td>3382</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>6.931200</td>
+<td>3920</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>6.748711</td>
+<td>2178</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>6.609937</td>
+<td>662</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>6.336838</td>
+<td>469</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>6.316229</td>
+<td>199</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>6.203409</td>
+<td>215</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>6.190802</td>
+<td>2073</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>6.095066</td>
+<td>881</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>6.074839</td>
+<td>3132</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>For <code>user_id=1</code> and <code>item_id=3382</code>, the predicted rating is <code>7.159546</code>.</p>
+</section>
+</section>
+<section id="latent-factors-embeddings-and-bias" class="level2">
+<h2 class="anchored" data-anchor-id="latent-factors-embeddings-and-bias">Latent Factors (Embeddings) and Bias</h2>
+<p>The matrix factorization model trained in BigQuery ML returns a predicted rating as the following equation:</p>
+<p><code>predicted = Global Bias + DotProduct(user_factors, item_factors) + user_bias + item_bias</code></p>
+<p>Where <code>Global Bias</code> is a constant for all the pairs, <code>user_factors</code> and <code>item_factors</code> are vectors with 60 dimensions (as definied in the training process) and <code>user_bias</code> and <code>item_bias</code> are a distinct number for each user and for each item.</p>
+<section id="global-bias" class="level3">
+<h3 class="anchored" data-anchor-id="global-bias">Global Bias</h3>
+<div class="cell" data-execution_count="72">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>global_bias <span class="op">=</span> client.query(<span class="ss">f"""</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT intercept</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="ss">    FROM ML.WEIGHTS(model </span><span class="sc">{</span>MODEL_DATASET<span class="sc">}</span><span class="ss">.mf_model_pipe_03)</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="ss">    WHERE feature = 'global__INTERCEPT__'</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span>).to_dataframe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="77">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>global_bias_np <span class="op">=</span> global_bias.loc[<span class="dv">0</span>].values</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>global_bias_np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="77">
+<pre><code>array([3.58156445])</code></pre>
+</div>
+</div>
+</section>
+<section id="movie-embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="movie-embeddings">Movie Embeddings</h3>
+<div class="cell" data-execution_count="78">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>item_factors_df <span class="op">=</span> client.query(<span class="ss">f"""</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT feature AS item_id, intercept AS bias, fw.factor AS factor, fw.weight</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="ss">    FROM ML.WEIGHTS(model </span><span class="sc">{</span>MODEL_DATASET<span class="sc">}</span><span class="ss">.mf_model_pipe_03),</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="ss">    UNNEST(factor_weights) AS fw</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="ss">    WHERE processed_input = 'item_id'</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span>).to_dataframe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="79">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>item_factors_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="79">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">item_id</th>
+<th data-quarto-table-cell-role="th">bias</th>
+<th data-quarto-table-cell-role="th">factor</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2</td>
+<td>-0.393036</td>
+<td>60</td>
+<td>-0.113832</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>-0.393036</td>
+<td>59</td>
+<td>0.048548</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>-0.393036</td>
+<td>58</td>
+<td>-0.112024</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2</td>
+<td>-0.393036</td>
+<td>57</td>
+<td>0.118971</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2</td>
+<td>-0.393036</td>
+<td>56</td>
+<td>-0.050817</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">222355</td>
+<td>3833</td>
+<td>-1.592288</td>
+<td>5</td>
+<td>0.123739</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">222356</td>
+<td>3833</td>
+<td>-1.592288</td>
+<td>4</td>
+<td>0.234778</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">222357</td>
+<td>3833</td>
+<td>-1.592288</td>
+<td>3</td>
+<td>-0.296197</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">222358</td>
+<td>3833</td>
+<td>-1.592288</td>
+<td>2</td>
+<td>0.502392</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">222359</td>
+<td>3833</td>
+<td>-1.592288</td>
+<td>1</td>
+<td>-0.232240</td>
+</tr>
+</tbody>
+</table>
+
+<p>222360 rows × 4 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="user-embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="user-embeddings">User Embeddings</h3>
+<div class="cell" data-execution_count="80">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>user_factors_df <span class="op">=</span> client.query(<span class="st">"""</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT feature AS user_id, intercept AS bias, fw.factor AS factor, fw.weight</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM ML.WEIGHTS(model bqml_modelos.mf_model_pipe_03),</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="st">    UNNEST(factor_weights) AS fw</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE processed_input = 'user_id'</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>).to_dataframe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="81">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>user_factors_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="81">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">user_id</th>
+<th data-quarto-table-cell-role="th">bias</th>
+<th data-quarto-table-cell-role="th">factor</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>256</td>
+<td>0.255283</td>
+<td>60</td>
+<td>0.713645</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>256</td>
+<td>0.255283</td>
+<td>59</td>
+<td>1.387058</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>256</td>
+<td>0.255283</td>
+<td>58</td>
+<td>-0.567324</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>256</td>
+<td>0.255283</td>
+<td>57</td>
+<td>-0.709545</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>256</td>
+<td>0.255283</td>
+<td>56</td>
+<td>-1.813568</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">362395</td>
+<td>5887</td>
+<td>-0.408196</td>
+<td>5</td>
+<td>1.493551</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">362396</td>
+<td>5887</td>
+<td>-0.408196</td>
+<td>4</td>
+<td>0.960923</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">362397</td>
+<td>5887</td>
+<td>-0.408196</td>
+<td>3</td>
+<td>-2.272016</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">362398</td>
+<td>5887</td>
+<td>-0.408196</td>
+<td>2</td>
+<td>0.393577</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">362399</td>
+<td>5887</td>
+<td>-0.408196</td>
+<td>1</td>
+<td>-2.099104</td>
+</tr>
+</tbody>
+</table>
+
+<p>362400 rows × 4 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="do-the-math-for-a-prediction" class="level3">
+<h3 class="anchored" data-anchor-id="do-the-math-for-a-prediction">Do the math for a prediction</h3>
+<p>We already saw that for <code>user_id=1</code> and <code>item_id=3382</code>, the predicted rating is <code>7.159546</code>. Let’s do the math:</p>
+<div class="cell" data-execution_count="87">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>user_1_factors <span class="op">=</span> user_factors_df[user_factors_df.user_id<span class="op">==</span><span class="st">'1'</span>].weight.to_numpy()</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>user_1_bias <span class="op">=</span> user_factors_df[user_factors_df.user_id<span class="op">==</span><span class="st">'1'</span>].bias.to_numpy()[:<span class="dv">1</span>]</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>user_1_bias, user_1_factors[:<span class="dv">5</span>], user_1_factors.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="87">
+<pre><code>(array([0.04259326]),
+ array([ 0.72214304, -1.06488835, -0.35848901, -0.08184539, -0.34282946]),
+ (60,))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="88">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>item_3382_factors <span class="op">=</span> item_factors_df[item_factors_df.item_id<span class="op">==</span><span class="st">"3382"</span>].weight.to_numpy()</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>item_3382_bias <span class="op">=</span> item_factors_df[item_factors_df.item_id<span class="op">==</span><span class="st">"3382"</span>].bias.to_numpy()[:<span class="dv">1</span>]</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>item_3382_bias, item_3382_factors[:<span class="dv">5</span>], item_3382_factors.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="88">
+<pre><code>(array([3.535388]),
+ array([ 1.38777878e-17,  3.03576608e-18, -2.81892565e-18,  1.73472348e-18,
+        -5.02894452e-17]),
+ (60,))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="92">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>global_bias_np <span class="op">+</span> np.dot(user_1_factors, item_3382_factors) <span class="op">+</span> user_1_bias <span class="op">+</span> item_3382_bias</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="92">
+<pre><code>array([7.15954572])</code></pre>
+</div>
+</div>
+<p>There it is, same value for the predicted rating.</p>
+</section>
+</section>
+<section id="full-pair-predictions" class="level2">
+<h2 class="anchored" data-anchor-id="full-pair-predictions">Full Pair Predictions</h2>
+<div class="cell" data-execution_count="94">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Change type</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>user_factors_df[[<span class="st">'user_id'</span>, <span class="st">'factor'</span>]] <span class="op">=</span> user_factors_df[[<span class="st">'user_id'</span>, <span class="st">'factor'</span>]].astype(<span class="st">'int'</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Bias for each user</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>user_bias_df <span class="op">=</span> user_factors_df.groupby(<span class="st">'user_id'</span>)[<span class="st">'bias'</span>].<span class="bu">max</span>().reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="98">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Change type</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>item_factors_df[[<span class="st">'item_id'</span>, <span class="st">'factor'</span>]] <span class="op">=</span> item_factors_df[[<span class="st">'item_id'</span>, <span class="st">'factor'</span>]].astype(<span class="st">'int'</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Bias for each movie</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>item_bias_df <span class="op">=</span> item_factors_df.groupby(<span class="st">'item_id'</span>)[<span class="st">'bias'</span>].<span class="bu">max</span>().reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="convert-to-numpy" class="level4">
+<h4 class="anchored" data-anchor-id="convert-to-numpy">Convert to numpy</h4>
+<div class="cell" data-execution_count="96">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bias</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>user_bias_np <span class="op">=</span> user_bias_df.sort_values(<span class="st">"user_id"</span>, ascending<span class="op">=</span><span class="va">True</span>).bias.to_numpy()</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co"># embeddings</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>user_factors_np <span class="op">=</span> user_factors_df.sort_values(</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"user_id"</span>, <span class="st">"factor"</span>], ascending<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>).weight.to_numpy().reshape((<span class="dv">6_040</span>, <span class="dv">60</span>))</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>user_bias_np.shape, user_factors_np.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="96">
+<pre><code>((6040,), (6040, 60))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="99">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bias</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>item_bias_np <span class="op">=</span> item_bias_df.sort_values(<span class="st">"item_id"</span>, ascending<span class="op">=</span><span class="va">True</span>).bias.to_numpy()</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co"># embeddings</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>item_factors_np <span class="op">=</span> item_factors_df.sort_values(</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"item_id"</span>, <span class="st">"factor"</span>], ascending<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>).weight.to_numpy().reshape((<span class="dv">3_706</span>, <span class="dv">60</span>))</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>item_bias_np.shape, item_factors_np.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="99">
+<pre><code>((3706,), (3706, 60))</code></pre>
+</div>
+</div>
+</section>
+<section id="map-user_id-and-item_id-to-numpy-indices" class="level4">
+<h4 class="anchored" data-anchor-id="map-user_id-and-item_id-to-numpy-indices">Map <code>user_id</code> and <code>item_id</code> to numpy indices</h4>
+<div class="cell" data-execution_count="108">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>idx2item_id <span class="op">=</span> {idx: item_id <span class="cf">for</span> idx, item_id <span class="kw">in</span> <span class="bu">zip</span>(item_bias_df.index, item_bias_df.item_id)}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="user-item-interaction" class="level3">
+<h3 class="anchored" data-anchor-id="user-item-interaction">User Item interaction</h3>
+<div class="cell" data-execution_count="104">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>user_items_interactions <span class="op">=</span> global_bias_np <span class="op">+</span> np.dot(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    user_factors_np, item_factors_np.T</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">+</span> user_bias_np[:,<span class="va">None</span>] <span class="op">+</span> item_bias_np[<span class="va">None</span>,:] </span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>user_items_interactions.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="104">
+<pre><code>(6040, 3706)</code></pre>
+</div>
+</div>
+<p>So, <code>user_id=1</code> is the index 0 for the numpy array.</p>
+<div class="cell" data-execution_count="111">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>top_10_1 <span class="op">=</span> user_items_interactions[<span class="dv">0</span>].argsort()[<span class="op">-</span><span class="dv">10</span>:][::<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>[idx2item_id[idx] <span class="cf">for</span> idx <span class="kw">in</span> top_10_1]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="111">
+<pre><code>[3382, 3920, 2178, 662, 469, 199, 215, 2073, 881, 3132]</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="112">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>endpoint_predictions_df.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="112">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">predicted_rating</th>
+<th data-quarto-table-cell-role="th">predicted_item_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>7.159546</td>
+<td>3382</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>6.931200</td>
+<td>3920</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>6.748711</td>
+<td>2178</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>6.609937</td>
+<td>662</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>6.336838</td>
+<td>469</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>6.316229</td>
+<td>199</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>6.203409</td>
+<td>215</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>6.190802</td>
+<td>2073</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>6.095066</td>
+<td>881</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>6.074839</td>
+<td>3132</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Same Top item_id from the endpoint. We are doing fine.</p>
+</section>
+<section id="top-10-predictions-for-each-pair" class="level3">
+<h3 class="anchored" data-anchor-id="top-10-predictions-for-each-pair">Top 10 predictions for each pair</h3>
+<div class="cell" data-execution_count="113">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>top_10_idxs <span class="op">=</span> np.argsort(user_items_interactions, axis<span class="op">=</span><span class="dv">1</span>)[:,::<span class="op">-</span><span class="dv">1</span>][:,:<span class="dv">10</span>]</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>top_10_idxs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="113">
+<pre><code>array([[3152, 3673, 1997, ..., 1892,  823, 2916],
+       [3258, 3191, 2758, ...,  447, 2719, 1917],
+       [1763,  668,  984, ..., 3152, 1917, 1860],
+       ...,
+       [3152, 3504, 2122, ..., 2232, 1470,  543],
+       [ 986, 2964,  856, ...,  616, 2118, 2684],
+       [3237, 1298, 3579, ..., 2925, 2732, 1451]])</code></pre>
+</div>
+</div>
+<p>Top 10 ratings for <code>user_id=1</code></p>
+<div class="cell" data-execution_count="114">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>user_items_interactions[<span class="dv">0</span>][top_10_idxs[<span class="dv">0</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="114">
+<pre><code>array([7.15954572, 6.93120045, 6.74871055, 6.60993714, 6.33683759,
+       6.31622919, 6.20340873, 6.19080189, 6.09506552, 6.07483853])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="126">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(top_10_idxs[<span class="dv">0</span>])</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>df.columns <span class="op">=</span> [<span class="st">'movie_id'</span>]</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>df.movie_id <span class="op">=</span> df.movie_id.<span class="bu">map</span>(idx2item_id)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(movies_df)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'predicted_rating'</span>] <span class="op">=</span> user_items_interactions[<span class="dv">0</span>][top_10_idxs[<span class="dv">0</span>]]</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="126">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">movie_id</th>
+<th data-quarto-table-cell-role="th">movie_title</th>
+<th data-quarto-table-cell-role="th">genre</th>
+<th data-quarto-table-cell-role="th">predicted_rating</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>3382</td>
+<td>Song of Freedom (1936)</td>
+<td>Drama</td>
+<td>7.159546</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>3920</td>
+<td>Faraway, So Close (In Weiter Ferne, So Nah!) (...</td>
+<td>Drama|Fantasy</td>
+<td>6.931200</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2178</td>
+<td>Frenzy (1972)</td>
+<td>Thriller</td>
+<td>6.748711</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>662</td>
+<td>Fear (1996)</td>
+<td>Thriller</td>
+<td>6.609937</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>469</td>
+<td>House of the Spirits, The (1993)</td>
+<td>Drama|Romance</td>
+<td>6.336838</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>199</td>
+<td>Umbrellas of Cherbourg, The (Parapluies de Che...</td>
+<td>Drama|Musical</td>
+<td>6.316229</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>215</td>
+<td>Before Sunrise (1995)</td>
+<td>Drama|Romance</td>
+<td>6.203409</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2073</td>
+<td>Fandango (1985)</td>
+<td>Comedy</td>
+<td>6.190802</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>881</td>
+<td>First Kid (1996)</td>
+<td>Children's|Comedy</td>
+<td>6.095066</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>3132</td>
+<td>Daddy Long Legs (1919)</td>
+<td>Comedy</td>
+<td>6.074839</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="getting-top-movies-for-each-user-from-bigquery" class="level2">
+<h2 class="anchored" data-anchor-id="getting-top-movies-for-each-user-from-bigquery">Getting Top Movies for each User from BigQuery</h2>
+<p>Let’s create a table containing the Top 5 movies by user.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="ss">f'''SELECT</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="ss">  user_id,</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="ss">  ARRAY_AGG(STRUCT(movie_title, genre, predicted_rating)</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="ss">ORDER BY predicted_rating DESC LIMIT 5)</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="ss">FROM (</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a><span class="ss">SELECT</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a><span class="ss">  user_id,</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a><span class="ss">  item_id,</span></span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a><span class="ss">  predicted_rating,</span></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a><span class="ss">  movie_title,</span></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a><span class="ss">  genre</span></span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a><span class="ss">FROM</span></span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a><span class="ss">  </span><span class="sc">{</span>MODEL_DATASET<span class="sc">}</span><span class="ss">.recommend_m2_1m</span></span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a><span class="ss">JOIN</span></span>
+<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a><span class="ss">  movielens.movie_titles</span></span>
+<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a><span class="ss">ON</span></span>
+<span id="cb55-17"><a href="#cb55-17" aria-hidden="true" tabindex="-1"></a><span class="ss">  item_id = movie_id)</span></span>
+<span id="cb55-18"><a href="#cb55-18" aria-hidden="true" tabindex="-1"></a><span class="ss">GROUP BY</span></span>
+<span id="cb55-19"><a href="#cb55-19" aria-hidden="true" tabindex="-1"></a><span class="ss">  user_id</span></span>
+<span id="cb55-20"><a href="#cb55-20" aria-hidden="true" tabindex="-1"></a><span class="ss">'''</span></span>
+<span id="cb55-21"><a href="#cb55-21" aria-hidden="true" tabindex="-1"></a>job_config <span class="op">=</span> bigquery.QueryJobConfig()</span>
+<span id="cb55-22"><a href="#cb55-22" aria-hidden="true" tabindex="-1"></a>job_config.destination <span class="op">=</span> <span class="st">"</span><span class="sc">{PROJECT_ID}</span><span class="st">.</span><span class="sc">{MODEL_DATASET}</span><span class="st">.recommend_m2_1m_top"</span></span>
+<span id="cb55-23"><a href="#cb55-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-24"><a href="#cb55-24" aria-hidden="true" tabindex="-1"></a>query_job <span class="op">=</span> client.query(query, job_config)</span>
+<span id="cb55-25"><a href="#cb55-25" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> query_job.result()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="131">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>items_for_user_1_df <span class="op">=</span> client.query(<span class="ss">f"""</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT * </span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="ss">    FROM `</span><span class="sc">{</span>PROJECT_ID<span class="sc">}</span><span class="ss">.</span><span class="sc">{</span>MODEL_DATASET<span class="sc">}</span><span class="ss">.recommend_m2_1m_top` </span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="ss">    WHERE user_id=1</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span>).to_dataframe()</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>items_for_user_1_df.f0_.loc[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="131">
+<pre><code>array([{'movie_title': 'Song of Freedom (1936)', 'genre': 'Drama', 'predicted_rating': 7.1595457186221525},
+       {'movie_title': 'Faraway, So Close (In Weiter Ferne, So Nah!) (1993)', 'genre': 'Drama|Fantasy', 'predicted_rating': 6.931200454403858},
+       {'movie_title': 'Frenzy (1972)', 'genre': 'Thriller', 'predicted_rating': 6.748710552254239},
+       {'movie_title': 'Fear (1996)', 'genre': 'Thriller', 'predicted_rating': 6.609937143182611},
+       {'movie_title': 'House of the Spirits, The (1993)', 'genre': 'Drama|Romance', 'predicted_rating': 6.336837592527967}],
+      dtype=object)</code></pre>
+</div>
+</div>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -181,9 +1661,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -195,7 +1689,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
     button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
     setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
       button.setAttribute("title", currentTitle);
       button.classList.remove('code-copy-button-checked');
     }, 1000);
@@ -231,24 +1742,128 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
   var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
   for (var i=0; i<bibliorefs.length; i++) {
     const ref = bibliorefs[i];
-    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-    tippyHover(ref, function() {
-      var popup = window.document.createElement('div');
-      cites.forEach(function(cite) {
-        var citeDiv = window.document.createElement('div');
-        citeDiv.classList.add('hanging-indent');
-        citeDiv.classList.add('csl-entry');
-        var biblioDiv = window.document.getElementById('ref-' + cite);
-        if (biblioDiv) {
-          citeDiv.innerHTML = biblioDiv.innerHTML;
-        }
-        popup.appendChild(citeDiv);
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
       });
-      return popup.innerHTML;
-    });
+    }
   }
 });
 </script>

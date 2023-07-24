@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.1.251">
+<meta name="generator" content="quarto-1.3.433">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -19,9 +19,10 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -48,43 +49,13 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -120,7 +91,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
@@ -142,26 +114,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <span class="navbar-title">datamatica</span>
     </a>
   </div>
+            <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html">About</a>
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/fmussari"><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/fmussari" rel="" target=""><i class="bi bi-github" role="img">
 </i> 
- </a>
+ <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/francisco-mussari-432b781a6/"><i class="bi bi-linkedin" role="img">
+    <a class="nav-link" href="https://www.linkedin.com/in/francisco-mussari-432b781a6/" rel="" target=""><i class="bi bi-linkedin" role="img">
 </i> 
- </a>
+ <span class="menu-text"></span></a>
   </li>  
 </ul>
-              <div id="quarto-search" class="" title="Search"></div>
+            <div class="quarto-navbar-tools">
+</div>
           </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
@@ -197,6 +172,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p class="date">October 8, 2022</p>
       </div>
     </div>
+    
       
     </div>
     
@@ -371,12 +347,12 @@ Solid
 <pre><code>TrainingEndpoint=YOUR_TRAINING_ENDPOINT
 TrainingKey=YOUR_TRAINING_KEY
 ProjectID=YOUR_PROJECT_ID</code></pre>
-<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Note
 </div>
 </div>
@@ -539,87 +515,88 @@ Note
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df <span class="op">=</span> pd.DataFrame(upload_batch)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>image_name</th>
-      <th>image_id</th>
-      <th>image_status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>41.JPG</td>
-      <td>452a0b58-0dc5-41ff-83d1-8d1ae7bd5d1c</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>CIMG0030.JPG</td>
-      <td>96b7774e-f5ad-4591-aa71-99ad5c71135e</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>CIMG0031.JPG</td>
-      <td>3027bc7e-6e21-4b13-a7d7-bb7e08ce6824</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>CIMG0056.JPG</td>
-      <td>1320ab2e-3405-4853-bd7e-b0ef0f915d4b</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>CIMG0059.JPG</td>
-      <td>aa67eceb-3db0-4026-bf16-0842c006e6ac</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>198</th>
-      <td>torre cerro el pavon 075.jpg</td>
-      <td>b6dd061a-a68d-4d91-a39f-711968445571</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>199</th>
-      <td>torre cerro el pavon 080.jpg</td>
-      <td>d12264cf-3d7b-469c-9445-da8dce8dabef</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>200</th>
-      <td>torre cerro el pavon 085.jpg</td>
-      <td>c6d587fe-5f3a-46ea-bc04-7ff54f10b4ae</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>201</th>
-      <td>torre cerro el pavon 086.jpg</td>
-      <td>ea34cbad-8d50-4b5f-aed0-91d7fe40a754</td>
-      <td>OK</td>
-    </tr>
-    <tr>
-      <th>202</th>
-      <td>torre cerro el pavon 087.jpg</td>
-      <td>6e274dfc-411a-4bf3-9151-51b96f662248</td>
-      <td>OK</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">image_name</th>
+<th data-quarto-table-cell-role="th">image_id</th>
+<th data-quarto-table-cell-role="th">image_status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>41.JPG</td>
+<td>452a0b58-0dc5-41ff-83d1-8d1ae7bd5d1c</td>
+<td>OK</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>CIMG0030.JPG</td>
+<td>96b7774e-f5ad-4591-aa71-99ad5c71135e</td>
+<td>OK</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>CIMG0031.JPG</td>
+<td>3027bc7e-6e21-4b13-a7d7-bb7e08ce6824</td>
+<td>OK</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>CIMG0056.JPG</td>
+<td>1320ab2e-3405-4853-bd7e-b0ef0f915d4b</td>
+<td>OK</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>CIMG0059.JPG</td>
+<td>aa67eceb-3db0-4026-bf16-0842c006e6ac</td>
+<td>OK</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">198</td>
+<td>torre cerro el pavon 075.jpg</td>
+<td>b6dd061a-a68d-4d91-a39f-711968445571</td>
+<td>OK</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">199</td>
+<td>torre cerro el pavon 080.jpg</td>
+<td>d12264cf-3d7b-469c-9445-da8dce8dabef</td>
+<td>OK</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">200</td>
+<td>torre cerro el pavon 085.jpg</td>
+<td>c6d587fe-5f3a-46ea-bc04-7ff54f10b4ae</td>
+<td>OK</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">201</td>
+<td>torre cerro el pavon 086.jpg</td>
+<td>ea34cbad-8d50-4b5f-aed0-91d7fe40a754</td>
+<td>OK</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">202</td>
+<td>torre cerro el pavon 087.jpg</td>
+<td>6e274dfc-411a-4bf3-9151-51b96f662248</td>
+<td>OK</td>
+</tr>
+</tbody>
 </table>
+
 <p>203 rows × 3 columns</p>
 </div>
 </div>
@@ -697,27 +674,28 @@ image.height: 900</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[uploaded_images_df.image_id<span class="op">==</span>image.<span class="bu">id</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>image_name</th>
-      <th>image_id</th>
-      <th>image_status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>202</th>
-      <td>torre cerro el pavon 087.jpg</td>
-      <td>6e274dfc-411a-4bf3-9151-51b96f662248</td>
-      <td>OK</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">image_name</th>
+<th data-quarto-table-cell-role="th">image_id</th>
+<th data-quarto-table-cell-role="th">image_status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">202</td>
+<td>torre cerro el pavon 087.jpg</td>
+<td>6e274dfc-411a-4bf3-9151-51b96f662248</td>
+<td>OK</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -769,63 +747,64 @@ image.height: 900</code></pre>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="st">'ori_h'</span>] <span class="op">=</span> local_h</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>image_name</th>
-      <th>image_id</th>
-      <th>image_status</th>
-      <th>ori_w</th>
-      <th>ori_h</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>41.JPG</td>
-      <td>452a0b58-0dc5-41ff-83d1-8d1ae7bd5d1c</td>
-      <td>OK</td>
-      <td>640</td>
-      <td>480</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>CIMG0030.JPG</td>
-      <td>96b7774e-f5ad-4591-aa71-99ad5c71135e</td>
-      <td>OK</td>
-      <td>1620</td>
-      <td>2160</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>CIMG0031.JPG</td>
-      <td>3027bc7e-6e21-4b13-a7d7-bb7e08ce6824</td>
-      <td>OK</td>
-      <td>1620</td>
-      <td>2160</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>CIMG0056.JPG</td>
-      <td>1320ab2e-3405-4853-bd7e-b0ef0f915d4b</td>
-      <td>OK</td>
-      <td>2160</td>
-      <td>1620</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>CIMG0059.JPG</td>
-      <td>aa67eceb-3db0-4026-bf16-0842c006e6ac</td>
-      <td>OK</td>
-      <td>2160</td>
-      <td>1620</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">image_name</th>
+<th data-quarto-table-cell-role="th">image_id</th>
+<th data-quarto-table-cell-role="th">image_status</th>
+<th data-quarto-table-cell-role="th">ori_w</th>
+<th data-quarto-table-cell-role="th">ori_h</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>41.JPG</td>
+<td>452a0b58-0dc5-41ff-83d1-8d1ae7bd5d1c</td>
+<td>OK</td>
+<td>640</td>
+<td>480</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>CIMG0030.JPG</td>
+<td>96b7774e-f5ad-4591-aa71-99ad5c71135e</td>
+<td>OK</td>
+<td>1620</td>
+<td>2160</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>CIMG0031.JPG</td>
+<td>3027bc7e-6e21-4b13-a7d7-bb7e08ce6824</td>
+<td>OK</td>
+<td>1620</td>
+<td>2160</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>CIMG0056.JPG</td>
+<td>1320ab2e-3405-4853-bd7e-b0ef0f915d4b</td>
+<td>OK</td>
+<td>2160</td>
+<td>1620</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>CIMG0059.JPG</td>
+<td>aa67eceb-3db0-4026-bf16-0842c006e6ac</td>
+<td>OK</td>
+<td>2160</td>
+<td>1620</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -860,35 +839,36 @@ image.height: 900</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="bu">abs</span>(ori_ratio <span class="op">-</span> train_ratio) <span class="op">&gt;</span> <span class="fl">0.1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>image_name</th>
-      <th>image_id</th>
-      <th>image_status</th>
-      <th>ori_w</th>
-      <th>ori_h</th>
-      <th>train_w</th>
-      <th>train_h</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>179</th>
-      <td>TORRE EL TIGRITO 01.jpg</td>
-      <td>2563fffe-d621-4799-8e81-6ad57049cdaa</td>
-      <td>OK</td>
-      <td>480</td>
-      <td>640</td>
-      <td>640</td>
-      <td>480</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">image_name</th>
+<th data-quarto-table-cell-role="th">image_id</th>
+<th data-quarto-table-cell-role="th">image_status</th>
+<th data-quarto-table-cell-role="th">ori_w</th>
+<th data-quarto-table-cell-role="th">ori_h</th>
+<th data-quarto-table-cell-role="th">train_w</th>
+<th data-quarto-table-cell-role="th">train_h</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">179</td>
+<td>TORRE EL TIGRITO 01.jpg</td>
+<td>2563fffe-d621-4799-8e81-6ad57049cdaa</td>
+<td>OK</td>
+<td>480</td>
+<td>640</td>
+<td>640</td>
+<td>480</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -920,35 +900,36 @@ If seems that <code>exif_transpose</code> keep track of manually rotated images.
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.loc[<span class="bu">filter</span>, [<span class="st">'ori_w'</span>, <span class="st">'ori_h'</span>]] <span class="op">=</span> (<span class="dv">640</span>, <span class="dv">480</span>)</span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>uploaded_images_df[<span class="bu">filter</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>image_name</th>
-      <th>image_id</th>
-      <th>image_status</th>
-      <th>ori_w</th>
-      <th>ori_h</th>
-      <th>train_w</th>
-      <th>train_h</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>179</th>
-      <td>TORRE EL TIGRITO 01.jpg</td>
-      <td>2563fffe-d621-4799-8e81-6ad57049cdaa</td>
-      <td>OK</td>
-      <td>640</td>
-      <td>480</td>
-      <td>640</td>
-      <td>480</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">image_name</th>
+<th data-quarto-table-cell-role="th">image_id</th>
+<th data-quarto-table-cell-role="th">image_status</th>
+<th data-quarto-table-cell-role="th">ori_w</th>
+<th data-quarto-table-cell-role="th">ori_h</th>
+<th data-quarto-table-cell-role="th">train_w</th>
+<th data-quarto-table-cell-role="th">train_h</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">179</td>
+<td>TORRE EL TIGRITO 01.jpg</td>
+<td>2563fffe-d621-4799-8e81-6ad57049cdaa</td>
+<td>OK</td>
+<td>640</td>
+<td>480</td>
+<td>640</td>
+<td>480</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -958,125 +939,126 @@ If seems that <code>exif_transpose</code> keep track of manually rotated images.
 <div class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>uploaded_images_df.sample(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>image_name</th>
-      <th>image_id</th>
-      <th>image_status</th>
-      <th>ori_w</th>
-      <th>ori_h</th>
-      <th>train_w</th>
-      <th>train_h</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>155</th>
-      <td>P1100700.JPG</td>
-      <td>b10efb57-70a4-48d6-a846-121ded4546f8</td>
-      <td>OK</td>
-      <td>2048</td>
-      <td>1360</td>
-      <td>1355</td>
-      <td>900</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>CUMACA 11.jpg</td>
-      <td>2c55467b-5de5-4329-91d2-a2fafdedd080</td>
-      <td>OK</td>
-      <td>2592</td>
-      <td>1944</td>
-      <td>1200</td>
-      <td>900</td>
-    </tr>
-    <tr>
-      <th>49</th>
-      <td>IMG_1170.JPG</td>
-      <td>ce2177ae-d03e-4a61-9dfb-4229542572fe</td>
-      <td>OK</td>
-      <td>480</td>
-      <td>640</td>
-      <td>480</td>
-      <td>640</td>
-    </tr>
-    <tr>
-      <th>141</th>
-      <td>MVC-024S.JPG</td>
-      <td>9ba84daa-e00c-4975-a07b-3ae23ef8f884</td>
-      <td>OK</td>
-      <td>640</td>
-      <td>480</td>
-      <td>640</td>
-      <td>480</td>
-    </tr>
-    <tr>
-      <th>136</th>
-      <td>Imagen008.jpg</td>
-      <td>c861b4de-127a-4dc0-84ea-9cb96fb380f2</td>
-      <td>OK</td>
-      <td>640</td>
-      <td>480</td>
-      <td>640</td>
-      <td>480</td>
-    </tr>
-    <tr>
-      <th>202</th>
-      <td>torre cerro el pavon 087.jpg</td>
-      <td>6e274dfc-411a-4bf3-9151-51b96f662248</td>
-      <td>OK</td>
-      <td>2576</td>
-      <td>1952</td>
-      <td>1188</td>
-      <td>900</td>
-    </tr>
-    <tr>
-      <th>145</th>
-      <td>P1100611.JPG</td>
-      <td>1148d437-fc44-4c51-af4a-4751e242b3b7</td>
-      <td>OK</td>
-      <td>2048</td>
-      <td>1360</td>
-      <td>1355</td>
-      <td>900</td>
-    </tr>
-    <tr>
-      <th>147</th>
-      <td>P1100613.JPG</td>
-      <td>c9dab11e-0663-42f8-8c93-4e2351b15d4c</td>
-      <td>OK</td>
-      <td>2048</td>
-      <td>1360</td>
-      <td>1355</td>
-      <td>900</td>
-    </tr>
-    <tr>
-      <th>171</th>
-      <td>PICT0386.JPG</td>
-      <td>0e51a561-b938-48f6-8bc6-3c3bf4c72c44</td>
-      <td>OK</td>
-      <td>2560</td>
-      <td>1920</td>
-      <td>1200</td>
-      <td>900</td>
-    </tr>
-    <tr>
-      <th>142</th>
-      <td>MVC-025S.JPG</td>
-      <td>a8c2a746-2a65-4872-b7b5-0bd5edf965c9</td>
-      <td>OK</td>
-      <td>640</td>
-      <td>480</td>
-      <td>640</td>
-      <td>480</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">image_name</th>
+<th data-quarto-table-cell-role="th">image_id</th>
+<th data-quarto-table-cell-role="th">image_status</th>
+<th data-quarto-table-cell-role="th">ori_w</th>
+<th data-quarto-table-cell-role="th">ori_h</th>
+<th data-quarto-table-cell-role="th">train_w</th>
+<th data-quarto-table-cell-role="th">train_h</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">155</td>
+<td>P1100700.JPG</td>
+<td>b10efb57-70a4-48d6-a846-121ded4546f8</td>
+<td>OK</td>
+<td>2048</td>
+<td>1360</td>
+<td>1355</td>
+<td>900</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>CUMACA 11.jpg</td>
+<td>2c55467b-5de5-4329-91d2-a2fafdedd080</td>
+<td>OK</td>
+<td>2592</td>
+<td>1944</td>
+<td>1200</td>
+<td>900</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">49</td>
+<td>IMG_1170.JPG</td>
+<td>ce2177ae-d03e-4a61-9dfb-4229542572fe</td>
+<td>OK</td>
+<td>480</td>
+<td>640</td>
+<td>480</td>
+<td>640</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">141</td>
+<td>MVC-024S.JPG</td>
+<td>9ba84daa-e00c-4975-a07b-3ae23ef8f884</td>
+<td>OK</td>
+<td>640</td>
+<td>480</td>
+<td>640</td>
+<td>480</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">136</td>
+<td>Imagen008.jpg</td>
+<td>c861b4de-127a-4dc0-84ea-9cb96fb380f2</td>
+<td>OK</td>
+<td>640</td>
+<td>480</td>
+<td>640</td>
+<td>480</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">202</td>
+<td>torre cerro el pavon 087.jpg</td>
+<td>6e274dfc-411a-4bf3-9151-51b96f662248</td>
+<td>OK</td>
+<td>2576</td>
+<td>1952</td>
+<td>1188</td>
+<td>900</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">145</td>
+<td>P1100611.JPG</td>
+<td>1148d437-fc44-4c51-af4a-4751e242b3b7</td>
+<td>OK</td>
+<td>2048</td>
+<td>1360</td>
+<td>1355</td>
+<td>900</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">147</td>
+<td>P1100613.JPG</td>
+<td>c9dab11e-0663-42f8-8c93-4e2351b15d4c</td>
+<td>OK</td>
+<td>2048</td>
+<td>1360</td>
+<td>1355</td>
+<td>900</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">171</td>
+<td>PICT0386.JPG</td>
+<td>0e51a561-b938-48f6-8bc6-3c3bf4c72c44</td>
+<td>OK</td>
+<td>2560</td>
+<td>1920</td>
+<td>1200</td>
+<td>900</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">142</td>
+<td>MVC-025S.JPG</td>
+<td>a8c2a746-2a65-4872-b7b5-0bd5edf965c9</td>
+<td>OK</td>
+<td>640</td>
+<td>480</td>
+<td>640</td>
+<td>480</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -1124,9 +1106,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -1138,7 +1134,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
     button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
     setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
       button.setAttribute("title", currentTitle);
       button.classList.remove('code-copy-button-checked');
     }, 1000);
@@ -1174,24 +1187,128 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
   var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
   for (var i=0; i<bibliorefs.length; i++) {
     const ref = bibliorefs[i];
-    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-    tippyHover(ref, function() {
-      var popup = window.document.createElement('div');
-      cites.forEach(function(cite) {
-        var citeDiv = window.document.createElement('div');
-        citeDiv.classList.add('hanging-indent');
-        citeDiv.classList.add('csl-entry');
-        var biblioDiv = window.document.getElementById('ref-' + cite);
-        if (biblioDiv) {
-          citeDiv.innerHTML = biblioDiv.innerHTML;
-        }
-        popup.appendChild(citeDiv);
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
       });
-      return popup.innerHTML;
-    });
+    }
   }
 });
 </script>

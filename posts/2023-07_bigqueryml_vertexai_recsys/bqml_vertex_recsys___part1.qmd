@@ -33,6 +33,10 @@ At the end we shoud get a flow like this:
 - [YouTube: Lesson 7: Practical Deep Learning for Coders 2022 - Collaborative filtering deep dive](https://youtu.be/p4ZZq0736Po?t=3720)
 - [Tutorial: Use BigQuery ML to make recommendations from Google analytics data](https://cloud.google.com/bigquery/docs/bigqueryml-mf-implicit-tutorial)
 
+::: {.callout-note}
+This notebook is better suited for running in Colab.
+:::
+
 ## Blog Post Parts
 
 ### Part 1. Train and Deploy
@@ -44,8 +48,8 @@ At the end we shoud get a flow like this:
 ### Part 2. Inference
 - Use the Cloud Run endpoint to get recommendations
 - Get recommendations from BigQuery ML
-- Get Weights and Bias (Embeddings) and interpret them
-- Cosine similarity with NumPy
+- Get Weights and Bias (Embeddings) and do the math
+
 
 ## Before you begin
 1. [Select or create a Google Cloud project](https://console.cloud.google.com/cloud-resource-manager). 
@@ -164,7 +168,7 @@ else:
     # If you are running this notebook locally, replace the string below with the
     # path to your service account key and run this cell to authenticate your GCP
     # account.
-    %env GOOGLE_APPLICATION_CREDENTIALS ''
+    %env GOOGLE_APPLICATION_CREDENTIALS <path-to-json-credential>
 ```
 
 ```{python}
@@ -676,4 +680,4 @@ reservation_id = 'matrix-factorization-reservation' # As declared in the pipelin
 - https://console.cloud.google.com/vertex-ai/pipelines/runs?project=[your-project-id]
 
 ## Conclusions
-An that's about it. The automated process for training an deploying the model using BigQuery ML and Vertex AI pipeline. In [Part 2](bqml_vertex_recsys__part2.qmd) we will see how to do inference and how to get insight from the embeddings (latent factors) learned by the model for each item and user.
+An that's about it. The automated process for training an deploying the model using BigQuery ML and Vertex AI pipeline. In [Part 2](bqml_vertex_recsys__part2.ipynb) we will see how to do inference and how to get insight from the embeddings (latent factors) learned by the model for each item and user.

@@ -2,7 +2,6 @@
 title: Dimensional Modelling with dbt and different flavors of PostgreSQL
 author: "Francisco Mussari"  
 date: 2023-05-15  
-image: ""  
 categories: [dbt, Data-Engineer-Camp, Datawarehousing, Kimball]  
 format:
   html:

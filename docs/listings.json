@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2023-07_collab_filter_miniai/2023-07_MovieLens_20M_Part1.html",
       "/posts/2023-07_bigqueryml_vertexai_recsys/bqml_vertex_recsys__part2.html",
       "/posts/2023-07_bigqueryml_vertexai_recsys/bqml_vertex_recsys___part1.html",
       "/posts/2023-05_dbt_dimensional_model/dimensional_model_with_dbt_postgres.html",

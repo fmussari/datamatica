@@ -123,14 +123,14 @@
     "href": "posts/2023-07_collab_filter_miniai/2023-07_MovieLens_20M_Part1.html",
     "title": "Collaborative Filtering with PyTorch and miniai - MovieLens 20M",
     "section": "",
-    "text": "In this post we are going to train a Matrix Factorization model over MovieLens 20M Dataset.\nFor the training we are going to use raw PyTorch and miniai.\nAfter the model is trained, we will interpret the results by recommending movies to a given user, analyzing movies’ bias, and visualizing the embeddings by reducing dimensionality using PCA and t-SNE. We will also find similar movies to a given one using cosine similarity."
+    "text": "In this post we are going to train a Matrix Factorization model on MovieLens 20M Dataset.\nFor the training we are going to use raw PyTorch and miniai.\nAfter the model is trained, we will interpret the results by recommending movies to a given user, analyzing movies’ bias, and visualizing the embeddings by reducing dimensionality using PCA and t-SNE. We will also find similar movies to a given one using cosine similarity."
   },
   {
     "objectID": "posts/2023-07_collab_filter_miniai/2023-07_MovieLens_20M_Part1.html#overview",
     "href": "posts/2023-07_collab_filter_miniai/2023-07_MovieLens_20M_Part1.html#overview",
     "title": "Collaborative Filtering with PyTorch and miniai - MovieLens 20M",
     "section": "",
-    "text": "In this post we are going to train a Matrix Factorization model over MovieLens 20M Dataset.\nFor the training we are going to use raw PyTorch and miniai.\nAfter the model is trained, we will interpret the results by recommending movies to a given user, analyzing movies’ bias, and visualizing the embeddings by reducing dimensionality using PCA and t-SNE. We will also find similar movies to a given one using cosine similarity."
+    "text": "In this post we are going to train a Matrix Factorization model on MovieLens 20M Dataset.\nFor the training we are going to use raw PyTorch and miniai.\nAfter the model is trained, we will interpret the results by recommending movies to a given user, analyzing movies’ bias, and visualizing the embeddings by reducing dimensionality using PCA and t-SNE. We will also find similar movies to a given one using cosine similarity."
   },
   {
     "objectID": "posts/2023-07_collab_filter_miniai/2023-07_MovieLens_20M_Part1.html#hardware",

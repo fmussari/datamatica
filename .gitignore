@@ -8,3 +8,5 @@ photos
 models
 ml-20m
 ml-20m.zip
+.ipynb_checkpoints
+/posts/2023-11_rag_on_ms_learning_paths/.env

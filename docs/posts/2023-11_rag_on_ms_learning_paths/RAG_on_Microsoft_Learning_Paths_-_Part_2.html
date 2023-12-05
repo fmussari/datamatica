@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Francisco Mussari">
+<meta name="dcterms.date" content="2023-12-05">
+
+<title>datamatica - RAG on Microsoft Learning Paths - Part 2. Embeddings</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">datamatica</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/fmussari" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/francisco-mussari-432b781a6/" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">RAG on Microsoft Learning Paths - Part 2. Embeddings</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">RAG</div>
+                <div class="quarto-category">LLM</div>
+                <div class="quarto-category">Embeddings</div>
+                <div class="quarto-category">SQLAlchemy</div>
+                <div class="quarto-category">PostgreSQL</div>
+                <div class="quarto-category">Supabase</div>
+                <div class="quarto-category">pgvector</div>
+                <div class="quarto-category">Vector Search</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Francisco Mussari </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 5, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#references" id="toc-references" class="nav-link active" data-scroll-target="#references">References</a></li>
+  <li><a href="#import-libraries" id="toc-import-libraries" class="nav-link" data-scroll-target="#import-libraries">Import libraries</a></li>
+  <li><a href="#credentials" id="toc-credentials" class="nav-link" data-scroll-target="#credentials">Credentials</a></li>
+  <li><a href="#embedding-models" id="toc-embedding-models" class="nav-link" data-scroll-target="#embedding-models">Embedding Models</a></li>
+  <li><a href="#create-tables-and-collections-to-store-embeddings-using-vecs" id="toc-create-tables-and-collections-to-store-embeddings-using-vecs" class="nav-link" data-scroll-target="#create-tables-and-collections-to-store-embeddings-using-vecs">Create tables and collections to store embeddings using <code>vecs</code></a></li>
+  <li><a href="#get-content-from-database" id="toc-get-content-from-database" class="nav-link" data-scroll-target="#get-content-from-database">Get Content from Database</a>
+  <ul class="collapse">
+  <li><a href="#connect-to-existing-tables" id="toc-connect-to-existing-tables" class="nav-link" data-scroll-target="#connect-to-existing-tables">Connect to existing tables</a></li>
+  <li><a href="#create-connections-to-existing-tables" id="toc-create-connections-to-existing-tables" class="nav-link" data-scroll-target="#create-connections-to-existing-tables">Create connections to existing tables</a></li>
+  <li><a href="#three-ways-to-query-the-database-with-sqlalchemy" id="toc-three-ways-to-query-the-database-with-sqlalchemy" class="nav-link" data-scroll-target="#three-ways-to-query-the-database-with-sqlalchemy">Three ways to query the database with SQLAlchemy</a></li>
+  <li><a href="#remove-unwanted-parts-in-content" id="toc-remove-unwanted-parts-in-content" class="nav-link" data-scroll-target="#remove-unwanted-parts-in-content">Remove unwanted parts in content</a></li>
+  </ul></li>
+  <li><a href="#populate-the-database-with-the-embeddings" id="toc-populate-the-database-with-the-embeddings" class="nav-link" data-scroll-target="#populate-the-database-with-the-embeddings">Populate the database with the embeddings</a>
+  <ul class="collapse">
+  <li><a href="#chapter-content-excluding-questions-andor-answers" id="toc-chapter-content-excluding-questions-andor-answers" class="nav-link" data-scroll-target="#chapter-content-excluding-questions-andor-answers">1. Chapter Content (excluding questions and/or answers)</a></li>
+  <li><a href="#questions-embeddings" id="toc-questions-embeddings" class="nav-link" data-scroll-target="#questions-embeddings">2. Questions’ Embeddings</a></li>
+  <li><a href="#questions-answers-embeddings" id="toc-questions-answers-embeddings" class="nav-link" data-scroll-target="#questions-answers-embeddings">3. Questions’ + Answers’ Embeddings</a></li>
+  <li><a href="#function-to-upsert-embeddings-and-metadata" id="toc-function-to-upsert-embeddings-and-metadata" class="nav-link" data-scroll-target="#function-to-upsert-embeddings-and-metadata">Function to upsert embeddings and metadata</a></li>
+  <li><a href="#for-each-model-and-content-type-call-the-previous-function" id="toc-for-each-model-and-content-type-call-the-previous-function" class="nav-link" data-scroll-target="#for-each-model-and-content-type-call-the-previous-function">For each model and content type, call the previous function</a></li>
+  </ul></li>
+  <li><a href="#exploring-the-embeddings-and-content" id="toc-exploring-the-embeddings-and-content" class="nav-link" data-scroll-target="#exploring-the-embeddings-and-content">Exploring the Embeddings and content</a>
+  <ul class="collapse">
+  <li><a href="#embeddings-for-the-first-question" id="toc-embeddings-for-the-first-question" class="nav-link" data-scroll-target="#embeddings-for-the-first-question">Embeddings for the first question</a></li>
+  <li><a href="#vector-similarity-search" id="toc-vector-similarity-search" class="nav-link" data-scroll-target="#vector-similarity-search">Vector similarity search</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>We’ve successfully stored our contextual data in a free Supabase instance. Our next step is to evaluate how LLMs perform on Power BI Learning Path questions. In this post, we are going to create embeddings for both questions and contexts.</p>
+<p><strong>The Need for a Vector Database:</strong></p>
+<p>PostgreSQL offers an open-source extension called pgvector that allows efficient storage and similarity searches for vectors. However, our existing database schema requires careful consideration for embedding insertion. While the llamaindex solution creates a defined schema using <code>SupabaseVectorStore</code>, we’ll opt for <code>vecs</code>, a Python client designed to manage and query vector stores in PostgreSQL as an simplified abstraction above <code>pgvector</code>.</p>
+<p><strong>Part 2 Goals:</strong></p>
+<ul>
+<li>Read Data: We’ll retrieve the scraped content stored within Supabase (PostgreSQL).</li>
+<li>Embed Everything: We’ll create embeddings for contextual content, questions, and questions with their possible answers.</li>
+<li>Store Embeddings: We’ll store the generated embeddings and metadata back in Supabase.</li>
+</ul>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><a href="../../posts/2023-11_rag_on_ms_learning_paths/RAG_on_Microsoft_Learning_Paths_-_Part_1.html">RAG on Microsoft Learning Paths - Part 1. Web Scraping and Supabase</a></li>
+<li><a href="https://github.com/supabase/vecs/blob/main/README.md">vecs</a></li>
+<li><a href="https://github.com/run-llama/llama_index/blob/main/docs/examples/embeddings/jina_embeddings.ipynb">jina_embeddings.ipynb</a></li>
+<li><a href="https://sanjayasubedi.com.np/python/sqlalchemy/using-sqlalchemy-orm-with-existing-tables/">Using SQLAlchemy ORM with existing tables</a></li>
+<li><a href="https://medium.com/hackernoon/how-to-query-jsonb-beginner-sheet-cheat-4da3aa5082a3">How to query JSONB, beginner sheet cheat</a></li>
+</ul>
+</section>
+<section id="import-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="import-libraries">Import libraries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> vecs</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> List, Tuple</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> llama_index.embeddings <span class="im">import</span> HuggingFaceEmbedding</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> llama_index <span class="im">import</span> ServiceContext</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> llama_index</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(llama_index.__version__)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> transformers</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(transformers.__version__)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.9.11.post1
+4.35.2</code></pre>
+</div>
+</div>
+</section>
+<section id="credentials" class="level2">
+<h2 class="anchored" data-anchor-id="credentials">Credentials</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">"google.colab"</span> <span class="kw">in</span> sys.modules:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> google.colab <span class="im">import</span> userdata</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    IS_COLAB <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    supabase_host <span class="op">=</span> userdata.get(<span class="st">"SUPABASE_HOST"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    supabase_pass <span class="op">=</span> userdata.get(<span class="st">"SUPABASE_PASS"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    load_dotenv()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    supabase_host <span class="op">=</span> os.environ.get(<span class="st">'SUPABASE_HOST'</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    supabase_pass <span class="op">=</span> os.environ.get(<span class="st">'SUPABASE_PASS'</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>DB_CONNECTION <span class="op">=</span> <span class="ss">f"postgresql://postgres:</span><span class="sc">{</span>supabase_pass<span class="sc">}</span><span class="ss">@</span><span class="sc">{</span>supabase_host<span class="sc">}</span><span class="ss">:5432/postgres"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="embedding-models" class="level2">
+<h2 class="anchored" data-anchor-id="embedding-models">Embedding Models</h2>
+<p>This work leverages Jina AI’s “world’s first open-source 8K text embedding model”. While testing on my 8GB GPU model, I encountered memory limitations when the context exceeded 2,500 words.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>emb_models <span class="op">=</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"jinaai/jina-embeddings-v2-small-en"</span>:</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"size"</span>:  <span class="dv">512</span>, <span class="st">"collection"</span>: <span class="va">None</span>, <span class="st">"table"</span>: <span class="va">None</span>, <span class="st">"embed_model"</span>: <span class="va">None</span>},</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"jinaai/jina-embeddings-v2-base-en"</span>:</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"size"</span>: <span class="dv">768</span>, <span class="st">"collection"</span>: <span class="va">None</span>, <span class="st">"table"</span>: <span class="va">None</span>, <span class="st">"embed_model"</span>: <span class="va">None</span>},</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">#"jinaai/jina-embeddings-v2-large-en":</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">#{"size": 2048, "collection": None, "table": None, "embed_model": None},</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-tables-and-collections-to-store-embeddings-using-vecs" class="level2">
+<h2 class="anchored" data-anchor-id="create-tables-and-collections-to-store-embeddings-using-vecs">Create tables and collections to store embeddings using <code>vecs</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>vx <span class="op">=</span> vecs.create_client(DB_CONNECTION)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _model <span class="kw">in</span> emb_models.keys():</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    _data <span class="op">=</span> emb_models[_model]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    _data[<span class="st">"table"</span>] <span class="op">=</span> _model.split(<span class="st">"/"</span>)[<span class="op">-</span><span class="dv">1</span>].replace(<span class="st">"-"</span>, <span class="st">"_"</span>).replace(<span class="st">"."</span>, <span class="st">"_"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    _data[<span class="st">"collection"</span>] <span class="op">=</span> vx.get_or_create_collection(name<span class="op">=</span>_data[<span class="st">"table"</span>], dimension<span class="op">=</span>_data[<span class="st">"size"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="get-content-from-database" class="level2">
+<h2 class="anchored" data-anchor-id="get-content-from-database">Get Content from Database</h2>
+<p>Let’s get the content we scraped in Part 1.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sqlalchemy.ext.automap <span class="im">import</span> automap_base</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sqlalchemy.orm <span class="im">import</span> Session</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sqlalchemy <span class="im">import</span> create_engine</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sqlalchemy.engine.row <span class="im">import</span> Row</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sqlalchemy.engine.result <span class="im">import</span> RMKeyView</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sqlalchemy <span class="im">import</span> select, text, func, and_, literal_column, cast, String</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="connect-to-existing-tables" class="level3">
+<h3 class="anchored" data-anchor-id="connect-to-existing-tables">Connect to existing tables</h3>
+<p>This is the model we created in Part 1.</p>
+<p><img src="ERD.svg" align="center"></p>
+<p>Fig 1. Model’s ERD. (Created with https://dbdiagram.io/)</p>
+</section>
+<section id="create-connections-to-existing-tables" class="level3">
+<h3 class="anchored" data-anchor-id="create-connections-to-existing-tables">Create connections to existing tables</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>engine <span class="op">=</span> create_engine(DB_CONNECTION)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>Base <span class="op">=</span> automap_base()</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>Base.prepare(autoload_with<span class="op">=</span>engine)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># matching that of the table name.</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>Exam <span class="op">=</span> Base.classes.exam</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>Learning <span class="op">=</span> Base.classes.learning_path</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>Module <span class="op">=</span> Base.classes.module</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>Chapter <span class="op">=</span> Base.classes.chapter</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>Question <span class="op">=</span> Base.classes.question</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>Answer <span class="op">=</span> Base.classes.answer</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>session <span class="op">=</span> Session(engine)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_275/1542308513.py:4: SAWarning: Did not recognize type 'vector' of column 'embedding'
+  Base.prepare(autoload_with=engine)</code></pre>
+</div>
+</div>
+</section>
+<section id="three-ways-to-query-the-database-with-sqlalchemy" class="level3">
+<h3 class="anchored" data-anchor-id="three-ways-to-query-the-database-with-sqlalchemy">Three ways to query the database with SQLAlchemy</h3>
+<p>Before we continue, let’s explore some ways we can query the database. #### 1. Using <code>select</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>stmt <span class="op">=</span> select(Question).where(Question.<span class="bu">id</span> <span class="op">&lt;=</span> <span class="dv">2</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> engine.<span class="ex">connect</span>() <span class="im">as</span> conn:</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> conn.execute(stmt)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result.keys())</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> result:</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(row.question)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>RMKeyView(['id', 'question', 'chapter_id'])
+Which data role enables advanced analytics capabilities specifically through reports and visualizations?
+Which data analyst task has a critical performance impact on reporting and data analysis?</code></pre>
+</div>
+</div>
+<section id="creating-a-sql-statement" class="level4">
+<h4 class="anchored" data-anchor-id="creating-a-sql-statement">2. Creating a SQL statement</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT  ex.id AS exam_id, pa.id AS path_id, mo.id AS module_id, </span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="st">        ch.id AS chapter_id, ch.is_check</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="st">FROM exam AS ex JOIN learning_path AS pa ON ex.id=pa.exam_id</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="st">JOIN module AS mo ON pa.id=mo.path_id</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="st">JOIN chapter AS ch ON mo.id=ch.module_id</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="st">WHERE NOT ch.is_check</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="st">LIMIT 5</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>stmt <span class="op">=</span> text(q)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> engine.<span class="ex">connect</span>() <span class="im">as</span> conn:</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> conn.execute(stmt)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result.keys())</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> result:</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(row)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>RMKeyView(['exam_id', 'path_id', 'module_id', 'chapter_id', 'is_check'])
+(1, 1, 1, 1, False)
+(1, 1, 1, 2, False)
+(1, 1, 1, 3, False)
+(1, 1, 1, 4, False)
+(1, 1, 1, 6, False)</code></pre>
+</div>
+</div>
+</section>
+<section id="using-session.query" class="level4">
+<h4 class="anchored" data-anchor-id="using-session.query">3. Using <code>session.query</code></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> (session.query(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>        Exam.<span class="bu">id</span>, Learning.<span class="bu">id</span>, Module.<span class="bu">id</span>, Chapter.<span class="bu">id</span>, Chapter.is_check)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>     .join(Learning, Exam.<span class="bu">id</span><span class="op">==</span>Learning.exam_id)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>     .join(Module, Learning.<span class="bu">id</span><span class="op">==</span>Module.path_id)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>     .join(Chapter, Module.<span class="bu">id</span><span class="op">==</span>Chapter.module_id)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>     .where(<span class="op">~</span>Chapter.is_check)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>     .limit(<span class="dv">5</span>))</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>[r <span class="cf">for</span> r <span class="kw">in</span> q]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[(1, 1, 1, 1, False),
+ (1, 1, 1, 2, False),
+ (1, 1, 1, 3, False),
+ (1, 1, 1, 4, False),
+ (1, 1, 1, 6, False)]</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="remove-unwanted-parts-in-content" class="level3">
+<h3 class="anchored" data-anchor-id="remove-unwanted-parts-in-content">Remove unwanted parts in content</h3>
+<p>There are links to images we don’t need to embed, lets remove them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>stmt <span class="op">=</span> select(Chapter.content).where(Chapter.<span class="bu">id</span> <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> engine.<span class="ex">connect</span>() <span class="im">as</span> conn:</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> conn.execute(stmt):</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        text <span class="op">=</span> row.content</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(text[:<span class="dv">500</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>As a data analyst, you are on a journey. Think about all the data that is
+being generated each day and that is available in an organization, from
+transactional data in a traditional database, telemetry data from services
+that you use, to signals that you get from different areas like social media.
+
+[![abundance of data](media/abundance-data-ss.png)](media/abundance-data-
+ss.png#lightbox)
+
+For example, today's retail businesses collect and store massive amounts of
+data that track the items you br</code></pre>
+</div>
+</div>
+<p>Let’s filter the patterns like:</p>
+<ul>
+<li><p><code>[![abundance of data](media/abundance-data-ss.png)](media/abundance-data- ss.png#lightbox)</code></p></li>
+<li><p><code>![Screenshot of the filtered Top 100 Contributors report page](media/pbi- touring_05.png)</code></p></li>
+</ul>
+<p>Which represents images in the content and doesn’t add any value.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> remove_content_image(text: <span class="bu">str</span>):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">#text = re.sub("\[\!\[[\s\S]*\)\]\([\s\S]*\)\n\n", "", text)</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    better_regex <span class="op">=</span> <span class="vs">r"\[{0,1}\!\[[\s\S]*?\)$\n{0,2}"</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> re.sub(<span class="st">"\[{0,1}\!\[[\s\S]*?\)</span><span class="ch">\n\n</span><span class="st">"</span>, <span class="st">""</span>, text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(remove_content_image(text[:<span class="dv">500</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>As a data analyst, you are on a journey. Think about all the data that is
+being generated each day and that is available in an organization, from
+transactional data in a traditional database, telemetry data from services
+that you use, to signals that you get from different areas like social media.
+
+For example, today's retail businesses collect and store massive amounts of
+data that track the items you br</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="populate-the-database-with-the-embeddings" class="level2">
+<h2 class="anchored" data-anchor-id="populate-the-database-with-the-embeddings">Populate the database with the embeddings</h2>
+<section id="chapter-content-excluding-questions-andor-answers" class="level3">
+<h3 class="anchored" data-anchor-id="chapter-content-excluding-questions-andor-answers">1. Chapter Content (excluding questions and/or answers)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>content_cols <span class="op">=</span> [<span class="st">"exam_id"</span>, <span class="st">"path_id"</span>, <span class="st">"module_id"</span>, <span class="st">"chapter_id"</span>, <span class="st">"content"</span>]</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>content_stmt <span class="op">=</span> (</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    select(</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>        Exam.<span class="bu">id</span>.label(content_cols[<span class="dv">0</span>]),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        Learning.<span class="bu">id</span>.label(content_cols[<span class="dv">1</span>]),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        Module.<span class="bu">id</span>.label(content_cols[<span class="dv">2</span>]),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        Chapter.<span class="bu">id</span>.label(content_cols[<span class="dv">3</span>]),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        Chapter.content.label(content_cols[<span class="dv">4</span>])</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    .join(Learning, Exam.<span class="bu">id</span><span class="op">==</span>Learning.exam_id)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    .join(Module, Learning.<span class="bu">id</span><span class="op">==</span>Module.path_id)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    .join(Chapter, Module.<span class="bu">id</span><span class="op">==</span>Chapter.module_id)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    .where(<span class="op">~</span>Chapter.is_check)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">#.where(and_(Chapter.id&lt;=80, Chapter.id&gt;=75)) # testing porpuses</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="questions-embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="questions-embeddings">2. Questions’ Embeddings</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>question_cols <span class="op">=</span> [<span class="st">"exam_id"</span>, <span class="st">"path_id"</span>, <span class="st">"module_id"</span>, <span class="st">"chapter_id"</span>, <span class="st">"question_id"</span>, <span class="st">"content"</span>]</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>questions_stmt <span class="op">=</span> (</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    select(</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        Exam.<span class="bu">id</span>.label(question_cols[<span class="dv">0</span>]),</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        Learning.<span class="bu">id</span>.label(question_cols[<span class="dv">1</span>]),</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        Module.<span class="bu">id</span>.label(question_cols[<span class="dv">2</span>]),</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        Chapter.<span class="bu">id</span>.label(question_cols[<span class="dv">3</span>]),</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>        Question.<span class="bu">id</span>.label(question_cols[<span class="dv">4</span>]),</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        Question.question.label(question_cols[<span class="dv">5</span>])</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    .join(Learning, Exam.<span class="bu">id</span><span class="op">==</span>Learning.exam_id)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    .join(Module, Learning.<span class="bu">id</span><span class="op">==</span>Module.path_id)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    .join(Chapter, Module.<span class="bu">id</span><span class="op">==</span>Chapter.module_id)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    .join(Question, Chapter.<span class="bu">id</span><span class="op">==</span>Question.chapter_id)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    .where(Chapter.is_check)</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#.where(and_(Chapter.id&lt;=80, Chapter.id&gt;=75)) # testing porpuses</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="how-does-the-query-behaves-testing" class="level4">
+<h4 class="anchored" data-anchor-id="how-does-the-query-behaves-testing">How does the query behaves (testing)</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> engine.<span class="ex">connect</span>() <span class="im">as</span> conn:</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> conn.execute(questions_stmt)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    result_keys <span class="op">=</span> results.keys()</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result_keys)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> results:</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(row)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>RMKeyView(['exam_id', 'path_id', 'module_id', 'chapter_id', 'question_id', 'content'])
+(1, 3, 10, 80, 29, 'Which statement about calculated tables is true?')
+(1, 3, 10, 80, 30, 'Which statement about calculated columns is true?')
+(1, 3, 10, 80, 31, "You're developing a Power BI desktop model that sources data from an Excel workbook. The workbook has an employee table that stores one row for each  ... (181 characters truncated) ... ze payroll data within the organization hierarchy (like, executive level, manager level, and so on). Which technique will you use to add the columns?")</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="questions-answers-embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="questions-answers-embeddings">3. Questions’ + Answers’ Embeddings</h3>
+<p>I wanted to also embed question with its possible answers to check whether this could possibly translate in better retrievals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>qa_cols <span class="op">=</span> [</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"exam_id"</span>, <span class="st">"path_id"</span>, <span class="st">"module_id"</span>, <span class="st">"chapter_id"</span>, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"question_id"</span>, <span class="st">"answers_count"</span>, <span class="st">"content"</span>]</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>qa_stmt <span class="op">=</span> (</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    select(</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>        Exam.<span class="bu">id</span>.label(qa_cols[<span class="dv">0</span>]),               <span class="co"># exam_id</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        Learning.<span class="bu">id</span>.label(qa_cols[<span class="dv">1</span>]),           <span class="co"># path_id</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        Module.<span class="bu">id</span>.label(qa_cols[<span class="dv">2</span>]),             <span class="co"># module_id</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>        Chapter.<span class="bu">id</span>.label(qa_cols[<span class="dv">3</span>]),            <span class="co"># chapter_id</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>        Question.<span class="bu">id</span>.label(qa_cols[<span class="dv">4</span>]),           <span class="co"># question_id</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>        func.count(Answer.<span class="bu">id</span>).label(qa_cols[<span class="dv">5</span>]), <span class="co"># answers_count</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">#func.string_agg(cast(Answer.id, String), literal_column("','")),</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>        func.concat(</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>            func.string_agg(</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>                Question.question.distinct(), literal_column(<span class="st">"''"</span>)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>            ), </span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">": </span><span class="ch">\n</span><span class="st">- "</span>,</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>            func.string_agg(Answer.answer, literal_column(<span class="st">"'</span><span class="ch">\n</span><span class="st">- '"</span>))</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>        ).label(qa_cols[<span class="dv">6</span>]),                     <span class="co"># content</span></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    .join(Learning, Exam.<span class="bu">id</span><span class="op">==</span>Learning.exam_id)</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>    .join(Module, Learning.<span class="bu">id</span><span class="op">==</span>Module.path_id)</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>    .join(Chapter, Module.<span class="bu">id</span><span class="op">==</span>Chapter.module_id)</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>    .join(Question, Chapter.<span class="bu">id</span><span class="op">==</span>Question.chapter_id)</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>    .join(Answer, Question.<span class="bu">id</span><span class="op">==</span>Answer.question_id)</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>    .where(Chapter.is_check)</span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">#.where(and_(Chapter.id&lt;=80, Chapter.id&gt;=75)) # testing porpuses</span></span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>    .group_by(Exam.<span class="bu">id</span>, Learning.<span class="bu">id</span>, Module.<span class="bu">id</span>, Chapter.<span class="bu">id</span>, Question.<span class="bu">id</span>)</span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="how-does-the-query-behaves-testing-1" class="level4">
+<h4 class="anchored" data-anchor-id="how-does-the-query-behaves-testing-1">How does the query behaves (testing)</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> engine.<span class="ex">connect</span>() <span class="im">as</span> conn:</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> conn.execute(qa_stmt)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    result_keys <span class="op">=</span> results.keys()</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result_keys)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> results:</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(row.question_id, row.answers_count, row.content)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>RMKeyView(['exam_id', 'path_id', 'module_id', 'chapter_id', 'question_id', 'answers_count', 'content'])
+29 4 Which statement about calculated tables is true?: 
+- Calculated tables increase the size of the semantic model.
+- Calculated tables are evaluated by using row context.
+- Calculated tables are created in Power Query.
+- Calculated tables cannot include calculated columns.
+30 4 Which statement about calculated columns is true?: 
+- Calculated columns are created in the Power Query Editor window.
+- Calculated column formulas are evaluated by using row context.
+- Calculated column formulas can only reference columns from within their table.
+- Calculated columns can't be related to non-calculated columns.
+31 4 You're developing a Power BI desktop model that sources data from an Excel workbook. The workbook has an employee table that stores one row for each employee. Each row has a reference to the employee's manager, which is also a row in the employee table. You need to add several columns to the Employee table in your model to analyze payroll data within the organization hierarchy (like, executive level, manager level, and so on). Which technique will you use to add the columns?: 
+- Add persisted columns to a table by using T-SQL.
+- Add column expressions in a view by using T-SQL.
+- Add computed columns by using M.
+- Add calculated columns by using DAX.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>stmts <span class="op">=</span> [content_stmt, questions_stmt, qa_stmt]</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>cols_lst <span class="op">=</span> [content_cols, question_cols, qa_cols]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="function-to-upsert-embeddings-and-metadata" class="level3">
+<h3 class="anchored" data-anchor-id="function-to-upsert-embeddings-and-metadata">Function to upsert embeddings and metadata</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> embed_results(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    embed_model: HuggingFaceEmbedding, </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    results: List[Row],</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    result_keys: RMKeyView,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    collection: vecs.Collection</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>):    </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(results):</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>        content <span class="op">=</span> remove_content_image(row[<span class="op">-</span><span class="dv">1</span>]).replace(<span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span>, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>        number_of_words <span class="op">=</span> <span class="bu">len</span>(content.split())</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>        metadata <span class="op">=</span> {col: row[idx] <span class="cf">for</span> idx, col <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">list</span>(result_keys)[:<span class="op">-</span><span class="dv">1</span>])}</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>        metadata[<span class="st">'question_id'</span>] <span class="op">=</span> metadata.get(<span class="st">'question_id'</span>, <span class="va">None</span>) <span class="kw">or</span> <span class="dv">0</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>        metadata[<span class="st">'answers_count'</span>] <span class="op">=</span> metadata.get(<span class="st">'answers_count'</span>, <span class="va">None</span>) <span class="kw">or</span> <span class="dv">0</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>        metadata[<span class="st">'is_check'</span>] <span class="op">=</span> <span class="bu">bool</span>(metadata[<span class="st">'question_id'</span>])</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>        metadata[<span class="st">'has_answers'</span>] <span class="op">=</span> <span class="bu">bool</span>(metadata[<span class="st">'answers_count'</span>])</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>        metadata[<span class="st">'number_of_words'</span>] <span class="op">=</span> number_of_words</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>        <span class="bu">id</span> <span class="op">=</span> <span class="st">"-"</span>.join([<span class="ss">f"</span><span class="sc">{</span>r<span class="sc">:03d}</span><span class="ss">"</span> <span class="cf">for</span> r <span class="kw">in</span> row[:<span class="dv">4</span>]])</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>        <span class="bu">id</span> <span class="op">+=</span> <span class="ss">f"-</span><span class="sc">{</span>metadata[<span class="st">'question_id'</span>]<span class="sc">:03d}</span><span class="ss">"</span> </span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>        <span class="bu">id</span> <span class="op">+=</span> <span class="ss">f"-</span><span class="sc">{</span>metadata[<span class="st">'has_answers'</span>]<span class="sc">:01d}</span><span class="ss">"</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print(id)</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>        <span class="co">#metadata['content'] = content</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>        q_embedding <span class="op">=</span> (embed_model.get_query_embedding(content))</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>        collection.upsert(</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>            records<span class="op">=</span>[(<span class="bu">id</span>, q_embedding, metadata)]</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>        torch.cuda.empty_cache()</span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss"> rows upserted to collection </span><span class="sc">{</span>collection<span class="sc">.</span>name<span class="sc">}</span><span class="ss">."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="for-each-model-and-content-type-call-the-previous-function" class="level3">
+<h3 class="anchored" data-anchor-id="for-each-model-and-content-type-call-the-previous-function">For each model and content type, call the previous function</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _model <span class="kw">in</span> emb_models.keys():</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    embed_model <span class="op">=</span> HuggingFaceEmbedding(</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>        model_name<span class="op">=</span>_model, trust_remote_code<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">#device="cpu"</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Embed model:</span><span class="ch">\n</span><span class="sc">{</span>_model<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> stmt <span class="kw">in</span> stmts:</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> engine.<span class="ex">connect</span>() <span class="im">as</span> conn:</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>            results <span class="op">=</span> conn.execute(stmt)</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>            result_keys <span class="op">=</span> results.keys()</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>            results <span class="op">=</span> [row <span class="cf">for</span> row <span class="kw">in</span> results]</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>        collection <span class="op">=</span> emb_models[_model][<span class="st">"collection"</span>]</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>        embed_results(embed_model, results, result_keys, collection)</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    embed_model <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    torch.cuda.empty_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Embed model:
+jinaai/jina-embeddings-v2-small-en
+
+173 rows upserted to collection jina_embeddings_v2_small_en.
+69 rows upserted to collection jina_embeddings_v2_small_en.
+69 rows upserted to collection jina_embeddings_v2_small_en.
+
+Embed model:
+jinaai/jina-embeddings-v2-base-en
+
+173 rows upserted to collection jina_embeddings_v2_base_en.
+69 rows upserted to collection jina_embeddings_v2_base_en.
+69 rows upserted to collection jina_embeddings_v2_base_en.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="exploring-the-embeddings-and-content" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-the-embeddings-and-content">Exploring the Embeddings and content</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>emb_table <span class="op">=</span> emb_models[_model][<span class="st">'table'</span>]</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>VecsBase <span class="op">=</span> automap_base()</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>VecsBase.prepare(autoload_with<span class="op">=</span>engine, schema<span class="op">=</span><span class="st">"vecs"</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>EmbTable <span class="op">=</span> VecsBase.classes[emb_table]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_275/4242081468.py:4: SAWarning: Did not recognize type 'vector' of column 'vec'
+  VecsBase.prepare(autoload_with=engine, schema="vecs")</code></pre>
+</div>
+</div>
+<section id="embeddings-for-the-first-question" class="level3">
+<h3 class="anchored" data-anchor-id="embeddings-for-the-first-question">Embeddings for the first question</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>stmt <span class="op">=</span> (</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    select(</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>        cast(EmbTable.metadata[<span class="st">'is_check'</span>], String)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>        , EmbTable.metadata</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>        , EmbTable.vec.label(<span class="st">'embedding'</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    ).where(EmbTable.metadata[<span class="st">'is_check'</span>].astext <span class="op">==</span> <span class="st">'true'</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    ).limit(<span class="dv">1</span>)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> engine.<span class="ex">connect</span>() <span class="im">as</span> conn:</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> conn.execute(stmt)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(results.keys())</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> results:</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>        embedding <span class="op">=</span> json.loads(row.embedding)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>        metadata <span class="op">=</span> row.metadata</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>RMKeyView(['anon_1', 'metadata', 'embedding'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Embedding size: </span><span class="sc">{</span><span class="bu">len</span>(embedding)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"First 5 dimensions: </span><span class="sc">{</span>embedding[:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Embedding size: 768
+First 5 dimensions: [0.0017405826, -0.066035606, 0.023444103, -0.028299995, 9.624907e-06]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(metadata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'exam_id': 1, 'path_id': 1, 'is_check': True, 'module_id': 1, 'chapter_id': 5, 'has_answers': False, 'question_id': 1, 'answers_count': 0, 'number_of_words': 12}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> (session.query(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>        Question.question)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>     .where(Question.<span class="bu">id</span><span class="op">==</span>metadata[<span class="st">'question_id'</span>]))</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>[r <span class="cf">for</span> r <span class="kw">in</span> q][<span class="dv">0</span>][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'Which data role enables advanced analytics capabilities specifically through reports and visualizations?'</code></pre>
+</div>
+</div>
+<p>As shown in the metadata, the question belongs to the first module. So the ideal retrieval would get chapters of the first module.</p>
+</section>
+<section id="vector-similarity-search" class="level3">
+<h3 class="anchored" data-anchor-id="vector-similarity-search">Vector similarity search</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>ids <span class="op">=</span> collection.query(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>embedding,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    limit<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    filters<span class="op">=</span>{<span class="st">"question_id"</span>: {<span class="st">"$eq"</span>: <span class="dv">0</span>}},</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['001-003-009-075-000-0',
+ '001-001-002-012-000-0',
+ '001-004-018-151-000-0',
+ '001-005-023-196-000-0']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> session.query(</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>        EmbTable.metadata[<span class="st">'module_id'</span>]</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>        , EmbTable.metadata[<span class="st">'chapter_id'</span>]</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    ).where(EmbTable.<span class="bu">id</span>.in_(ids))</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>module_ids <span class="op">=</span> [r <span class="cf">for</span> r <span class="kw">in</span> q]</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>module_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[(2, 12), (9, 75), (18, 151), (23, 196)]</code></pre>
+</div>
+</div>
+<p>For the first question, the vector search is returning content from module 2, 9, 18, 23, but not from module 1.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<ul>
+<li>Leveraging a free Supabase instance for storing content and embeddings proved very useful.</li>
+<li>Testing additional embedding models like OpenAI’s would be valuable, only if it was available in Venezuela.</li>
+<li>Part 3 will evaluate retrieval by vector similarity, aiming for question proximity to related content in the vector space.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

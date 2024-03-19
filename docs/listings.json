@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2024-03_async_gladia/async_gladia.html",
       "/posts/2023-11_rag_on_ms_learning_paths/RAG_on_Microsoft_Learning_Paths_-_Part_2.html",
       "/posts/2023-11_rag_on_ms_learning_paths/RAG_on_Microsoft_Learning_Paths_-_Part_1.html",
       "/posts/2023-07_collab_filter_miniai/2023-07_MovieLens_20M_Part1.html",

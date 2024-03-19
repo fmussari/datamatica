@@ -1,0 +1,322 @@
+---
+title: Gladia API using `asyncio` with Python
+author: "Francisco Mussari"  
+date: 2024-03-15  
+image: ""
+categories: [Whisper, Transcription, asyncio, aiohttp]  
+format:
+  html:
+    toc: true
+    toc-depth: 3
+---
+
+## Introduction
+
+### Discovering Gladia
+
+In the last couple of months I have been working with a client that needed Apple Podcast and YouTube transcriptions
+
+
+Using their own words, [Gladia](https://www.gladia.io/) "provides a fast and accurate way to turn unstructured data into valuable business knowledge — starting with audio."  
+  
+Besides their "Audio intelligence" features, in this post we are going to be working with the "Speech-to-Text" service, which is Powered by their proprietary [Whisper-Zero](https://www.gladia.io/whisper-zero) ASR. You can use the API for free with a quota of 10 hours of audio per month.
+
+### Usage and Documentation
+
+Gladia's [documentation and API reference](https://docs.gladia.io/chapters/introduction/pages/introduction) are very good. They also have a repository with Python examples for Pre-recorded and Live (Streaming) use cases.  
+  
+### Asyncio in Python
+
+This post is about using the API with async Python, something that is not yet in Gladia's documentation.
+
+When you need to upload or transcribe multiple files, it makes sense to use asyncio capabilities to process those files since is a I/O-bound task. 
+
+## Configuring your account
+
+You can go to the [Getting Started](https://docs.gladia.io/chapters/get-started/pages/configure-account) section in the documentation to configure your account and get an API key.
+
+## Asyncio with Gladia: A Step-by-Step Guide
+
+### Import Libraries
+
+```{python}
+#| eval: true
+import asyncio
+import aiohttp
+import requests
+import os
+
+import nest_asyncio
+nest_asyncio.apply()
+
+from time import sleep
+from pathlib import Path
+from typing import List, Optional
+from time import perf_counter
+```
+
+### Get API Key
+
+```{python}
+import sys
+if "google.colab" in sys.modules:
+    # If running in Colab
+    from google.colab import userdata
+    x_gladia_key = userdata.get('GLADIA_API_KEY')
+else:
+    from dotenv import load_dotenv
+    load_dotenv("creds/.env")
+    x_gladia_key = os.environ.get('GLADIA_API_KEY')
+```
+
+### Context manager to measure time
+
+```{python}
+# https://stackoverflow.com/a/69156219
+class catchtime:
+    def __enter__(self):
+        self.start = perf_counter()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.seconds = round(perf_counter() - self.start, 2)
+        m, s = divmod(self.seconds, 60)
+        self.m, self.s = int(m), round(s, 1)
+        self.readout = f'Time: {self.seconds:.3f} seconds'
+```
+
+### Python Code
+```{python}
+async def process_response(response):
+
+    if response.status != 200:
+        print(f"- Request failed with status: {response.status}")
+        json_response = await response.text()
+        print(f"Json Response: {json_response}")
+        print('- End of work');
+        return None
+    else:
+        print("- Request successful")
+        return await response.json()
+
+
+async def async_make_request(
+    session, url, headers, method="GET", data=None, json=None
+):
+    print(f"{headers=}")
+    if method == "POST":
+        async with session.post(
+            url, headers=headers, data=data, json=json
+        ) as response:
+            return await process_response(response)
+    else:
+        async with session.get(url, headers=headers) as response:
+            return await process_response(response)
+
+
+async def async_upload_file_to_gladia(session, file_path):
+
+    with catchtime() as t:
+        file_name = str(file_path.with_suffix(''))
+        content_type = f"audio/{file_path.suffix[1:]}"
+
+        with open(file_path, "rb") as f:
+            data = aiohttp.FormData()
+            data.add_field("audio", f, filename=file_name, content_type=content_type)
+
+            print("- Uploading file to Gladia...")
+            json_response = await async_make_request(
+                session, "https://api.gladia.io/v2/upload/",
+                headers=headers,  method="POST", data=data
+            )
+
+    print(f'Upload Time: {t.seconds} seconds for `{file_path.name}`')
+
+    return json_response
+
+
+async def async_transcribe_job(
+    session: aiohttp.client.ClientSession,
+    audio_url: str,
+    diarization: bool = False,
+    enable_code_switching: bool = False,
+    custom_metadata: Optional[dict] = None,
+    **kwargs
+) -> str:
+
+    data = {
+        "audio_url": audio_url,
+        "diarization": diarization,
+        "enable_code_switching": enable_code_switching,
+        "custom_metadata": custom_metadata
+    }
+    for key in kwargs.keys():
+        data[key] = kwargs[key]
+    
+    form_data = aiohttp.FormData()
+    for k,v in data.items():
+        form_data.add_field(k, v)
+
+    print("- Sending transcription request to Gladia API...")
+    print(f"{data=}")
+
+    with catchtime() as t:
+        json_response = await async_make_request(
+            session, "https://api.gladia.io/v2/transcription/",
+            headers=headers,  method="POST", json=data
+        )
+
+    print(f'Create Transcription Job: {t.seconds} seconds for `{audio_url}`')
+
+    return json_response
+
+
+
+async def async_upload_orchestrator(files_to_upload):
+
+    async with aiohttp.ClientSession() as session:
+
+        tasks = [
+            async_upload_file_to_gladia(
+                session, file
+            ) for file in files_to_upload
+        ]
+
+        results = await asyncio.gather(*tasks)
+        return results
+
+
+async def async_transcription_orchestrator(audio_urls):
+
+    async with aiohttp.ClientSession() as session:
+
+        tasks = [
+            async_transcribe_job(
+                session, url
+            ) for url in audio_urls
+        ]
+
+        results = await asyncio.gather(*tasks)
+        return results
+
+
+async def async_wait_for_job(session, transcription_job):
+
+    result_url = transcription_job.get("result_url")
+
+    while True:
+        poll_response = async_make_request(result_url, headers)
+
+        if poll_response.get("status") == "done":
+            print("- Transcription done: \n")
+            print(poll_response.get("result"))
+            break
+        elif poll_response.get("status") == "error":
+            print("- Transcription failed")
+            print(poll_response)
+        else:
+            print("Transcription status:", poll_response.get("status"))
+    
+        asyncio.sleep(2)
+
+        return 
+
+async def async_wait_orchestrator(transcription_jobs):
+
+    async with aiohttp.ClientSession() as session:
+
+        tasks = [
+            async_wait_for_job(
+                session, job
+            ) for job in transcription_jobs
+        ]
+
+        results = await asyncio.gather(*tasks)
+        return results
+
+```
+
+```{python}
+headers = {
+    "accept": "application/json",
+    "x-gladia-key": x_gladia_key,
+}
+
+
+files_path = Path("./data")
+files_to_upload = [f for f in files_path.iterdir()][:1]
+
+for file in files_to_upload:
+    print(file)
+
+with catchtime() as t:
+    upload_results = asyncio.run(
+        async_upload_orchestrator(files_to_upload)
+    )
+
+print(f'Total Time: {t.seconds} seconds')
+
+```
+
+```{python}
+upload_results
+```
+
+### Create the transcription jobs
+This does not return the transcription, but creates the job for the transcription to be done. We need to wait for the transcription.
+
+```{python}
+
+headers = {
+    "Content-Type": "application/json",
+    "x-gladia-key": x_gladia_key,
+}
+
+headers = {
+    "accept": "application/json",
+    "x-gladia-key": x_gladia_key,
+}
+
+
+audio_urls = [uploaded["audio_url"] for uploaded in upload_results]
+
+with catchtime() as t:
+    transcription_job_results = asyncio.run(
+        async_transcription_orchestrator(audio_urls)
+    )
+
+print(f'Total Time: {t.seconds} seconds')
+```
+
+```{python}
+
+def make_request(url, headers, method="GET", data=None, files=None):
+    if method == "POST":
+        response = requests.post(url, headers=headers, json=data, files=files)
+    else:
+        response = requests.get(url, headers=headers)
+    return response.json()
+    
+post_response = make_request(
+    "https://api.gladia.io/v2/transcription/", headers, "POST", data={"audio_url": upload_results[0]["audio_url"]}
+)
+
+post_response
+```
+
+
+```{python}
+transcription_job_results
+```
+
+### Wait for the transcriptions to be ready
+```{python}
+
+with catchtime() as t:
+    transcription_results = asyncio.run(
+        async_wait_orchestrator(transcription_job_results)
+    )
+
+print(f'Total Time: {t.seconds} seconds')
+
+```
